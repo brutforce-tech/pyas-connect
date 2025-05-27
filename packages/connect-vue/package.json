@@ -1,0 +1,47 @@
+{
+  "name": "@pyas/connect-vue",
+  "version": "1.0.0",
+  "description": "A Vue 3 plugin wrapper around the Pyas Connect Web Component, exposing PyasConnect as a first-class Vue component",
+  "keywords": [
+    "pyas",
+    "pyas-connect",
+    "vue",
+    "vue3",
+    "oauth",
+    "web-components",
+    "stencil",
+    "plugin",
+    "calendar-integration",
+    "outlook api integration",
+    "google calendar integration",
+    "microsoft graph api",
+    "google api"
+  ],
+  "author": "Pyas Team <support@pyas.io>",
+  "homepage": "https://github.com/brutforce-tech/pyas-connect#readme",
+  "license": "ISC",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "directories": {
+    "lib": "dist",
+    "test": "__tests__"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1",
+    "build": "npm run tsc",
+    "tsc": "tsc -p . --outDir ./dist"
+  },
+  "devDependencies": {
+    "vue": "^3.5.14"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@stencil/vue-output-target": "^0.10.7",
+    "@pyas/connect": "*"
+  }
+}
