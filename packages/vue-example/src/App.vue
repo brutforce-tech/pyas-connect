@@ -9,7 +9,7 @@ import { PyasConnect } from '@pyas/connect-vue'
       :show-icloud="true"
       user-name="Jane Doe"
       user-email="jane@gmail.com"
-      client-id="pyas_56ca0f06-7961-45ac-a439-42dbf23bcb99"
+      client-id="some-client-id"
       token-name="oooo">
       <span>
         Connect an Account
