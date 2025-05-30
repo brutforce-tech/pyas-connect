@@ -7,40 +7,73 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface PyasConnect {
-        "appName": string;
         /**
           * Optional: Automatically open modal
+          * @default false
          */
         "autoOpen": boolean;
         /**
-          * Required: OAuth Client ID  and Token Name
+          * Required: Pyas APP Client ID  and Token Name
          */
         "clientId": string;
+        /**
+          * @default ''
+         */
         "formDescription": string;
+        /**
+          * @default 'Enter Your Details'
+         */
         "formTitle": string;
-        "googleIcon"?: string;
-        "icloudIcon"?: string;
+        /**
+          * @default ''
+         */
         "modalDescription": string;
+        /**
+          * @default 'Connect an Account'
+         */
         "modalTitle": string;
-        "outlookIcon"?: string;
+        /**
+          * Optional: The name of your actual product/app. Not your Pyas app name.
+          * @default 'This app'
+         */
+        "productName": string;
+        /**
+          * @default true
+         */
         "showDisclaimer": boolean;
+        /**
+          * @default true
+         */
         "showGoogle": boolean;
+        /**
+          * @default false
+         */
         "showIcloud": boolean;
         /**
           * Optional: Show provider labels
+          * @default true
          */
         "showLabels": boolean;
+        /**
+          * @default true
+         */
         "showOutlook": boolean;
+        /**
+          * @default true
+         */
         "showZoom": boolean;
+        /**
+          * @default ''
+         */
         "state": string;
         /**
           * Optional: Theme (light/dark)
+          * @default 'light'
          */
         "theme": 'light' | 'dark';
         "tokenName": string;
         "userEmail"?: string;
         "userName"?: string;
-        "zoomIcon"?: string;
     }
 }
 export interface PyasConnectCustomEvent<T> extends CustomEvent<T> {
@@ -72,20 +105,30 @@ declare global {
 }
 declare namespace LocalJSX {
     interface PyasConnect {
-        "appName"?: string;
         /**
           * Optional: Automatically open modal
+          * @default false
          */
         "autoOpen"?: boolean;
         /**
-          * Required: OAuth Client ID  and Token Name
+          * Required: Pyas APP Client ID  and Token Name
          */
         "clientId"?: string;
+        /**
+          * @default ''
+         */
         "formDescription"?: string;
+        /**
+          * @default 'Enter Your Details'
+         */
         "formTitle"?: string;
-        "googleIcon"?: string;
-        "icloudIcon"?: string;
+        /**
+          * @default ''
+         */
         "modalDescription"?: string;
+        /**
+          * @default 'Connect an Account'
+         */
         "modalTitle"?: string;
         /**
           * Emit connection result
@@ -95,25 +138,48 @@ declare namespace LocalJSX {
           * Emit error result
          */
         "onConnectError"?: (event: PyasConnectCustomEvent<{ message: string, code: string|number|undefined }>) => void;
-        "outlookIcon"?: string;
+        /**
+          * Optional: The name of your actual product/app. Not your Pyas app name.
+          * @default 'This app'
+         */
+        "productName"?: string;
+        /**
+          * @default true
+         */
         "showDisclaimer"?: boolean;
+        /**
+          * @default true
+         */
         "showGoogle"?: boolean;
+        /**
+          * @default false
+         */
         "showIcloud"?: boolean;
         /**
           * Optional: Show provider labels
+          * @default true
          */
         "showLabels"?: boolean;
+        /**
+          * @default true
+         */
         "showOutlook"?: boolean;
+        /**
+          * @default true
+         */
         "showZoom"?: boolean;
+        /**
+          * @default ''
+         */
         "state"?: string;
         /**
           * Optional: Theme (light/dark)
+          * @default 'light'
          */
         "theme"?: 'light' | 'dark';
         "tokenName"?: string;
         "userEmail"?: string;
         "userName"?: string;
-        "zoomIcon"?: string;
     }
     interface IntrinsicElements {
         "pyas-connect": PyasConnect;

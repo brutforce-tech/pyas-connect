@@ -1,6 +1,7 @@
 import { Config } from '@stencil/core';
 import { vueOutputTarget } from '@stencil/vue-output-target';
 import { reactOutputTarget } from '@stencil/react-output-target';
+import { angularOutputTarget } from '@stencil/angular-output-target';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -41,8 +42,13 @@ export const config: Config = {
       outDir: '../connect-react/lib',
       hydrateModule: '@pyas/connect/hydrate',
       stencilPackageName: '@pyas/connect',
+    }),
+    angularOutputTarget({
+      componentCorePackage: '@pyas/connect',
+      outputType: 'component',
+      directivesProxyFile: '../angular-workspace/projects/connect-angular/src/lib/components.ts',
+      directivesArrayFile: '../angular-workspace/projects/connect-angular/src/lib/index.ts',
       
-    
     }),
   ],
 

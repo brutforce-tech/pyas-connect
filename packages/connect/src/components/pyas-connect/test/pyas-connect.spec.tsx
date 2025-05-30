@@ -1,4 +1,5 @@
 import { newSpecPage } from '@stencil/core/testing';
+import '@stencil/core/testing/jest';
 import { PyasConnect } from '../pyas-connect';
 
 describe('pyas-connect', () => {
