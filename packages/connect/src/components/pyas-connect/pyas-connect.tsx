@@ -4,23 +4,23 @@ const PYAS_BASE_URL = Env.PYAS_BASE_URL || 'https://api.pyas.io'
 const PYAS_REDIRECT_URL = Env.PYAS_REDIRECT_URL || 'https://api.pyas.io/oauth/callback'
 
 const GoogleIcon = () => (
-  <svg 
-      xmlns="http://www.w3.org/2000/svg" 
+  <svg
+      xmlns="http://www.w3.org/2000/svg"
       x="0px" y="0px" width="48" height="48" viewBox="0 0 48 48">
     <rect width="22" height="22" x="13" y="13" fill="#fff"></rect><polygon fill="#1e88e5" points="25.68,20.92 26.688,22.36 28.272,21.208 28.272,29.56 30,29.56 30,18.616 28.56,18.616"></polygon><path fill="#1e88e5" d="M22.943,23.745c0.625-0.574,1.013-1.37,1.013-2.249c0-1.747-1.533-3.168-3.417-3.168 c-1.602,0-2.972,1.009-3.33,2.453l1.657,0.421c0.165-0.664,0.868-1.146,1.673-1.146c0.942,0,1.709,0.646,1.709,1.44 c0,0.794-0.767,1.44-1.709,1.44h-0.997v1.728h0.997c1.081,0,1.993,0.751,1.993,1.64c0,0.904-0.866,1.64-1.931,1.64 c-0.962,0-1.784-0.61-1.914-1.418L17,26.802c0.262,1.636,1.81,2.87,3.6,2.87c2.007,0,3.64-1.511,3.64-3.368 C24.24,25.281,23.736,24.363,22.943,23.745z"></path><polygon fill="#fbc02d" points="34,42 14,42 13,38 14,34 34,34 35,38"></polygon><polygon fill="#4caf50" points="38,35 42,34 42,14 38,13 34,14 34,34"></polygon><path fill="#1e88e5" d="M34,14l1-4l-1-4H9C7.343,6,6,7.343,6,9v25l4,1l4-1V14H34z"></path><polygon fill="#e53935" points="34,34 34,42 42,34"></polygon><path fill="#1565c0" d="M39,6h-5v8h8V9C42,7.343,40.657,6,39,6z"></path><path fill="#1565c0" d="M9,42h5v-8H6v5C6,40.657,7.343,42,9,42z"></path>
   </svg>
 )
 
 const OutlookIcon = () => (
-    <svg 
-          xmlns="http://www.w3.org/2000/svg" 
+    <svg
+          xmlns="http://www.w3.org/2000/svg"
           x="0px" y="0px" width="48" height="48" viewBox="0 0 48 48">
           <path fill="#103262" d="M43.255,23.547l-6.81-3.967v11.594H44v-6.331C44,24.309,43.716,23.816,43.255,23.547z"></path><path fill="#0084d7" d="M13,10h10v9H13V10z"></path><path fill="#33afec" d="M23,10h10v9H23V10z"></path><path fill="#54daff" d="M33,10h10v9H33V10z"></path><path fill="#027ad4" d="M23,19h10v9H23V19z"></path><path fill="#0553a4" d="M23,28h10v9H23V28z"></path><path fill="#25a2e5" d="M33,19h10v9H33V19z"></path><path fill="#0262b8" d="M33,28h10v9H33V28z"></path><polygon points="13,37 43,37 43,24.238 28.99,32.238 13,24.238" opacity=".019"></polygon><polygon points="13,37 43,37 43,24.476 28.99,32.476 13,24.476" opacity=".038"></polygon><polygon points="13,37 43,37 43,24.714 28.99,32.714 13,24.714" opacity=".057"></polygon><polygon points="13,37 43,37 43,24.952 28.99,32.952 13,24.952" opacity=".076"></polygon><polygon points="13,37 43,37 43,25.19 28.99,33.19 13,25.19" opacity=".095"></polygon><polygon points="13,37 43,37 43,25.429 28.99,33.429 13,25.429" opacity=".114"></polygon><polygon points="13,37 43,37 43,25.667 28.99,33.667 13,25.667" opacity=".133"></polygon><polygon points="13,37 43,37 43,25.905 28.99,33.905 13,25.905" opacity=".152"></polygon><polygon points="13,37 43,37 43,26.143 28.99,34.143 13,26.143" opacity=".171"></polygon><polygon points="13,37 43,37 43,26.381 28.99,34.381 13,26.381" opacity=".191"></polygon><polygon points="13,37 43,37 43,26.619 28.99,34.619 13,26.619" opacity=".209"></polygon><polygon points="13,37 43,37 43,26.857 28.99,34.857 13,26.857" opacity=".229"></polygon><polygon points="13,37 43,37 43,27.095 28.99,35.095 13,27.095" opacity=".248"></polygon><polygon points="13,37 43,37 43,27.333 28.99,35.333 13,27.333" opacity=".267"></polygon><polygon points="13,37 43,37 43,27.571 28.99,35.571 13,27.571" opacity=".286"></polygon><polygon points="13,37 43,37 43,27.81 28.99,35.81 13,27.81" opacity=".305"></polygon><polygon points="13,37 43,37 43,28.048 28.99,36.048 13,28.048" opacity=".324"></polygon><polygon points="13,37 43,37 43,28.286 28.99,36.286 13,28.286" opacity=".343"></polygon><polygon points="13,37 43,37 43,28.524 28.99,36.524 13,28.524" opacity=".362"></polygon><polygon points="13,37 43,37 43,28.762 28.99,36.762 13,28.762" opacity=".381"></polygon><polygon points="13,37 43,37 43,29 28.99,37 13,29" opacity=".4"></polygon><linearGradient id="Qf7015RosYe_HpjKeG0QTa_ut6gQeo5pNqf_gr1" x1="38.925" x2="32.286" y1="24.557" y2="36.024" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#31abec"></stop><stop offset="1" stop-color="#1582d5"></stop></linearGradient><path fill="url(#Qf7015RosYe_HpjKeG0QTa_ut6gQeo5pNqf_gr1)" d="M15.441,42h26.563c1.104,0,1.999-0.889,2-1.994C44.007,35.485,44,24.843,44,24.843	s-0.007,0.222-1.751,1.212S14.744,41.566,14.744,41.566S14.978,42,15.441,42z"></path><linearGradient id="Qf7015RosYe_HpjKeG0QTb_ut6gQeo5pNqf_gr2" x1="13.665" x2="41.285" y1="6.992" y2="9.074" gradientUnits="userSpaceOnUse"><stop offset=".042" stop-color="#076db4"></stop><stop offset=".85" stop-color="#0461af"></stop></linearGradient><path fill="url(#Qf7015RosYe_HpjKeG0QTb_ut6gQeo5pNqf_gr2)" d="M43,10H13V8c0-1.105,0.895-2,2-2h26c1.105,0,2,0.895,2,2V10z"></path><linearGradient id="Qf7015RosYe_HpjKeG0QTc_ut6gQeo5pNqf_gr3" x1="28.153" x2="23.638" y1="33.218" y2="41.1" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#33acee"></stop><stop offset="1" stop-color="#1b8edf"></stop></linearGradient><path fill="url(#Qf7015RosYe_HpjKeG0QTc_ut6gQeo5pNqf_gr3)" d="M13,25v15c0,1.105,0.895,2,2,2h15h12.004c0.462,0,0.883-0.162,1.221-0.425L13,25z"></path><path d="M21.319,13H13v24h8.319C23.352,37,25,35.352,25,33.319V16.681C25,14.648,23.352,13,21.319,13z" opacity=".05"></path><path d="M21.213,36H13V13.333h8.213c1.724,0,3.121,1.397,3.121,3.121v16.425	C24.333,34.603,22.936,36,21.213,36z" opacity=".07"></path><path d="M21.106,35H13V13.667h8.106c1.414,0,2.56,1.146,2.56,2.56V32.44C23.667,33.854,22.52,35,21.106,35z" opacity=".09"></path><linearGradient id="Qf7015RosYe_HpjKeG0QTd_ut6gQeo5pNqf_gr4" x1="3.53" x2="22.41" y1="14.53" y2="33.41" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1784d8"></stop><stop offset="1" stop-color="#0864c5"></stop></linearGradient><path fill="url(#Qf7015RosYe_HpjKeG0QTd_ut6gQeo5pNqf_gr4)" d="M21,34H5c-1.105,0-2-0.895-2-2V16c0-1.105,0.895-2,2-2h16c1.105,0,2,0.895,2,2v16	C23,33.105,22.105,34,21,34z"></path><path fill="#fff" d="M13,18.691c-3.111,0-4.985,2.377-4.985,5.309S9.882,29.309,13,29.309	c3.119,0,4.985-2.377,4.985-5.308C17.985,21.068,16.111,18.691,13,18.691z M13,27.517c-1.765,0-2.82-1.574-2.82-3.516	s1.06-3.516,2.82-3.516s2.821,1.575,2.821,3.516S14.764,27.517,13,27.517z"></path>
     </svg>
 )
 
 const ZoomIcon = () => (
-    <svg 
+    <svg
       xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="48" height="48" viewBox="0 0 48 48">
       <circle cx="24" cy="24" r="20" fill="#2196f3"></circle><path fill="#fff" d="M29,31H14c-1.657,0-3-1.343-3-3V17h15c1.657,0,3,1.343,3,3V31z"></path><polygon fill="#fff" points="37,31 31,27 31,21 37,17"></polygon>
     </svg>
@@ -48,9 +48,6 @@ export class PyasConnect {
 
   /** Optional: Theme (light/dark) */
   @Prop({ reflect: true }) theme: 'light' | 'dark' = 'light';
-
-  /** Optional: Automatically open modal */
-  @Prop() autoOpen: boolean = false
 
   @Prop() modalTitle: string = 'Connect an Account'
   @Prop() modalDescription: string = ''
@@ -80,16 +77,12 @@ export class PyasConnect {
 
 
   /** Emit connection result */
-  @Event() accountConnected: EventEmitter<{ provider: string; user: any }>
+  @Event() accountConnected: EventEmitter<{ provider: string; accountId: string, name: string, email: string, scopes: string[], status: string }>
   /** Emit error result */
-  @Event() connectError: EventEmitter<{ message: string, code: string|number|undefined }>
+  @Event() connectError: EventEmitter<{ message: string, code: string|number|undefined, error?: any }>
 
 
   @State() modalOpen: boolean = false
-
-  connectedCallback() {
-    if (this.autoOpen) this.modalOpen = true
-  }
 
   private handleNext(provider: string) {
     this.selectedProvider = provider
@@ -152,6 +145,8 @@ export class PyasConnect {
         return;
       }
 
+      let closedByUser = true;
+
       const pollId = window.setInterval(() => {
         let hasClosed = false;
         try {
@@ -161,34 +156,37 @@ export class PyasConnect {
           // under strict COOP, reading .closed throws → assume it’s closed
           hasClosed = true;
         }
-   
+
         if (hasClosed) {
           window.clearInterval(pollId);
           window.removeEventListener('message', handleMessage);
 
           this.isLoading = false;
 
-          /* Emit a “cancelled” event so host app can react */
-          this.connectError.emit({
-            message: 'OAuth window closed by user.',
-            code: 'user_cancelled',
-          });
+          if (closedByUser) {
+            /* Emit a “cancelled” event so host app can react */
+            this.connectError.emit({
+              message: 'OAuth window closed by user.',
+              code: 'user_cancelled',
+            });
+          }
         }
       }, 500)
 
       const handleMessage = async (event: MessageEvent) => {
           if (event.origin !== PYAS_BASE_URL) return; // Optional: lock this down
           if (!event.data || event.data.type !== 'pyas-oauth-complete') return;
-      
+
           const { code } = event.data;
           window.removeEventListener('message', handleMessage);
-      
+
           if (!code) {
             this.connectError.emit({
               message: 'OAuth connection failed. No grant code received.',
-              code: 'unknown',
+              code: 'invalid_grant',
             })
             this.isLoading = false
+            closedByUser = false;
             return popup?.close();
           }
 
@@ -198,6 +196,8 @@ export class PyasConnect {
                 clientId: this.clientId,
                 tokenName: this.tokenName,
               }).toString();
+
+              closedByUser = false;
 
               const res = await fetch(`${PYAS_BASE_URL}/oauth/init/connect?${query}`, {
                 method: 'POST',
@@ -210,9 +210,8 @@ export class PyasConnect {
               });
 
               const result = await res.json();
-          
+
               if (!res.ok) {
-                console.error('OAuth connect failed:', result?.message);
                 this.connectError.emit({
                   message: result?.message || result?.error || 'OAuth connect failed',
                   code: result?.code || 'unknown',
@@ -220,7 +219,6 @@ export class PyasConnect {
                 this.isLoading = false
                 return popup?.close();
               }
-
               popup?.close();
 
               const { account } = result.data
@@ -229,10 +227,12 @@ export class PyasConnect {
               this.isLoading = false
 
           } catch (error) {
+              closedByUser = false;
               console.error('OAuth connect error:', error);
               this.connectError.emit({
                 message: 'OAuth connect failed',
                 code: 'connect_error',
+                error
               });
               this.isLoading = false;
               popup?.close();
@@ -255,6 +255,18 @@ export class PyasConnect {
 
       this.isLoading = true
 
+      function getErrorCodeMessage(error: string | undefined): { code: string, message: string } {
+        if (!error) return { code: 'invalid_response', message: 'Invalid response from server' };
+        const err = error.toLowerCase();
+        if (err.includes('token not found')) return { code: 'invalid_token', message: error };
+        if (err.includes('invalid client')) return { code: 'invalid_client', message: error };
+        if (err.includes('invalid grant')) return { code: 'invalid_grant', message: error };
+        if (err.includes('unauthorized')) return { code: 'unauthorized', message: error };
+        if (err.includes('expired')) return { code: 'expired', message: error };
+        if (err.includes('not allowed')) return { code: 'not_allowed', message: error };
+        return { code: 'unknown', message: error };
+      }
+
       const queryString = new URLSearchParams(authPayload).toString()
       fetch(`${PYAS_BASE_URL}/oauth/init?${queryString}`)
         .then(res => res.json())
@@ -263,19 +275,15 @@ export class PyasConnect {
             this.openOAuthPopup(this.selectedProvider, data.url)
           } else {
             this.isLoading = false
-            console.error('Invalid response from server')
-            this.connectError.emit({
-              message: 'Invalid response from server',
-              code: 'invalid_response',
-            })
+            this.connectError.emit(getErrorCodeMessage(data?.error || 'Invalid response from server'))
           }
         })
         .catch((e) => {
           this.isLoading = false
-          console.error('Failed to fetch OAuth URL:', e)
           this.connectError.emit({
             message: 'Failed to fetch OAuth URL',
             code: 'fetch_error',
+            error: e
           })
         })
   }
@@ -314,14 +322,14 @@ export class PyasConnect {
                       <p>{this.formDescription}</p>
                     </div>
                  )}
-                  
+
                   <div class="close-modal-wrapper">
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      fill="none" 
-                      viewBox="0 0 24 24" 
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
                       stroke-width="2"
-                      stroke="currentColor" 
+                      stroke="currentColor"
                       class="pyas-modal-close"
                       onClick={() => this.closeModal()}>
                       <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -345,7 +353,7 @@ export class PyasConnect {
                 <div class="step-form">
                   <div class="step-form-content form-group">
                     <label class="form-label">
-                     <span>Name</span> 
+                     <span>Name</span>
                       <input
                         type="text"
                         class="form-input"
@@ -369,9 +377,9 @@ export class PyasConnect {
                     </label>
                   </div>
                   <div class="form-actions">
-                    <button 
+                    <button
                       disabled={this.isLoading}
-                      class="form-back" 
+                      class="form-back"
                       onClick={() => this.handlePrev()}>
                       Back
                     </button>
@@ -395,7 +403,7 @@ export class PyasConnect {
                     <div class="divider">
                         <hr />
                     </div>
-                
+
                     <div class="pyas-disclaimer">
                       <span>
                         {this.productName} uses
@@ -403,7 +411,7 @@ export class PyasConnect {
                       <a href="https://pyas.io/" target="_blank">
                         <img class="pyas-logo" src="data:image/svg+xml,%3c?xml%20version=%271.0%27%20encoding=%27UTF-8%27?%3e%3csvg%20id=%27Layer_1%27%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20183%20100%27%3e%3cdefs%3e%3cstyle%3e.cls-1{fill:%23290066;}.cls-2{fill:%23ff9b19;}.cls-3{fill:%23b70053;}.cls-4{fill:%233d0099;}.cls-5{fill:%230f0b3a;}.cls-6{fill:%23ffd701;}.cls-7{fill:%23fb0062;}%3c/style%3e%3c/defs%3e%3cg%3e%3cpath%20class=%27cls-5%27%20d=%27M96.12,39.39c0,6.17-4.85,10.84-11.17,10.84h-5.18v10.84h-6.5V28.55h11.69c6.32,0,11.17,4.67,11.17,10.84Zm-6.69,0c0-2.69-1.98-4.71-4.62-4.71h-5.04v9.43h5.04c2.64,0,4.62-2.03,4.62-4.71Z%27/%3e%3cpath%20class=%27cls-5%27%20d=%27M124.16,37.03l-13.71,32.99h-6.6l3.86-9.19-9.85-23.8h6.97l6.22,16.35,6.22-16.35h6.88Z%27/%3e%3cpath%20class=%27cls-5%27%20d=%27M150.27,37.03v24.04h-6.13v-3.16c-1.89,2.31-4.57,3.72-7.82,3.72-6.69,0-11.73-5.42-11.73-12.58s5.04-12.58,11.73-12.58c3.25,0,5.94,1.41,7.82,3.72v-3.16h6.13Zm-6.13,12.02c0-3.77-2.83-6.65-6.64-6.65s-6.6,2.87-6.6,6.65,2.83,6.64,6.6,6.64,6.64-2.87,6.64-6.64Z%27/%3e%3cpath%20class=%27cls-5%27%20d=%27M154.6,53.86h6.17c0,1.51,1.27,2.73,2.87,2.73,1.51,0,2.69-.94,2.69-2.17,0-1.65-1.84-2.45-4.01-3.02-3.58-.85-7.4-2.69-7.4-7.54s4.01-7.4,8.62-7.4c4.95,0,8.67,3.3,8.67,7.4h-6.17c0-1.27-1.08-2.36-2.54-2.36-1.32,0-2.4,.9-2.4,1.98,0,1.51,1.7,2.4,4.19,3.02,3.72,.94,7.26,2.78,7.26,7.4,0,4.9-4.05,7.73-8.95,7.73-5.18,0-9-3.49-9-7.78Z%27/%3e%3c/g%3e%3cg%3e%3cpath%20class=%27cls-6%27%20d=%27M54.12,30.12H16.82c-.31-.48-.49-1.04-.49-1.65V8.39c0-1,.81-1.81,1.82-1.81,.37,0,.72,.11,1.01,.3,0,0,.01,0,.02,.01l31.39,20.38,1.13,.74h0c.87,.63,1.68,1.33,2.42,2.11Z%27/%3e%3cpath%20class=%27cls-4%27%20d=%27M23.35,39.35s-.09-.06-.14-.09l-12.37-8.03s-.05-.03-.07-.05c-.28-.18-.61-.28-.97-.28-1,0-1.81,.81-1.81,1.82v57.47c0,1,.81,1.82,1.81,1.82,.42,0,.8-.14,1.11-.38,.02-.01,.03-.03,.05-.04l12.48-9.75s.08-.06,.11-.09c.34-.28,.62-.64,.82-1.05,.19-.39,.29-.83,.29-1.3V41.85c0-1.04-.52-1.96-1.32-2.5Z%27/%3e%3cpath%20class=%27cls-2%27%20d=%27M58.31,38.19H28.28c-.22-.33-.49-.62-.82-.85-.02-.02-.04-.03-.07-.05l-9.68-6.29s-.04-.03-.06-.04c-.33-.23-.62-.52-.83-.86H54.12c2.09,2.2,3.57,4.98,4.19,8.08Z%27/%3e%3cpath%20class=%27cls-7%27%20d=%27M58.63,41.44c0,4.98-2.21,9.44-5.7,12.45-.03,.03-.06,.05-.1,.08,0,0-14.65,11.44-21.09,16.48-.01,0-.02,.02-.04,.03-.31,.25-.71,.39-1.13,.39-1,0-1.81-.81-1.81-1.82v-29.22c0-.61-.18-1.17-.49-1.65h30.03c.21,1.05,.32,2.13,.32,3.24Z%27/%3e%3cpath%20class=%27cls-3%27%20d=%27M28.76,43.28v-3.44c0-.61-.18-1.17-.49-1.65h30.03l-29.54,5.09Z%27/%3e%3cpath%20class=%27cls-1%27%20d=%27M24.38,80.69c-.19,.41-.47,.76-.82,1.05-.04,.03-.08,.06-.11,.09l-12.48,9.75s-.03,.03-.05,.04c-.31,.24-.69,.38-1.11,.38-1,0-1.81-.81-1.81-1.82V32.72c0,27.4,7.06,37.35,16.39,47.98Z%27/%3e%3c/g%3e%3c/svg%3e" alt="Pyas Logo" />
                       </a>
-                    
+
                       <span>
                         to securely connect your account
                       </span>

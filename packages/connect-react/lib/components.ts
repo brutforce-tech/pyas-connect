@@ -13,8 +13,8 @@ import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 
 export type PyasConnectEvents = {
-    onAccountConnected: EventName<CustomEvent<{ provider: string; user: any }>>,
-    onConnectError: EventName<CustomEvent<{ message: string, code: string | number | undefined }>>
+    onAccountConnected: EventName<CustomEvent<{ provider: string; accountId: string, name: string, email: string, scopes: string[], status: string }>>,
+    onConnectError: EventName<CustomEvent<{ message: string, code: string | number | undefined, error?: any }>>
 };
 
 export const PyasConnect: StencilReactComponent<PyasConnectElement, PyasConnectEvents> = /*@__PURE__*/ createComponent<PyasConnectElement, PyasConnectEvents>({

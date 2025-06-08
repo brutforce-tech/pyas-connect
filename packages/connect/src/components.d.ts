@@ -8,11 +8,6 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface PyasConnect {
         /**
-          * Optional: Automatically open modal
-          * @default false
-         */
-        "autoOpen": boolean;
-        /**
           * Required: Pyas APP Client ID  and Token Name
          */
         "clientId": string;
@@ -82,8 +77,8 @@ export interface PyasConnectCustomEvent<T> extends CustomEvent<T> {
 }
 declare global {
     interface HTMLPyasConnectElementEventMap {
-        "accountConnected": { provider: string; user: any };
-        "connectError": { message: string, code: string|number|undefined };
+        "accountConnected": { provider: string; accountId: string, name: string, email: string, scopes: string[], status: string };
+        "connectError": { message: string, code: string|number|undefined, error?: any };
     }
     interface HTMLPyasConnectElement extends Components.PyasConnect, HTMLStencilElement {
         addEventListener<K extends keyof HTMLPyasConnectElementEventMap>(type: K, listener: (this: HTMLPyasConnectElement, ev: PyasConnectCustomEvent<HTMLPyasConnectElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -105,11 +100,6 @@ declare global {
 }
 declare namespace LocalJSX {
     interface PyasConnect {
-        /**
-          * Optional: Automatically open modal
-          * @default false
-         */
-        "autoOpen"?: boolean;
         /**
           * Required: Pyas APP Client ID  and Token Name
          */
@@ -133,11 +123,11 @@ declare namespace LocalJSX {
         /**
           * Emit connection result
          */
-        "onAccountConnected"?: (event: PyasConnectCustomEvent<{ provider: string; user: any }>) => void;
+        "onAccountConnected"?: (event: PyasConnectCustomEvent<{ provider: string; accountId: string, name: string, email: string, scopes: string[], status: string }>) => void;
         /**
           * Emit error result
          */
-        "onConnectError"?: (event: PyasConnectCustomEvent<{ message: string, code: string|number|undefined }>) => void;
+        "onConnectError"?: (event: PyasConnectCustomEvent<{ message: string, code: string|number|undefined, error?: any }>) => void;
         /**
           * Optional: The name of your actual product/app. Not your Pyas app name.
           * @default 'This app'

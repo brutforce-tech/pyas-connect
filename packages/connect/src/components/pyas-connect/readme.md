@@ -9,7 +9,6 @@
 
 | Property           | Attribute           | Description                                                            | Type                | Default                |
 | ------------------ | ------------------- | ---------------------------------------------------------------------- | ------------------- | ---------------------- |
-| `autoOpen`         | `auto-open`         | Optional: Automatically open modal                                     | `boolean`           | `false`                |
 | `clientId`         | `client-id`         | Required: Pyas APP Client ID  and Token Name                           | `string`            | `undefined`            |
 | `formDescription`  | `form-description`  |                                                                        | `string`            | `''`                   |
 | `formTitle`        | `form-title`        |                                                                        | `string`            | `'Enter Your Details'` |
@@ -31,10 +30,10 @@
 
 ## Events
 
-| Event              | Description            | Type                                                        |
-| ------------------ | ---------------------- | ----------------------------------------------------------- |
-| `accountConnected` | Emit connection result | `CustomEvent<{ provider: string; user: any; }>`             |
-| `connectError`     | Emit error result      | `CustomEvent<{ message: string; code: string \| number; }>` |
+| Event              | Description            | Type                                                                                                                   |
+| ------------------ | ---------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `accountConnected` | Emit connection result | `CustomEvent<{ provider: string; accountId: string; name: string; email: string; scopes: string[]; status: string; }>` |
+| `connectError`     | Emit error result      | `CustomEvent<{ message: string; code: string \| number; error?: any; }>`                                               |
 
 
 ## Shadow Parts

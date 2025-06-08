@@ -15,8 +15,8 @@ import { createComponent, type SerializeShadowRootOptions } from '@stencil/react
 export const serializeShadowRoot: SerializeShadowRootOptions = { default: "declarative-shadow-dom" };
 
 export type PyasConnectEvents = {
-    onAccountConnected: EventName<CustomEvent<{ provider: string; user: any }>>,
-    onConnectError: EventName<CustomEvent<{ message: string, code: string | number | undefined }>>
+    onAccountConnected: EventName<CustomEvent<{ provider: string; accountId: string, name: string, email: string, scopes: string[], status: string }>>,
+    onConnectError: EventName<CustomEvent<{ message: string, code: string | number | undefined, error?: any }>>
 };
 
 export const PyasConnect: StencilReactComponent<PyasConnectElement, PyasConnectEvents> = /*@__PURE__*/ createComponent<PyasConnectElement, PyasConnectEvents>({
@@ -26,7 +26,6 @@ export const PyasConnect: StencilReactComponent<PyasConnectElement, PyasConnectE
         tokenName: 'token-name',
         showLabels: 'show-labels',
         theme: 'theme',
-        autoOpen: 'auto-open',
         modalTitle: 'modal-title',
         modalDescription: 'modal-description',
         formTitle: 'form-title',
