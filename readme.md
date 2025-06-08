@@ -10,6 +10,32 @@ Pyas Connect is a Stencil web-component that lets developers who use Pyas for th
 
 > **Need a Pyas account?** Create one free at <https://www.app.pyas.io/auth/register>. Learn more at <https://pyas.io> and see full API docs at <https://docs.pyas.io>.
 
+<br />
+
+## The UI
+![image](https://github.com/user-attachments/assets/18b3bab1-aad5-4ccc-812b-fa78a545e9d6)
+
+**Light Mode**
+
+Step 1: 
+
+![image](https://github.com/user-attachments/assets/c33094b9-ee58-45fe-9bb4-1e84c61a4a8d)
+
+Step 2: 
+
+![image](https://github.com/user-attachments/assets/02ad5b5f-2b1c-47c7-b52f-cc868c827f85)
+
+**Dark Mode**
+
+Step 1:
+
+![image](https://github.com/user-attachments/assets/38e3e277-05cd-4f9c-a457-4348ff13fda0)
+
+Step 2:
+
+![image](https://github.com/user-attachments/assets/91384b19-9893-4017-82ef-f8a2c59276ec)
+
+
 ---
 
 ## 0 · Get your Pyas credentials (clientId & tokenName)
