@@ -4,8 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "build": "ng build connect-angular --configuration production",
+    "watch": "ng build connect-angular --watch --configuration development",
     "test": "ng test",
     "serve:ssr:angular-example": "node dist/angular-example/server/server.mjs"
   },

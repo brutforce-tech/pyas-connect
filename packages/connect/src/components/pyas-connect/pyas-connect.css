@@ -11,7 +11,7 @@
      switches palettes automatically.
    ------------------------------------------------------------------ */
 
-/* 0️⃣  light-mode tokens (defaults) */
+/* light-mode tokens (defaults) */
 :host {
   font-family: 'Outfit', sans-serif;
 
@@ -19,7 +19,7 @@
   --pc-bg-overlay: rgba(0, 0, 0, 0.5);
 
   --pc-bg-button-primary: #2563eb;
-  --pc-bg-button-primary-hover: #1e4ed8;      /* blue-700 */
+  --pc-bg-button-primary-hover: #1e4ed8;
   --pc-bg-button-subtle: #f5f6f7;
   --pc-bg-button-subtle-hover: #f0f2f5;
   --pc-bg-button-back: #2e3238;
@@ -32,16 +32,16 @@
 
   --pc-border-subtle: #e5e7eb;
 
-  --pc-text-primary: #374151;   /* gray-800 */
-  --pc-text-secondary: #6b7280; /* gray-500 */
+  --pc-text-primary: #374151;
+  --pc-text-secondary: #6b7280;
   --pc-text-invert: #ffffff;
-  --pc-text-faded: #9ca3af;     /* gray-400 */
+  --pc-text-faded: #9ca3af;
   --logo-filter: none;
   --pc-text-invert-hover: #ffffff;
-  
+
 }
 
-/* 1️⃣  automatic dark mode via OS/browser preference */
+/* automatic dark mode via OS/browser preference */
 @media (prefers-color-scheme: dark) {
   :host {
     --pc-bg-surface: #212121;
@@ -69,7 +69,7 @@
   }
 }
 
-/* 2️⃣  explicit dark theme via prop  OR  global .dark class */
+/* explicit dark theme via prop  OR  global .dark class */
 :host([theme='dark']),
 :host-context(.dark) {
   --pc-bg-surface: #212121;

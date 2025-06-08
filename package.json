@@ -10,6 +10,6 @@
   },
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "build": "lerna run build"
+    "build": "lerna run build --ignore vue-example --ignore react-example"
   }
 }

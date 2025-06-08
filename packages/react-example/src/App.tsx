@@ -39,7 +39,7 @@ function App() {
         <span>
           Connect an Account
         </span>
-      </PyasConnect> 
+      </PyasConnect>
     </>
   )
 }

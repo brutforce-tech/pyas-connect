@@ -14,7 +14,6 @@ export const PyasConnect: StencilVueComponent<JSX.PyasConnect> = /*@__PURE__*/ d
   'tokenName',
   'showLabels',
   'theme',
-  'autoOpen',
   'modalTitle',
   'modalDescription',
   'formTitle',
