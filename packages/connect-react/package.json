@@ -1,6 +1,6 @@
 {
   "name": "@pyas/connect-react",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A React plugin wrapper around the Pyas Connect Web Component, exposing PyasConnect as a first-class React component",
   "keywords": [
     "pyas",
@@ -39,14 +39,14 @@
     "access": "public"
   },
   "peerDependencies": {
+    "@pyas/connect": "^1.0.0",
     "react": ">=18.0.0",
-    "react-dom": ">=18.0.0",
-    "@pyas/connect": "^1.0.0"
+    "react-dom": ">=18.0.0"
   },
   "dependencies": {
-    "@pyas/connect": "^1.0.0"
+    "@pyas/connect": "^1.0.1"
   },
-   "devDependencies": {
+  "devDependencies": {
     "@stencil/react-output-target": "^1.0.2",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",

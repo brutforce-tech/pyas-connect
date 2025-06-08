@@ -20,6 +20,8 @@ $RECYCLE.BIN/
 Thumbs.db
 UserInterfaceState.xcuserstate
 .env
+.npmrc
+.npmrc.publish
 
 **/dist/
 **/www/

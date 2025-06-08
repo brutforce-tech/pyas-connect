@@ -1,0 +1,68 @@
+name: Release & Publish
+
+# Run manually OR every commit to main. Pick one trigger or keep both.
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+
+jobs:
+  version-pr:
+    # Skip if the commit that triggered this *is already* a release commit
+    if: ${{ !contains(github.event.head_commit.message, 'chore(release)') }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0      # we need history+tags for lerna
+
+      - name: Set up git user
+        run: |
+          git config user.name  "pyas-release-bot"
+          git config user.email "bot@pyas.io"
+
+      - name: Bump versions & create branch
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm install --ignore-scripts
+          # version bump (no private pkgs, ignore demos, NO push)
+          npm_config_userconfig=.npmrc.publish \
+            npx lerna version --conventional-commits \
+              --no-private --ignore "*example" --yes
+          VERSION=$(jq -r .version < packages/connect/package.json)
+          BRANCH="release/v$VERSION"
+          git switch -c "$BRANCH"
+          git push -u origin "$BRANCH"
+
+      - name: Open PR to master
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GH_PAT_RELEASE }}
+          base: master
+          branch: ${{ github.ref_name }} # the release/vx.y.z branch
+          title: "chore(release): v${{ github.ref_name }}"
+          body: "Automated version bump & changelogs"
+
+  publish:
+    needs: version-pr
+    # This only runs *after* the release branch PR is merged to master
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' && contains(github.event.head_commit.message, 'chore(release)') }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set npm auth
+        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc.publish
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Build (safety)
+        run: npm run build
+
+      - name: Publish tagged packages
+        run: npm run publish:libs
