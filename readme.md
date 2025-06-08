@@ -109,7 +109,7 @@ The component auto-registers as `<pyas-connect>` once the script is loaded.
 |------|------|---------|-------------|
 | `client-id` | `string` | **required** | Your Pyas Client ID. |
 | `token-name` | `string` | **required** | The *name* (not value) of one of your API keys. Identifies the api key for Pyas Connect. |
-| `theme` | `"light" \| "dark"` | `"light"` | Toggle built-in dark or light theme. |
+| `theme` | `string` | `"light"` | Toggle built-in dark or light theme. |
 | `modal-title` | `string` | `"Connect an Account"` | Title for the connect modal. |
 | `modal-description` | `string` | `undefined` | Short description for the connect modal. Displays under the modal title. |
 | `form-title` | `string` | `"Enter Your Details"` | Title for the form section where your users provide their name and email for account connection. |
@@ -323,13 +323,5 @@ Then use `<pyas-connect>` or the wrappers as usual.
 
 ---
 
-## 8 · Building & Publishing (maintainers)
-```bash
-npm run build   # builds core + wrappers
-npm run release # bumps version & publishes to npm
-```
-
----
-
-## 9 · License
+## 8 · License
 MIT © BrutForce Technologies
