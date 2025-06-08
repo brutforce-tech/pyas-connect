@@ -18,7 +18,7 @@
     "google api"
   ],
   "author": "Pyas Team <support@pyas.io>",
-  "homepage": "https://github.com/brutforce-tech/pyas-connect#readme",
+  "homepage": "https://github.com/brutforce-tech/pyas-connect",
   "license": "ISC",
   "main": "dist/index.js",
   "module": "dist/index.js",
