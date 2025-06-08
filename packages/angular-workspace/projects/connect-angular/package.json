@@ -19,14 +19,23 @@
   ],
   "author": "Pyas Team <support@pyas.io>",
   "homepage": "https://github.com/brutforce-tech/pyas-connect",
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "ISC",
   "peerDependencies": {
     "@angular/common": "^19.2.0",
     "@angular/core": "^19.2.0",
-    "@pyas/connect": "*"
+    "@pyas/connect": "^1.0.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@stencil/angular-output-target": "^0.9.0",
+    "@angular/compiler": "^19.0.0",
+    "@angular/compiler-cli": "^19.0.0",
+    "typescript": "^5.4.5"
   },
   "sideEffects": false
 }

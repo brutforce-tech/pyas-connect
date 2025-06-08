@@ -34,14 +34,18 @@
     "build": "npm run tsc",
     "tsc": "tsc -p . --outDir ./dist"
   },
+  "peerDependencies": {
+    "vue": "^3.0.0",
+    "@pyas/connect": "^1.0.0"
+  },
   "devDependencies": {
+    "@stencil/vue-output-target": "^0.10.7",
     "vue": "^3.5.14"
   },
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
-    "@stencil/vue-output-target": "^0.10.7",
-    "@pyas/connect": "*"
+    "@pyas/connect": "^1.0.0"
   }
 }
