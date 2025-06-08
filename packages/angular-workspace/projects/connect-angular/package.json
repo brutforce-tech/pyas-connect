@@ -1,6 +1,25 @@
 {
   "name": "@pyas/connect-angular",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "description": "An Angular plugin wrapper around the Pyas Connect Web Component, exposing PyasConnect as a first-class Angular component",
+  "keywords": [
+    "pyas",
+    "pyas-connect",
+    "angular",
+    "angular19",
+    "oauth",
+    "web-components",
+    "stencil",
+    "plugin",
+    "calendar-integration",
+    "outlook api integration",
+    "google calendar integration",
+    "microsoft graph api",
+    "google api"
+  ],
+  "author": "Pyas Team <support@pyas.io>",
+  "homepage": "https://github.com/brutforce-tech/pyas-connect",
+  "license": "ISC",
   "peerDependencies": {
     "@angular/common": "^19.2.0",
     "@angular/core": "^19.2.0",
