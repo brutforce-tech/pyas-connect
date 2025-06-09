@@ -30,11 +30,11 @@ jobs:
           # version bump (no private pkgs, ignore demos, NO push)
           npm_config_userconfig=.npmrc.publish \
             npx lerna version --conventional-commits \
-              --no-private --ignore-changes "*example" --yes
+              --no-private --ignore-changes "*example" --yes --no-push
           VERSION=$(jq -r .version < packages/connect/package.json)
           BRANCH="release/v$VERSION"
           git switch -c "$BRANCH"
-          git push -u origin "$BRANCH"
+          git push -u origin "$BRANCH" --follow-tags
 
       - name: Open PR to master
         uses: peter-evans/create-pull-request@v6
