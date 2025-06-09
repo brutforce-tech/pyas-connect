@@ -1,0 +1,27 @@
+name: Publish to npm after release PR merges
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [master]
+
+jobs:
+  publish:
+    if: ${{ github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, 'chore(release)') }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set npm auth
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc.publish
+
+      - name: Build (safety)
+        run: npm run build
+
+      - name: Publish tagged packages
+        run: npm run publish:libs

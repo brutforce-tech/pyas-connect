@@ -1,0 +1,48 @@
+name: Create Release PR
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  version-pr:
+    # Only run on a push whose HEAD commit message does NOT start with "chore(release)"
+    if: ${{ github.event_name == 'push' && !startsWith(github.event.head_commit.message, 'chore(release)') && !contains(github.event.head_commit.message, 'release/v') }}
+    runs-on: ubuntu-latest
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: Configure git signature
+        run: |
+          git config user.name  "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+
+      - id: bump
+        name: Bump versions & push release branch
+        run: |
+          npm install --ignore-scripts
+          npx lerna version --conventional-commits \
+            --no-private --ignore-changes "*example" \
+            --yes --no-push --no-git-tag-version
+
+          VERSION=$(jq -r '.version' < packages/connect/package.json)
+          BRANCH="release/v$VERSION"
+
+          git switch -c "$BRANCH"
+          git push -u origin "$BRANCH"
+
+          echo "branch=$BRANCH"   >>"$GITHUB_OUTPUT"
+          echo "version=$VERSION" >>"$GITHUB_OUTPUT"
+
+      - name: Open PR to master
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GH_PAT_RELEASE }}
+          base: master
+          branch: ${{ steps.bump.outputs.branch }}
+          title: "chore(release): v${{ steps.bump.outputs.version }}"
+          body: "Automated version bump & changelogs"
