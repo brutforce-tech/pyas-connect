@@ -1,6 +1,6 @@
 {
   "name": "@pyas/connect-vue",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A Vue 3 plugin wrapper around the Pyas Connect Web Component, exposing PyasConnect as a first-class Vue component",
   "keywords": [
     "pyas",
@@ -46,6 +46,6 @@
     "access": "public"
   },
   "dependencies": {
-    "@pyas/connect": "^1.0.6"
+    "@pyas/connect": "^1.0.7"
   }
 }
