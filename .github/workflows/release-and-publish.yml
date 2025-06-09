@@ -21,8 +21,8 @@ jobs:
         run: |
           git config user.name  "pyas-release-bot"
           git config user.email "bot@pyas.io"
-
-      - name: Bump versions & create branch
+      - id: bump
+        name: Bump versions & create branch
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
@@ -35,14 +35,16 @@ jobs:
           BRANCH="release/v$VERSION"
           git switch -c "$BRANCH"
           git push -u origin "$BRANCH" --follow-tags
+          echo "branch=$BRANCH"   >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Open PR to master
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GH_PAT_RELEASE }}
           base: master
-          branch: ${{ github.ref_name }} # the release/vx.y.z branch
-          title: "chore(release): v${{ github.ref_name }}"
+          branch: ${{ steps.bump.outputs.branch }}
+          title: "chore(release): v${{ steps.bump.outputs.version }}"
           body: "Automated version bump & changelogs"
 
   publish:
