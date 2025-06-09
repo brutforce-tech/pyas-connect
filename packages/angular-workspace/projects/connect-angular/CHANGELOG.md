@@ -5,12 +5,4 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## 1.0.2 (2025-06-09)
 
-**Note:** Version bump only for package @pyas/connect-vue
-
-
-
-
-
-## 1.0.1 (2025-06-08)
-
-**Note:** Version bump only for package @pyas/connect-vue
+**Note:** Version bump only for package @pyas/connect-angular
