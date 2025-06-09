@@ -30,7 +30,7 @@ jobs:
           # version bump (no private pkgs, ignore demos, NO push)
           npm_config_userconfig=.npmrc.publish \
             npx lerna version --conventional-commits \
-              --no-private --ignore-changes "*example" --yes --no-push
+              --no-private --ignore-changes "*example" --yes --no-push --no-git-tag-version
           VERSION=$(jq -r .version < packages/connect/package.json)
           BRANCH="release/v$VERSION"
           git switch -c "$BRANCH"
@@ -57,9 +57,9 @@ jobs:
           fetch-depth: 0
 
       - name: Set npm auth
-        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc.publish
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc.publish
 
       - name: Build (safety)
         run: npm run build
