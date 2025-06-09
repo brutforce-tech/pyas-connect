@@ -1,6 +1,6 @@
 {
   "name": "@pyas/connect-angular",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "An Angular plugin wrapper around the Pyas Connect Web Component, exposing PyasConnect as a first-class Angular component",
   "keywords": [
     "pyas",
@@ -32,9 +32,9 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@stencil/angular-output-target": "^0.9.0",
     "@angular/compiler": "^19.0.0",
     "@angular/compiler-cli": "^19.0.0",
+    "@stencil/angular-output-target": "^0.9.0",
     "typescript": "^5.4.5"
   },
   "sideEffects": false
