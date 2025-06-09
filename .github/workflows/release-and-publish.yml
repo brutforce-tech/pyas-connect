@@ -50,7 +50,7 @@ jobs:
   publish:
     needs: version-pr
     # This only runs *after* the release branch PR is merged to master
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' && contains(github.event.head_commit.message, 'chore(release)') }}
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, 'chore(release)') }}
     runs-on: ubuntu-latest
 
     steps:
