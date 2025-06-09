@@ -1,11 +1,11 @@
 # Angular — `@pyas/connect-angular`
 
-> An Angular plugin wrapper around the Pyas Connect Web Component, exposing PyasConnect as a first-class Angular component
+> An Angular plugin wrapper around the Pyas Connect Web Component <https://www.npmjs.com/package/@pyas/connect>, exposing PyasConnect as a first-class Angular component
 
 ## Usage
 
 ```bash
-npm install @pyas/connect-angular # core auto-installed
+npm install @pyas/connect-angular # core (@pyas/connect) auto-installed
 ```
 Register the custom pyas-connect element
 ```ts
@@ -32,11 +32,14 @@ export class AppModule {}
 ```
 ```html
 <pyas-connect
-    user-name="Jane Doe"
-    user-email="jane@gmail.com"
-    client-id="some-client-id"
-    token-name="token-name"
-    (accountConnected)="onSuccess($event)"
-    >
-</pyas-connect>
+  user-name="Jane Doe"
+  user-email="jane@gmail.com"
+  client-id="some-client-id"
+  token-name="token-name"
+  (accountConnected)="onSuccess($event)"
+></pyas-connect>
 ```
+
+## Full Documentation
+Full usage documentation can be found on the core component on npm: <https://www.npmjs.com/package/@pyas/connect>
+And also on GitHub: <https://github.com/brutforce-tech/pyas-connect>
