@@ -30,7 +30,7 @@ jobs:
           # version bump (no private pkgs, ignore demos, NO push)
           npm_config_userconfig=.npmrc.publish \
             npx lerna version --conventional-commits \
-              --no-private --ignore "*example" --yes
+              --no-private --ignore-changes "*example" --yes
           VERSION=$(jq -r .version < packages/connect/package.json)
           BRANCH="release/v$VERSION"
           git switch -c "$BRANCH"
