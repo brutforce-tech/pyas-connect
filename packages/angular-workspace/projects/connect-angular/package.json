@@ -1,6 +1,6 @@
 {
   "name": "@pyas/connect-angular",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "An Angular plugin wrapper around the Pyas Connect Web Component, exposing PyasConnect as a first-class Angular component",
   "keywords": [
     "pyas",
