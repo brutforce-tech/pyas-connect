@@ -2,9 +2,13 @@ name: Release & Publish
 
 # Run manually OR every commit to main. Pick one trigger or keep both.
 on:
-  workflow_dispatch:
   push:
     branches: [master]
+
+  pull_request:
+    types: [closed]
+    branches: [master]
+  workflow_dispatch:
 
 jobs:
   version-pr:
@@ -50,7 +54,7 @@ jobs:
   publish:
     needs: version-pr
     # This only runs *after* the release branch PR is merged to master
-    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, 'chore(release)') }}
+    if: ${{ (github.event_name == 'pull_request' && github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, 'chore(release)')) || (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'chore(release)')) }}
     runs-on: ubuntu-latest
 
     steps:
