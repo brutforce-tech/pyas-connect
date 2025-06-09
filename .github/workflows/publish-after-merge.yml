@@ -20,6 +20,9 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc.publish
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Build (safety)
         run: npm run build
 
