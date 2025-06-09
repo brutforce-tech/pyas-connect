@@ -11,7 +11,7 @@
   },
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "build": "lerna run build --ignore \"*example\"",
+    "build": "lerna run build --ignore \"*example\" --no-private",
     "version:libs": "npx lerna version --conventional-commits --no-private --ignore-changes \"*example\" --yes --create-release=github",
     "publish:libs": "npm_config_userconfig=.npmrc.publish lerna publish from-package --ignore-changes \"*example\" --yes"
   }

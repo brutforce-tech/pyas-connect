@@ -17,6 +17,9 @@
     "microsoft graph api",
     "google api"
   ],
+  "scripts": {
+    "build": "ng build connect-angular --configuration production"
+  },
   "author": "Pyas Team <support@pyas.io>",
   "homepage": "https://github.com/brutforce-tech/pyas-connect",
   "publishConfig": {
