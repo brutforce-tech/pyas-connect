@@ -31,11 +31,16 @@ function App() {
       </p>
       <h2>Pyas Connect</h2>
       <PyasConnect
-        theme="light"
-        user-name="Jane Doe"
-        user-email="jane@gmail.com"
-        client-id="some-client-id"
-        token-name="oooo">
+        userName="Jane Doe"
+        userEmail="jane@gmail.com"
+        clientId="some-client-id"
+        tokenName="MY_TOKEN_NAME"
+        onAccountConnected={(account) => {
+          console.log('Account connected:', account)
+        }}
+        onConnectError={(error) => {
+          console.error('Connection error:', error)
+        }}>
         <span>
           Connect an Account
         </span>

@@ -7,9 +7,6 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface PyasConnect {
-        /**
-          * Required: Pyas APP Client ID  and Token Name
-         */
         "clientId": string;
         /**
           * @default ''
@@ -28,7 +25,6 @@ export namespace Components {
          */
         "modalTitle": string;
         /**
-          * Optional: The name of your actual product/app. Not your Pyas app name.
           * @default 'This app'
          */
         "productName": string;
@@ -45,7 +41,6 @@ export namespace Components {
          */
         "showIcloud": boolean;
         /**
-          * Optional: Show provider labels
           * @default true
          */
         "showLabels": boolean;
@@ -62,7 +57,6 @@ export namespace Components {
          */
         "state": string;
         /**
-          * Optional: Theme (light/dark)
           * @default 'light'
          */
         "theme": 'light' | 'dark';
@@ -100,9 +94,6 @@ declare global {
 }
 declare namespace LocalJSX {
     interface PyasConnect {
-        /**
-          * Required: Pyas APP Client ID  and Token Name
-         */
         "clientId"?: string;
         /**
           * @default ''
@@ -129,7 +120,6 @@ declare namespace LocalJSX {
          */
         "onConnectError"?: (event: PyasConnectCustomEvent<{ message: string, code: string|number|undefined, error?: any }>) => void;
         /**
-          * Optional: The name of your actual product/app. Not your Pyas app name.
           * @default 'This app'
          */
         "productName"?: string;
@@ -146,7 +136,6 @@ declare namespace LocalJSX {
          */
         "showIcloud"?: boolean;
         /**
-          * Optional: Show provider labels
           * @default true
          */
         "showLabels"?: boolean;
@@ -163,7 +152,6 @@ declare namespace LocalJSX {
          */
         "state"?: string;
         /**
-          * Optional: Theme (light/dark)
           * @default 'light'
          */
         "theme"?: 'light' | 'dark';

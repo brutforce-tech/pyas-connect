@@ -1,5 +1,4 @@
 import { Config } from '@stencil/core';
-import { vueOutputTarget } from '@stencil/vue-output-target';
 import { reactOutputTarget } from '@stencil/react-output-target';
 import { angularOutputTarget } from '@stencil/angular-output-target';
 import * as dotenv from 'dotenv';
@@ -13,13 +12,17 @@ export const config: Config = {
     // Core distribution: emit web components and loader
     {
       type: 'dist',
-      esmLoaderPath: '../loader',       // loader will reside in dist/loader
+      esmLoaderPath: '../loader',
     },
     // Custom elements bundle for direct use in non-framework contexts
     {
       type: 'dist-custom-elements',
       customElementsExportBehavior: 'auto-define-custom-elements',
       externalRuntime: false,
+      copy: [
+        // copy everything from src/theme into dist/theme
+        { src: 'theme', dest: 'dist/theme' }
+      ]
     },
     // Generate README docs
     { type: 'docs-readme' },
@@ -29,27 +32,6 @@ export const config: Config = {
       type: 'dist-hydrate-script',
       dir: './hydrate',
     },
-
-    // Vue wrapper: TS proxies + auto-define custom elements
-    vueOutputTarget({
-      componentCorePackage: '@pyas/connect',
-      proxiesFile: '../connect-vue/lib/components.ts', 
-      includeDefineCustomElements: true,
-      includePolyfills: false, 
-    }),
-    reactOutputTarget({
-      // Relative path to where the React components will be generated
-      outDir: '../connect-react/lib',
-      hydrateModule: '@pyas/connect/hydrate',
-      stencilPackageName: '@pyas/connect',
-    }),
-    angularOutputTarget({
-      componentCorePackage: '@pyas/connect',
-      outputType: 'component',
-      directivesProxyFile: '../angular-workspace/projects/connect-angular/src/lib/components.ts',
-      directivesArrayFile: '../angular-workspace/projects/connect-angular/src/lib/index.ts',
-      
-    }),
   ],
 
   testing: {
@@ -60,4 +42,7 @@ export const config: Config = {
     PYAS_BASE_URL: process.env.PYAS_BASE_URL,
     PYAS_REDIRECT_URL: process.env.PYAS_REDIRECT_URL,
   },
+  extras: {
+    experimentalImportInjection: true
+  }
 };

@@ -1,6 +1,6 @@
 {
   "name": "@pyas/connect",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "author": "Pyas Team <support@pyas.io>",
   "homepage": "https://github.com/brutforce-tech/pyas-connect",
   "description": "Pyas Connect is a framework-agnostic Web Component, built with Stencil, that embeds a full OAuth connect experience for Pyas customers in a single tag. The component talks directly to Pyas's auth endpoints, presents a branded modal for Google, Microsoft, Zoom, and other providers, manage token storage and completes the callback handshake — all so you can drop secure calendar-account linking into any web app without writing integration code.",
@@ -19,6 +19,7 @@
       "require": "./dist/index.cjs.js",
       "types": "./dist/types/index.d.ts"
     },
+    "./theme/main.css": "./dist/theme/main.css",
     "./loader": {
       "import": "./loader/index.js",
       "require": "./loader/index.cjs",
@@ -53,7 +54,6 @@
     "@stencil/angular-output-target": "^0.10.2",
     "@stencil/core": "^4.27.1",
     "@stencil/react-output-target": "^1.0.2",
-    "@stencil/vue-output-target": "^0.10.7",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.15.19",
     "jest": "^29.7.0",

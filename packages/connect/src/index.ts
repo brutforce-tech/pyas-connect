@@ -10,3 +10,9 @@
 
 export { format } from './utils/utils';
 export type * from './components';
+
+export * from './utils/provider-button';
+export * from './utils/oauth';
+export * from './icons';
+export * from './icons/icons-html';
+import './theme/main.css';
