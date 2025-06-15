@@ -1,6 +1,6 @@
 {
   "name": "@pyas/connect",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "author": "Pyas Team <support@pyas.io>",
   "homepage": "https://github.com/brutforce-tech/pyas-connect",
   "description": "Pyas Connect is a framework-agnostic Web Component, built with Stencil, that embeds a full OAuth connect experience for Pyas customers in a single tag. The component talks directly to Pyas's auth endpoints, presents a branded modal for Google, Microsoft, Zoom, and other providers, manage token storage and completes the callback handshake — all so you can drop secure calendar-account linking into any web app without writing integration code.",
@@ -15,25 +15,24 @@
   },
   "exports": {
     ".": {
-        "types": "./dist/types/index.d.ts",
-        "import": "./dist/index.js",
-        "require": "./dist/index.cjs.js"
-
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs.js"
     },
     "./theme/main.css": "./dist/theme/main.css",
     "./loader": {
-        "types": "./loader/index.d.ts",
-        "import": "./loader/index.js",
-        "require": "./loader/index.cjs"
+      "types": "./loader/index.d.ts",
+      "import": "./loader/index.js",
+      "require": "./loader/index.cjs"
     },
     "./dist/*": {
       "import": "./dist/*",
       "require": "./dist/*"
     },
     "./hydrate": {
-        "types": "./hydrate/index.d.ts",
-        "import": "./hydrate/index.js",
-        "require": "./hydrate/index.mjs"
+      "types": "./hydrate/index.d.ts",
+      "import": "./hydrate/index.js",
+      "require": "./hydrate/index.mjs"
     }
   },
   "repository": {
