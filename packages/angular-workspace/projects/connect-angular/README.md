@@ -7,37 +7,42 @@
 ```bash
 npm install @pyas/connect-angular # core (@pyas/connect) auto-installed
 ```
-Register the custom pyas-connect element
-```ts
-  // main.ts
-  import { pyasConnectLoader } from '@pyas/connect-angular';
-  pyasConnectLoader()
-```
 Import the Component
 ```ts
-// app.module.ts
+// app.component.ts
 ...
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { PyasConnect } from '@pyas/connect-angular';
+import { Component } from '@angular/core';
+import { CommonModule }  from '@angular/common';
+import { PyasConnect } from '@pyas/connect-angular'; // <-- PyasConnect angular component
 
-@NgModule({
-  imports: [
-    BrowserModule, 
-    PyasConnect
-  ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, PyasConnect],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
 })
-export class AppModule {}
+export class AppComponent {
+    title = 'angular-example';
+    //handle accountConnected event
+    onAccountConnected(acc: any) { console.log('Connected:', acc) }
+    //handle connectError event
+    onConnectError(err: any)    { console.error('Error:', err) }
+}
+
 ```
+Use in your HTMl template
 ```html
 <pyas-connect
-  user-name="Jane Doe"
-  user-email="jane@gmail.com"
-  client-id="some-client-id"
-  token-name="token-name"
-  (accountConnected)="onSuccess($event)"
-></pyas-connect>
+    clientId="pyas_cff12c34-41c4-4d4b-840f-fd1c3562b32f"
+    tokenName="NEW KEY"
+    userName="Jon Snow"
+    userEmail="jon.snow@winterfell.com"
+    theme="light"
+    productName="Skyline AI"
+    (accountConnected)="onAccountConnected($event)"
+    (connectError)="onConnectError($event)"
+  ></pyas-connect>
 ```
 
 ## Full Documentation

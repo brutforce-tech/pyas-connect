@@ -1,13 +1,14 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "lib": ["dom", "es2020"],
-    "module": "es2015",
-    "moduleResolution": "node",
-    "target": "es2017",
-    "skipLibCheck": true
-  },
-  "include": ["lib"],
-  "exclude": ["node_modules"]
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.vitest.json"
+    }
+  ]
 }

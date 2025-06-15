@@ -1,55 +1,74 @@
 {
   "name": "@pyas/connect-react",
   "version": "1.0.8",
-  "description": "A React plugin wrapper around the Pyas Connect Web Component, exposing PyasConnect as a first-class React component",
+  "description": "A React wrapper around the Pyas Connect Web Component, exposing PyasConnect as a first-class React component",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brutforce-tech/pyas-connect.git"
+  },
+  "homepage": "https://github.com/brutforce-tech/pyas-connect#readme",
+  "author": "Pyas Team <support@pyas.io>",
+  "license": "ISC",
   "keywords": [
     "pyas",
     "pyas-connect",
     "react",
-    "react.js",
+    "reactjs",
     "oauth",
     "web-components",
-    "stencil",
-    "plugin",
     "calendar-integration",
-    "outlook api integration",
-    "google calendar integration",
-    "microsoft graph api",
-    "google api"
+    "google-calendar",
+    "microsoft-graph"
   ],
-  "author": "Pyas Team <support@pyas.io>",
-  "homepage": "https://github.com/brutforce-tech/pyas-connect",
-  "license": "ISC",
   "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/types/index.d.ts",
-  "directories": {
-    "lib": "lib",
-    "test": "__tests__"
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+    "types": "./dist/index.d.ts",
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.js"
+    },
+    "./connect-react.css": "./dist/connect-react.css"
   },
-  "files": [
-    "dist"
-  ],
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*.d.ts"
+      ]
+    }
+  },
   "scripts": {
-    "test": "node ./__tests__/connect-react.test.js",
-    "build": "npm run tsc",
-    "tsc": "tsc -p . --outDir ./dist"
-  },
-  "publishConfig": {
-    "access": "public"
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
   "peerDependencies": {
-    "@pyas/connect": "^1.0.0",
-    "react": ">=18.0.0",
-    "react-dom": ">=18.0.0"
+    "react": ">=18.0.0 <20.0.0",
+    "react-dom": ">=18.0.0 <20.0.0"
   },
   "dependencies": {
     "@pyas/connect": "^1.0.8"
   },
   "devDependencies": {
-    "@stencil/react-output-target": "^1.0.2",
-    "react": "^18.3.0",
-    "react-dom": "^18.3.0",
-    "typescript": "^5.4.5"
-  }
+    "@eslint/js": "^9.25.0",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "eslint": "^9.25.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.30.1",
+    "vite": "^6.3.5",
+    "vite-plugin-dts": "^4.5.4"
+  },
+  "publishConfig": {
+      "access": "public"
+   }
 }

@@ -1,48 +1,34 @@
 <script setup>
 import { PyasConnect } from '@pyas/connect-vue'
+
+const handleConnected = (event) => {
+  console.log('Account connected:', event)
+}
+
+const handleConnectError = (error) => {
+  console.error('Connect error:', error)
+}
+
+const email = 'jon@gmail.com'
+const name = 'Jon Doe'
 </script>
 
 <template>
   <main>
    <PyasConnect
-      theme="dark"
-      :show-icloud="true"
-      user-name="Jane Doe"
-      user-email="jane@gmail.com"
-      client-id="some-client-id"
-      token-name="oooo">
-      <span>
-        Connect an Account
-      </span>
-   </PyasConnect> 
+    client-id="YOUR_CLIENT_ID"
+    token-name="YOUR_TOKEN_NAME"
+    :user-email="email"
+    :user-name="name"
+    theme="dark"
+    :show-disclaimer="true"
+    @account-connected="handleConnected"
+    @connect-error="handleConnectError"
+  >
+    <span>Connect an Account</span>
+  </PyasConnect>
   </main>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
 </style>

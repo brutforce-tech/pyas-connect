@@ -20,32 +20,54 @@
   "author": "Pyas Team <support@pyas.io>",
   "homepage": "hthttps://github.com/brutforce-tech/pyas-connect",
   "license": "ISC",
+  "type": "module",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "directories": {
-    "lib": "dist",
-    "test": "__tests__"
+  "module": "dist/index.cjs.js",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs.js"
+    },
+    "./index.css": "./dist/index.css"
   },
   "files": [
     "dist"
   ],
-  "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1",
-    "build": "npm run tsc",
-    "tsc": "tsc -p . --outDir ./dist"
-  },
-  "peerDependencies": {
-    "@pyas/connect": "^1.0.0",
-    "vue": "^3.0.0"
-  },
-  "devDependencies": {
-    "@stencil/vue-output-target": "^0.10.7",
-    "vue": "^3.5.14"
-  },
   "publishConfig": {
     "access": "public"
   },
+  "scripts": {
+    "dev": "vite",
+    "build": "run-p type-check \"build-only {@}\" --",
+    "preview": "vite preview",
+    "test:unit": "vitest",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --build"
+  },
+  "peerDependencies": {
+    "vue": "^3.0.0"
+  },
   "dependencies": {
     "@pyas/connect": "^1.0.8"
+  },
+  "devDependencies": {
+    "@tsconfig/node22": "^22.0.1",
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^22.14.0",
+    "@types/vue": "^1.0.31",
+    "@vitejs/plugin-vue": "^5.2.3",
+    "@vitejs/plugin-vue-jsx": "^4.1.2",
+    "@vue/test-utils": "^2.4.6",
+    "@vue/tsconfig": "^0.7.0",
+    "jsdom": "^26.0.0",
+    "npm-run-all2": "^7.0.2",
+    "typescript": "~5.8.0",
+    "vite": "^6.2.4",
+    "vite-plugin-dts": "^4.5.4",
+    "vite-plugin-vue-devtools": "^7.7.2",
+    "vitest": "^3.1.1",
+    "vue": "^3.5.13",
+    "vue-tsc": "^2.2.8"
   }
 }
