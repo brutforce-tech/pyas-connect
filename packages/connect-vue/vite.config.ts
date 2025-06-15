@@ -12,7 +12,11 @@ export default defineConfig({
         vue(),
         vueJsx(),
         vueDevTools(),
-        dts({ insertTypesEntry: true }),
+        dts({
+            insertTypesEntry: true,
+            include: ['src/**/*.ts', 'src/**/*.vue'],
+            tsconfigPath: 'tsconfig.app.json',
+        }),
 
     ],
     build: {
