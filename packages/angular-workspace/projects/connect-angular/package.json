@@ -1,6 +1,6 @@
 {
   "name": "@pyas/connect-angular",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "description": "An Angular plugin wrapper around the Pyas Connect Web Component, exposing PyasConnect as a first-class Angular component",
   "keywords": [
     "pyas",
@@ -22,21 +22,35 @@
   },
   "author": "Pyas Team <support@pyas.io>",
   "homepage": "https://github.com/brutforce-tech/pyas-connect",
+  "main": "dist/fesm2022/index.mjs",
+  "module": "dist/fesm2022/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/fesm2022/index.mjs",
+      "require": "./dist/fesm2022/index.mjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },
   "license": "ISC",
   "peerDependencies": {
     "@angular/common": ">=19.0.0",
-    "@angular/core": ">=19.0.0"
+    "@angular/core": ">=19.0.0",
+    "rxjs": "^7.0.0"
   },
   "dependencies": {
-    "tslib": "^2.3.0",
     "@pyas/connect": "^1.0.8"
   },
   "devDependencies": {
     "@angular/compiler": "^19.0.0",
     "@angular/compiler-cli": "^19.0.0",
+    "tslib": "^2.3.0",
     "typescript": "^5.4.5"
   },
   "sideEffects": false

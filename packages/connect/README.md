@@ -1,5 +1,11 @@
 [![Built With Stencil](https://img.shields.io/badge/-Built%20With%20Stencil-16161d.svg?logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjIuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA1MTIgNTEyOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI%2BCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI%2BCgkuc3Qwe2ZpbGw6I0ZGRkZGRjt9Cjwvc3R5bGU%2BCjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik00MjQuNywzNzMuOWMwLDM3LjYtNTUuMSw2OC42LTkyLjcsNjguNkgxODAuNGMtMzcuOSwwLTkyLjctMzAuNy05Mi43LTY4LjZ2LTMuNmgzMzYuOVYzNzMuOXoiLz4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTQyNC43LDI5Mi4xSDE4MC40Yy0zNy42LDAtOTIuNy0zMS05Mi43LTY4LjZ2LTMuNkgzMzJjMzcuNiwwLDkyLjcsMzEsOTIuNyw2OC42VjI5Mi4xeiIvPgo8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNDI0LjcsMTQxLjdIODcuN3YtMy42YzAtMzcuNiw1NC44LTY4LjYsOTIuNy02OC42SDMzMmMzNy45LDAsOTIuNywzMC43LDkyLjcsNjguNlYxNDEuN3oiLz4KPC9zdmc%2BCg%3D%3D&colorA=16161d&style=flat-square)](https://stenciljs.com)
 
+[![Lerna](https://img.shields.io/badge/Lerna-monorepo-3B3B3B?logo=lerna&logoColor=white&style=flat-square)](https://lerna.js.org/)
+
+[![Vue 3](https://img.shields.io/badge/Vue-3.x-42b883?logo=vue.js&logoColor=white&style=flat-square)](https://vuejs.org/)
+[![React 18+](https://img.shields.io/badge/React-18%2B-61dafb?logo=react&logoColor=black&style=flat-square)](https://react.dev/)
+[![Angular 19+](https://img.shields.io/badge/Angular-19%2B-dd0031?logo=angular&logoColor=white&style=flat-square)](https://angular.io/)
+
 # Pyas Connect – Universal OAuth Wizard
 
 Pyas Connect is a Stencil web-component that lets developers who use Pyas for their calendar integrations embed a multi-step OAuth setup wizard for Google, Microsoft 365 (Outlook), and Zoom in minutes.
@@ -47,6 +53,8 @@ Follow these quick steps once. Screenshots are in the online docs.
 4. **Copy your Client ID** – Go to **Apps → [app] → Settings → General Details → Developer Info** (right panel).
 5. **Create / copy a Token Name** – Go to **Apps → [app] → Settings → API Keys**. Either copy the name of an existing, unexpired key or click **Generate New API Key** first (guide: <https://docs.pyas.io/rest-api-reference/api-authentication#generate-api-keys>). Make sure to copy just the **name** of the api key and not the actual api key value.
 6. **Add Allowed Origins** – Still in Settings → General Details, list every domain you’ll embed Pyas Connect on (e.g. https://your-app.com). Localhost entries (http://localhost:3000) are fine for testing but should be removed in production. You can also supply the list during initial app creation.
+
+6.1 **Note**: API Calls coming from origins not in your `Allowed Origins` list will result in an **"Access denied. Origin not allowed"** message.
 
 You now have:
 ```
@@ -121,7 +129,7 @@ The component auto-registers as `<pyas-connect>` once the script is loaded.
 | `show-google` | `boolean` | `true` | Displays or hides the Google Calendar integration option. |
 | `show-outlook` | `boolean` | `true` | Displays or hides the Microsoft Outlook integration option. |
 | `show-disclaimer` | `boolean` | `true` | Shows a " This app or [your app name] uses Pyas to to securely connect your account" text to end users. This is recommended especially when using the Pyas Auth option. See Pyas Auth vs Native Auth here: <https://docs.pyas.io/fundamentals/pyas-auth-vs-native-auth>|
-| `product-name` | `string` | `"This app"` | The name of your actual product/app. Not your Pyas app name. This is used in the disclaimer shown to users. (e.g. "Skyboard" as your product-name will result in the following disclaimer shown to your end users: "Skyboard uses Pyas to securely connect your account"  |
+| `product-name` | `string` | `"This app"` | The name of your actual product/app. Not your Pyas app name. This is used in the disclaimer shown to users. (e.g. "Skyboard" as your product-name will result in the following disclaimer shown to your end users: "Skyboard uses Pyas to securely connect your account")  |
 | `state` | `string` | `undefined` | Optional application state parameter for OAuth flow. |
 
 ---
@@ -234,19 +242,31 @@ Use the wrapper directly inside any component file. No need to modify main.ts or
 
 ```vue
 <script setup>
-import { PyasConnect } from '@pyas/connect-vue';
+import { PyasConnect } from '@pyas/connect-vue'
 
-function onSuccess(event) {
-  console.log('linked', event.detail);
+const handleConnected = (event) => {
+  console.log('Account connected:', event)
 }
+
+const handleConnectError = (error) => {
+  console.error('Connect error:', error)
+}
+
 </script>
 
 <template>
-  <PyasConnect
+   <PyasConnect
     client-id="YOUR_CLIENT_ID"
     token-name="YOUR_TOKEN_NAME"
-    @account-connected="onSuccess"
-  ></PyasConnect>
+    :user-email="email"
+    :user-name="name"
+    theme="dark"
+    :show-disclaimer="true"
+    @account-connected="handleConnected"
+    @connect-error="handleConnectError"
+  >
+    <span>Connect an Account</span>
+  </PyasConnect>
 </template>
 ```
 
@@ -261,13 +281,19 @@ import { PyasConnect } from '@pyas/connect-react';
 
 function App() {
   const handleSuccess = (e) => console.log(e.detail);
+  const handleError = (e) => console.log(e)
   return (
     <PyasConnect
-      clientId="YOUR_CLIENT_ID"
-      tokenName="YOUR_TOKEN_NAME"
-      theme="dark"
-      onAccountConnected={handleSuccess}
-    ></PyasConnect>
+        userName="Jane Doe"
+        userEmail="jane@gmail.com"
+        clientId="some-client-id"
+        tokenName="MY_TOKEN_NAME"
+        onAccountConnected={handleSuccess}
+        onConnectError={handleError}>
+        <span>
+          Connect an Account
+        </span>
+      </PyasConnect>
   );
 }
 ```

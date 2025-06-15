@@ -46,11 +46,11 @@
     "preview": "vite preview"
   },
   "peerDependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": ">=18.0.0 <20.0.0",
+    "react-dom": ">=18.0.0 <20.0.0"
   },
   "dependencies": {
-    "@pyas/connect": "^1.0.0"
+    "@pyas/connect": "^1.0.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
@@ -67,5 +67,8 @@
     "typescript-eslint": "^8.30.1",
     "vite": "^6.3.5",
     "vite-plugin-dts": "^4.5.4"
-  }
+  },
+  "publishConfig": {
+      "access": "public"
+   }
 }

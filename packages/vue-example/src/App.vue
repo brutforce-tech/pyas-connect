@@ -5,21 +5,25 @@ const handleConnected = (event) => {
   console.log('Account connected:', event)
 }
 
+const handleConnectError = (error) => {
+  console.error('Connect error:', error)
+}
+
 const email = 'jon@gmail.com'
-const name = 'Jon Snow'
+const name = 'Jon Doe'
 </script>
 
 <template>
   <main>
    <PyasConnect
-    client-id="pyas_cff12c34-41c4-4d4b-840f-fd1c3562b32f"
-    token-name="NEW KEY"
+    client-id="YOUR_CLIENT_ID"
+    token-name="YOUR_TOKEN_NAME"
     :user-email="email"
     :user-name="name"
-    :show-icloud="true"
     theme="dark"
     :show-disclaimer="true"
     @account-connected="handleConnected"
+    @connect-error="handleConnectError"
   >
     <span>Connect an Account</span>
   </PyasConnect>

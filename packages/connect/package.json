@@ -15,24 +15,25 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs.js",
-      "types": "./dist/types/index.d.ts"
+        "types": "./dist/types/index.d.ts",
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs.js"
+
     },
     "./theme/main.css": "./dist/theme/main.css",
     "./loader": {
-      "import": "./loader/index.js",
-      "require": "./loader/index.cjs",
-      "types": "./loader/index.d.ts"
+        "types": "./loader/index.d.ts",
+        "import": "./loader/index.js",
+        "require": "./loader/index.cjs"
     },
     "./dist/*": {
       "import": "./dist/*",
       "require": "./dist/*"
     },
     "./hydrate": {
-      "import": "./hydrate/index.js",
-      "require": "./hydrate/index.mjs",
-      "types": "./hydrate/index.d.ts"
+        "types": "./hydrate/index.d.ts",
+        "import": "./hydrate/index.js",
+        "require": "./hydrate/index.mjs"
     }
   },
   "repository": {

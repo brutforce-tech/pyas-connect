@@ -47,6 +47,7 @@ export interface PyasConnectProps extends PropsWithChildren {
 
 
 export const PyasConnect: React.FC<PyasConnectProps> = ({
+    children,
     clientId,
     tokenName,
     theme = 'light',
@@ -150,8 +151,7 @@ export const PyasConnect: React.FC<PyasConnectProps> = ({
     return (
         <div className="pyas-connect" data-theme={theme}>
             <button className="pyas-button" onClick={()=>setOpen(true)}>
-                {/* <slot>Connect a Provider</slot> ⇒ children fallback */}
-                Connect a Provider
+                {children ?? 'Connect a Provider'}
             </button>
 
             {open && (

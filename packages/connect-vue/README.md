@@ -11,19 +11,31 @@ Use the wrapper directly inside any component file. No need to modify main.ts or
 
 ```vue
 <script setup>
-import { PyasConnect } from '@pyas/connect-vue';
+import { PyasConnect } from '@pyas/connect-vue'
 
-function onSuccess(event) {
-  console.log('linked', event.detail);
+const handleConnected = (event) => {
+  console.log('Account connected:', event)
 }
+
+const handleConnectError = (error) => {
+  console.error('Connect error:', error)
+}
+
 </script>
 
 <template>
-  <PyasConnect
+   <PyasConnect
     client-id="YOUR_CLIENT_ID"
     token-name="YOUR_TOKEN_NAME"
-    @account-connected="onSuccess"
-  ></PyasConnect>
+    :user-email="email"
+    :user-name="name"
+    theme="dark"
+    :show-disclaimer="true"
+    @account-connected="handleConnected"
+    @connect-error="handleConnectError"
+  >
+    <span>Connect an Account</span>
+  </PyasConnect>
 </template>
 ```
 

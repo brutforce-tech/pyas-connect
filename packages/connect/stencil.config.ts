@@ -1,6 +1,4 @@
 import { Config } from '@stencil/core';
-import { reactOutputTarget } from '@stencil/react-output-target';
-import { angularOutputTarget } from '@stencil/angular-output-target';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
