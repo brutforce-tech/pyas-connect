@@ -1,6 +1,6 @@
 {
   "name": "@pyas/connect-react",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "A React wrapper around the Pyas Connect Web Component, exposing PyasConnect as a first-class React component",
   "type": "module",
   "repository": {
@@ -26,7 +26,7 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-    "types": "./dist/index.d.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.esm.js",
       "require": "./dist/index.js"
     },
@@ -50,7 +50,7 @@
     "react-dom": ">=18.0.0 <20.0.0"
   },
   "dependencies": {
-    "@pyas/connect": "^1.0.8"
+    "@pyas/connect": "^1.0.9"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
@@ -69,6 +69,6 @@
     "vite-plugin-dts": "^4.5.4"
   },
   "publishConfig": {
-      "access": "public"
-   }
+    "access": "public"
+  }
 }
