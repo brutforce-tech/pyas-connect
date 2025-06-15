@@ -5,8 +5,8 @@ import PyasConnect from '@/components/PyasConnect.vue';
 <template>
   <main>
     <PyasConnect
-        client-id="pyas_56ca0f06-7961-45ac-a439-42dbf23bcb99"
-        token-name="oooo"
+        client-id="your-client-id"
+        token-name="your-token-name"
         product-name="Skyline AI"
         user-name="Jimmy"
         user-email="jimmy.test@example.com"
