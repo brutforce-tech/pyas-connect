@@ -1,6 +1,6 @@
 {
   "name": "@pyas/connect-react",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "A React wrapper around the Pyas Connect Web Component, exposing PyasConnect as a first-class React component",
   "type": "module",
   "repository": {
@@ -50,7 +50,7 @@
     "react-dom": ">=18.0.0 <20.0.0"
   },
   "dependencies": {
-    "@pyas/connect": "^1.0.9"
+    "@pyas/connect": "^1.0.10"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
