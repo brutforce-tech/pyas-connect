@@ -54,7 +54,7 @@ Follow these quick steps once. Screenshots are in the online docs.
 5. **Create / copy a Token Name** – Go to **Apps → [app] → Settings → API Keys**. Either copy the name of an existing, unexpired key or click **Generate New API Key** first (guide: <https://docs.pyas.io/rest-api-reference/api-authentication#generate-api-keys>). Make sure to copy just the **name** of the api key and not the actual api key value.
 6. **Add Allowed Origins** – Still in Settings → General Details, list every domain you’ll embed Pyas Connect on (e.g. https://your-app.com). Localhost entries (http://localhost:3000) are fine for testing but should be removed in production. You can also supply the list during initial app creation.
 
-6.1 **Note**: API Calls coming from origins not in your `Allowed Origins` list will result in an **"Access denied. Origin not allowed"** message.
+    6.1 **Note**: API Calls coming from origins not in your `Allowed Origins` list will result in an **"Access denied. Origin not allowed"** message.
 
 You now have:
 ```
