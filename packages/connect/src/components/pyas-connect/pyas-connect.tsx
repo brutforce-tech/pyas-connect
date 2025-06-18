@@ -177,7 +177,7 @@ export class PyasConnect {
                                     <div class="modal-header-row">
                                         <div>
                                             <h3>{this.modalTitle}</h3>
-                                            <p>{this.modalDescription} test description</p>
+                                            <p>{this.modalDescription}</p>
                                         </div>
                                         <div class="close-modal-wrapper" onClick={() => this.closeModal()}>
                                             <CloseIcon  />
