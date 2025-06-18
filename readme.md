@@ -65,6 +65,10 @@ Both values are required props for `<pyas-connect>`.
 
 ---
 
+## Live Demo
+
+Try Pyas Connect instantly in your browser: [Live Demo](https://www.pyas.io/demos/pyas-connect)
+
 ## 1 · Installation
 
 ### npm (recommended)
@@ -158,6 +162,43 @@ The component auto-registers as `<pyas-connect>` once the script is loaded.
 ---
 
 ## 5 · Theming & Custom CSS
+
+### Styling Best Practices
+
+PyasConnect relies on sensible browser defaults for margins, paddings, font-weights, and box-model behavior. If your app uses a blanket reset like:
+
+```css
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+}
+```
+it may inadvertently break PyasConnect’s spacing, headings, icons, and transitions. To keep everything working smoothly, please follow one of these approaches:
+1. Use a Targeted Reset
+
+Instead of resetting every element, only reset the ones you need. For example:
+```css
+@layer base {
+    html,
+    body {
+        box-sizing: border-box;
+        margin: 0;
+        font-weight: normal;
+    }
+}
+```
+2. Remove Blanket Wildcard Resets
+
+Please remove any global `* {…}` reset from your stylesheet. If you need to zero-out your page, scope it to only the document root:
+```css
+html, body {
+  margin: 0;
+  padding: 0;
+}
+```
 
 The component exposes CSS variables on `:host` and auto‑switches to dark via OS or `theme="dark"`.
 
@@ -301,40 +342,46 @@ function App() {
 ---
 
 ### Angular — `@pyas/connect-angular`
+
 ```bash
 npm install @pyas/connect-angular # core (@pyas/connect) auto-installed
 ```
-Register the custom pyas-connect element
-```ts
-  // main.ts
-  import { pyasConnectLoader } from '@pyas/connect-angular';
-  pyasConnectLoader()
-```
 Import the Component
 ```ts
-// app.module.ts
+// app.component.ts
 ...
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { PyasConnect } from '@pyas/connect-angular';
+import { Component } from '@angular/core';
+import { CommonModule }  from '@angular/common';
+import { PyasConnect } from '@pyas/connect-angular'; // <-- PyasConnect angular component
 
-@NgModule({
-  imports: [
-    BrowserModule, 
-    PyasConnect
-  ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, PyasConnect],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
 })
-export class AppModule {}
+export class AppComponent {
+    title = 'angular-example';
+    //handle accountConnected event
+    onAccountConnected(acc: any) { console.log('Connected:', acc) }
+    //handle connectError event
+    onConnectError(err: any)    { console.error('Error:', err) }
+}
+
 ```
+Use in your HTMl template
 ```html
 <pyas-connect
-  user-name="Jane Doe"
-  user-email="jane@gmail.com"
-  client-id="some-client-id"
-  token-name="token-name"
-  (accountConnected)="onSuccess($event)"
-></pyas-connect>
+    clientId="YOUR_CLIENT_ID"
+    tokenName="YOUR TOKEN NAME"
+    userName="Jon Snow"
+    userEmail="jon.snow@winterfell.com"
+    theme="light"
+    productName="Skyline AI"
+    (accountConnected)="onAccountConnected($event)"
+    (connectError)="onConnectError($event)"
+  ></pyas-connect>
 ```
 
 ---

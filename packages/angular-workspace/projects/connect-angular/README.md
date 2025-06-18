@@ -34,8 +34,8 @@ export class AppComponent {
 Use in your HTMl template
 ```html
 <pyas-connect
-    clientId="pyas_cff12c34-41c4-4d4b-840f-fd1c3562b32f"
-    tokenName="NEW KEY"
+    clientId="YOUR_CLIENT_ID"
+    tokenName="YOUR TOKEN NAME"
     userName="Jon Snow"
     userEmail="jon.snow@winterfell.com"
     theme="light"
