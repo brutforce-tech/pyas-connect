@@ -16,6 +16,7 @@
     "size": "node scripts/check-size.mjs",
     "version:set": "node scripts/set-version.mjs",
     "release": "node scripts/publish.mjs",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "playground": "node playground/server.mjs"
   }
 }

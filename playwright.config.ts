@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test'
-import { API_DIR, API_URL, EXAMPLES } from './e2e/support/env'
+import { API_DIR, API_URL, EXAMPLES, PLAYGROUND, STATE_FILE } from './e2e/support/env'
 
 /**
  * PyasConnect end to end: the widget in a React, a Vue and an Angular app,
@@ -52,5 +52,12 @@ export default defineConfig({
             reuseExistingServer: !process.env.CI,
             timeout: 180_000,
         })),
+        {
+            command: PLAYGROUND.command,
+            cwd: PLAYGROUND.cwd,
+            url: PLAYGROUND.url,
+            reuseExistingServer: !process.env.CI,
+            env: { PYAS_API_URL: API_URL, PYAS_API_KEY_FILE: STATE_FILE },
+        },
     ],
 })

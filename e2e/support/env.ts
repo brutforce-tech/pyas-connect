@@ -15,6 +15,9 @@ export const EXAMPLES = [
     { name: 'angular', url: 'http://localhost:4103', cwd: path.join(ROOT, 'packages', 'angular-example'), command: 'npx ng serve' },
 ]
 
+/** The plain playground (playground/server.mjs), with the suite's key. */
+export const PLAYGROUND = { name: 'playground', url: 'http://localhost:4100', cwd: ROOT, command: 'node playground/server.mjs' }
+
 /** What the widget seed made (pyas-api/e2e/connectSeed.ts). */
 export interface SeedState {
     apiKey: string

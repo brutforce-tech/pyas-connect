@@ -176,7 +176,16 @@ npm run build   # every package, in order
 npm test        # core, element and wrapper tests
 npm run size    # the bundle budget: 25 KB gzipped for the element with the core
 npm run e2e     # the widget in React, Vue and Angular apps against a local API
+npm run playground  # the element alone on a plain page, against your local API
 ```
+
+The playground (http://localhost:4100) makes a connect session for every
+attempt with a live key of yours: copy `playground/.env.example` to
+`playground/.env`, set `PYAS_API_KEY` (and `PYAS_API_URL` if your API is not on
+`http://localhost:3030`), and add `http://localhost:4100` to the app's allowed
+origins in the dashboard. Rebuild the element (`npm run build -w @pyas/connect`,
+or `npx stencil build --watch` in `packages/connect`) and reload to see a
+change.
 
 The end-to-end suite needs [pyas-api](https://github.com/brutforce-tech/pyas-api)
 next to this repo (or `PYAS_API_DIR`) with its test databases up
