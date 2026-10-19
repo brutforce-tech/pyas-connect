@@ -26,10 +26,9 @@ export namespace Components {
      */
     interface PyasConnect {
         /**
-          * The Pyas API: production by default; a sandbox, preview or local API otherwise.
-          * @default 'https://api.pyas.io'
+          * The Pyas API: production (`https://api.pyas.io`) by default; a sandbox, preview or local API otherwise.
          */
-        "apiUrl": string;
+        "apiUrl"?: string;
         /**
           * Origins of your own OAuth callback page, when your app signs in with its own OAuth app.
          */
@@ -41,9 +40,8 @@ export namespace Components {
         "close": () => Promise<void>;
         /**
           * `dialog` (default, opened from the trigger or `open()`) or `inline`, in the page.
-          * @default 'dialog'
          */
-        "display": 'dialog' | 'inline';
+        "display"?: 'dialog' | 'inline';
         /**
           * 1.x, accepted and unused: the details screen has no description.
          */
@@ -58,16 +56,14 @@ export namespace Components {
         "getSessionToken"?: () => Promise<string>;
         /**
           * No trigger button: open it with `open()` from your own.
-          * @default false
          */
-        "hideTrigger": boolean;
+        "hideTrigger"?: boolean;
         "modalDescription"?: string;
         "modalTitle"?: string;
         /**
           * `popup` (default), or `redirect` for a full-page round trip (popup blockers, in-app browsers).
-          * @default 'popup'
          */
-        "mode": 'popup' | 'redirect';
+        "mode"?: 'popup' | 'redirect';
         /**
           * Opens the dialog. Call it from a click (a sign-in window may only open from one).
          */
@@ -86,9 +82,9 @@ export namespace Components {
          */
         "showDisclaimer"?: boolean;
         /**
-          * @default true
+          * 1.x: shown unless false.
          */
-        "showGoogle": boolean;
+        "showGoogle"?: boolean;
         /**
           * 1.x, accepted and unused: iCloud is not offered until Pyas supports it.
          */
@@ -97,24 +93,17 @@ export namespace Components {
           * 1.x, accepted and unused: 2.0's buttons always carry their labels.
          */
         "showLabels"?: boolean;
-        /**
-          * @default true
-         */
-        "showOutlook": boolean;
-        /**
-          * @default true
-         */
-        "showZoom": boolean;
+        "showOutlook"?: boolean;
+        "showZoom"?: boolean;
         "state"?: string;
         /**
           * Any of the widget's words, replaced (also how a translation is supplied): an object, or JSON in the attribute.
          */
         "strings"?: Partial<PyasConnectStrings> | string;
         /**
-          * `light`, `dark`, or `auto` (follows the system setting).
-          * @default 'light'
+          * `light` (default), `dark`, or `auto` (follows the system setting).
          */
-        "theme": 'light' | 'dark' | 'auto';
+        "theme"?: 'light' | 'dark' | 'auto';
         "tokenName"?: string;
         "userEmail"?: string;
         "userName"?: string;
@@ -181,8 +170,7 @@ declare namespace LocalJSX {
      */
     interface PyasConnect {
         /**
-          * The Pyas API: production by default; a sandbox, preview or local API otherwise.
-          * @default 'https://api.pyas.io'
+          * The Pyas API: production (`https://api.pyas.io`) by default; a sandbox, preview or local API otherwise.
          */
         "apiUrl"?: string;
         /**
@@ -192,7 +180,6 @@ declare namespace LocalJSX {
         "clientId"?: string;
         /**
           * `dialog` (default, opened from the trigger or `open()`) or `inline`, in the page.
-          * @default 'dialog'
          */
         "display"?: 'dialog' | 'inline';
         /**
@@ -209,14 +196,12 @@ declare namespace LocalJSX {
         "getSessionToken"?: () => Promise<string>;
         /**
           * No trigger button: open it with `open()` from your own.
-          * @default false
          */
         "hideTrigger"?: boolean;
         "modalDescription"?: string;
         "modalTitle"?: string;
         /**
           * `popup` (default), or `redirect` for a full-page round trip (popup blockers, in-app browsers).
-          * @default 'popup'
          */
         "mode"?: 'popup' | 'redirect';
         /**
@@ -253,7 +238,7 @@ declare namespace LocalJSX {
          */
         "showDisclaimer"?: boolean;
         /**
-          * @default true
+          * 1.x: shown unless false.
          */
         "showGoogle"?: boolean;
         /**
@@ -264,13 +249,7 @@ declare namespace LocalJSX {
           * 1.x, accepted and unused: 2.0's buttons always carry their labels.
          */
         "showLabels"?: boolean;
-        /**
-          * @default true
-         */
         "showOutlook"?: boolean;
-        /**
-          * @default true
-         */
         "showZoom"?: boolean;
         "state"?: string;
         /**
@@ -278,8 +257,7 @@ declare namespace LocalJSX {
          */
         "strings"?: Partial<PyasConnectStrings> | string;
         /**
-          * `light`, `dark`, or `auto` (follows the system setting).
-          * @default 'light'
+          * `light` (default), `dark`, or `auto` (follows the system setting).
          */
         "theme"?: 'light' | 'dark' | 'auto';
         "tokenName"?: string;

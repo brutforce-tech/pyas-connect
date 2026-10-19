@@ -177,7 +177,7 @@ describe('<pyas-connect>', () => {
         expect(t.text()).toContain('Link your calendar')
     })
 
-    it('1.x keys: the flow gets them, and a page without a name asks for one first', async () => {
+    it('1.x keys: the flow gets them, and a page without a name and email asks for them first', async () => {
         const t = await page('<pyas-connect client-id="client-1" token-name="web" product-name="Acme"></pyas-connect>')
         await t.click('Connect a calendar')
         expect(t.flow().opts.legacy).toMatchObject({ clientId: 'client-1', tokenName: 'web' })
@@ -188,15 +188,25 @@ describe('<pyas-connect>', () => {
         expect(t.text()).toContain('Your details')
         // The test DOM does not submit a form from its button; a browser does.
         const submit = async () => { t.shadow().querySelector('form')!.dispatchEvent(new Event('submit')); await t.p.waitForChanges() }
+        const type = async (index: number, value: string) => {
+            const input = t.shadow().querySelectorAll('input')[index]!
+            input.value = value
+            input.dispatchEvent(new Event('input'))
+            await t.p.waitForChanges()
+        }
         await submit()
         expect(t.text()).toContain('Enter your name.')
+        expect(t.text()).toContain('Enter your email address.')
         expect(t.flow().choose).not.toHaveBeenCalled()
-        const input = t.shadow().querySelector('input')!
-        input.value = 'Ana Silva'
-        input.dispatchEvent(new Event('input'))
-        await t.p.waitForChanges()
+        await type(0, 'Ana Silva')
+        await type(1, 'not an address')
         await submit()
-        expect(t.flow().opts.legacy.name).toBe('Ana Silva')
+        // v1's API needs an email address, so the form does not go on without one.
+        expect(t.text()).toContain('Enter your email address.')
+        expect(t.flow().choose).not.toHaveBeenCalled()
+        await type(1, 'ana@example.com')
+        await submit()
+        expect(t.flow().opts.legacy).toMatchObject({ name: 'Ana Silva', email: 'ana@example.com' })
         expect(t.flow().choose).toHaveBeenCalledWith('google')
     })
 })

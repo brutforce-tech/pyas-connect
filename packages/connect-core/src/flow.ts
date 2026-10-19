@@ -89,6 +89,9 @@ const ALL_PROVIDERS: Provider[] = ['google', 'microsoft', 'zoom']
 const POPUP_NAME = 'pyas_connect'
 const PROVIDER_NAMES: Record<Provider, string> = { google: 'Google', microsoft: 'Microsoft', zoom: 'Zoom' }
 
+/** Where v1 appends the opener's signed origin to a 1.x state (pyas-api helpers/connectOrigin). */
+const SIGNED_ORIGIN = '~pyasorigin~'
+
 export const createConnectFlow = (opts: ConnectFlowOptions) => {
     const win = opts.window ?? window
     const api = opts.api ?? createApi({ apiUrl: opts.apiUrl ?? 'https://api.pyas.io' })
@@ -266,8 +269,10 @@ export const createConnectFlow = (opts: ConnectFlowOptions) => {
                 if (forAttempt !== attempt || destroyed) return
                 consentUrl = url
                 const state = new URL(url).searchParams.get('state')
-                // Sessions bind every message to this attempt; 1.x states may be empty, so they rely on origin and window.
-                expectedState = opts.legacy ? (state && state.includes('_rest=') && state.split('_rest=')[1] ? state : null) : state
+                // Sessions bind every message to this attempt. A 1.x state is the page's own (often none),
+                // then Pyas's signed origin, which the callback page strips: with none, origin and window are the check.
+                const pageState = state?.split('_rest=')[1]?.split(SIGNED_ORIGIN)[0]
+                expectedState = opts.legacy ? (pageState ? state : null) : state
                 if (!popup || popup.closed) {
                     popup = openWindow(url)
                     if (!popup) {

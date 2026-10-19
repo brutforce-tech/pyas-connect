@@ -27,6 +27,7 @@ export const DEFAULT_STRINGS = {
     detailsEmail: 'Email',
     detailsContinue: 'Continue',
     detailsNameNeeded: 'Enter your name.',
+    detailsEmailNeeded: 'Enter your email address.',
 
     waitingTitle: 'Continue in {provider}',
     waitingBody: 'Allow access in the window that opened, then come back.',

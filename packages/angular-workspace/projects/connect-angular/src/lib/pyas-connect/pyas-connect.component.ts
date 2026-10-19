@@ -12,6 +12,12 @@ import type { ConnectErrorInfo, PyasConnectStrings } from '@pyas/connect'
  * element; inputs are set on it as properties, and its events come out as
  * outputs carrying the event's data, as 1.x's did.
  *
+ * An output named like a DOM event the element sends would run a template's
+ * handler twice (Angular listens for both, and the DOM one hands over the
+ * CustomEvent). So the wrapper takes each event first (capture, at the
+ * element), emits the output, and stops the DOM event there: Angular apps get
+ * outputs only, as with 1.x, which sent no DOM events.
+ *
  *   <pyas-connect [sessionToken]="token" (connected)="save($event.accountId)"></pyas-connect>
  */
 
@@ -98,9 +104,13 @@ export class PyasConnect implements OnChanges, AfterViewInit, OnDestroy {
             accountConnected: this.accountConnected, connectError: this.connectError,
         }
         for (const [name, output] of Object.entries(outputs)) {
-            const listener = (e: Event) => this.zone.run(() => output.emit((e as CustomEvent).detail))
-            this.host.nativeElement.addEventListener(name, listener)
-            this.off.push(() => this.host.nativeElement.removeEventListener(name, listener))
+            const listener = (e: Event) => {
+                if (e.target !== this.host.nativeElement) return
+                e.stopImmediatePropagation()
+                this.zone.run(() => output.emit((e as CustomEvent).detail))
+            }
+            this.host.nativeElement.addEventListener(name, listener, true)
+            this.off.push(() => this.host.nativeElement.removeEventListener(name, listener, true))
         }
     }
 

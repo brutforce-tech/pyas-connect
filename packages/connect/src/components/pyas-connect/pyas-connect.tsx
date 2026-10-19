@@ -4,6 +4,7 @@ import { AlertGlyph, CheckGlyph, CloseGlyph, LockGlyph, providerMark } from './m
 import { calendarName, DEFAULT_STRINGS, fill, providerName, PyasConnectStrings } from './strings'
 
 const ALL: Provider[] = ['google', 'microsoft', 'zoom']
+const DEFAULT_API_URL = 'https://api.pyas.io'
 let instances = 0
 
 /**
@@ -26,24 +27,30 @@ let instances = 0
 export class PyasConnect {
     @Element() el!: HTMLElement
 
+    /*
+     * No prop has an initializer: a page (or a framework wrapper) may set a
+     * property before the element is defined, and an initializer would
+     * overwrite it as the element upgrades. Defaults apply where props are read.
+     */
+
     /** A connect session's token, made on your server (`POST /v2/connect/sessions`). */
     @Prop({ attribute: 'session-token' }) sessionToken?: string
     /** Or a function that fetches a new session token: then every failure can be tried again in place. */
     @Prop() getSessionToken?: () => Promise<string>
     /** The providers to offer (`google,microsoft,zoom`); the session's own list still applies. */
     @Prop() providers?: string | string[]
-    /** The Pyas API: production by default; a sandbox, preview or local API otherwise. */
-    @Prop({ attribute: 'api-url' }) apiUrl: string = 'https://api.pyas.io'
+    /** The Pyas API: production (`https://api.pyas.io`) by default; a sandbox, preview or local API otherwise. */
+    @Prop({ attribute: 'api-url' }) apiUrl?: string
     /** `popup` (default), or `redirect` for a full-page round trip (popup blockers, in-app browsers). */
-    @Prop() mode: 'popup' | 'redirect' = 'popup'
+    @Prop() mode?: 'popup' | 'redirect'
     /** `dialog` (default, opened from the trigger or `open()`) or `inline`, in the page. */
-    @Prop({ reflect: true }) display: 'dialog' | 'inline' = 'dialog'
-    /** `light`, `dark`, or `auto` (follows the system setting). */
-    @Prop({ reflect: true }) theme: 'light' | 'dark' | 'auto' = 'light'
+    @Prop({ reflect: true }) display?: 'dialog' | 'inline'
+    /** `light` (default), `dark`, or `auto` (follows the system setting). */
+    @Prop({ reflect: true }) theme?: 'light' | 'dark' | 'auto'
     /** Any of the widget's words, replaced (also how a translation is supplied): an object, or JSON in the attribute. */
     @Prop() strings?: Partial<PyasConnectStrings> | string
     /** No trigger button: open it with `open()` from your own. */
-    @Prop({ attribute: 'hide-trigger' }) hideTrigger: boolean = false
+    @Prop({ attribute: 'hide-trigger' }) hideTrigger?: boolean
     /** Origins of your own OAuth callback page, when your app signs in with its own OAuth app. */
     @Prop({ attribute: 'callback-origins' }) callbackOrigins?: string
 
@@ -56,9 +63,10 @@ export class PyasConnect {
     @Prop() state?: string
     @Prop({ attribute: 'modal-title' }) modalTitle?: string
     @Prop({ attribute: 'modal-description' }) modalDescription?: string
-    @Prop({ attribute: 'show-google' }) showGoogle: boolean = true
-    @Prop({ attribute: 'show-outlook' }) showOutlook: boolean = true
-    @Prop({ attribute: 'show-zoom' }) showZoom: boolean = true
+    /** 1.x: shown unless false. */
+    @Prop({ attribute: 'show-google' }) showGoogle?: boolean
+    @Prop({ attribute: 'show-outlook' }) showOutlook?: boolean
+    @Prop({ attribute: 'show-zoom' }) showZoom?: boolean
     /** 1.x: the details screen's title (now also `strings.detailsTitle`). */
     @Prop({ attribute: 'form-title' }) formTitle?: string
     /** 1.x, accepted and unused: 2.0's buttons always carry their labels. */
@@ -87,6 +95,7 @@ export class PyasConnect {
     @State() nameInput = ''
     @State() emailInput = ''
     @State() nameError = false
+    @State() emailError = false
 
     private flow: ConnectFlow | null = null
     private unsubscribe: (() => void) | null = null
@@ -98,16 +107,20 @@ export class PyasConnect {
     // Closing: whatever the flow reports now is how it ended, so it is sent.
     private closing = false
 
+    private get inline() {
+        return this.display === 'inline'
+    }
+
     @Watch('sessionToken')
     @Watch('clientId')
     @Watch('tokenName')
     credentialsChanged() {
         // A new session for a dialog not yet in use takes effect on the next open.
-        if (!this.isOpen && this.display === 'inline') this.restart()
+        if (!this.isOpen && this.inline) this.restart()
     }
 
     componentDidLoad() {
-        if (this.display === 'inline') this.restart()
+        if (this.inline) this.restart()
     }
 
     disconnectedCallback() {
@@ -117,8 +130,11 @@ export class PyasConnect {
     /** Opens the dialog. Call it from a click (a sign-in window may only open from one). */
     @Method()
     async open() {
-        if (this.display === 'inline' || this.isOpen) return
-        this.returnFocus = (document.activeElement as HTMLElement) ?? null
+        if (this.inline || this.isOpen) return
+        // The focused element itself, inside any shadow root (the trigger is in this one).
+        let active = document.activeElement as HTMLElement | null
+        while (active?.shadowRoot?.activeElement) active = active.shadowRoot.activeElement as HTMLElement
+        this.returnFocus = active
         this.isOpen = true
         this.bodyOverflow = document.body.style.overflow
         document.body.style.overflow = 'hidden'
@@ -128,7 +144,7 @@ export class PyasConnect {
     /** Closes the dialog, reporting how it ended. */
     @Method()
     async close() {
-        if (this.display === 'inline' || !this.isOpen) return
+        if (this.inline || !this.isOpen) return
         this.finish()
         this.isOpen = false
         document.body.style.overflow = this.bodyOverflow
@@ -157,7 +173,7 @@ export class PyasConnect {
             const list = (Array.isArray(raw) ? raw : raw.split(',')).map((p) => p.trim().toLowerCase())
             return ALL.filter((p) => list.includes(p))
         }
-        return ALL.filter((p) => (p === 'google' ? this.showGoogle : p === 'microsoft' ? this.showOutlook : this.showZoom))
+        return ALL.filter((p) => (p === 'google' ? this.showGoogle : p === 'microsoft' ? this.showOutlook : this.showZoom) !== false)
     }
 
     private restart() {
@@ -167,16 +183,17 @@ export class PyasConnect {
         this.nameInput = this.userName ?? ''
         this.emailInput = this.userEmail ?? ''
         this.nameError = false
+        this.emailError = false
         const usesSession = !!(this.getSessionToken || this.sessionToken)
         this.legacy = !usesSession && this.clientId && this.tokenName
             ? { clientId: this.clientId, tokenName: this.tokenName, state: this.state || undefined, email: this.userEmail || undefined, name: this.userName || undefined }
             : null
         const options: ConnectFlowOptions = {
-            apiUrl: this.apiUrl,
+            apiUrl: this.apiUrl || DEFAULT_API_URL,
             session: this.getSessionToken ?? this.sessionToken ?? undefined,
             legacy: this.legacy ?? undefined,
             providers: this.offered(),
-            mode: this.mode,
+            mode: this.mode ?? 'popup',
             callbackOrigins: (this.callbackOrigins ?? '').split(',').map((o) => o.trim()).filter(Boolean),
             onConnected: (account) => this.onConnected(account),
             onError: (error) => this.onError(error),
@@ -222,7 +239,7 @@ export class PyasConnect {
 
     private onError(error: ConnectErrorInfo) {
         // Nothing the person can do here: the page can (a new session), so it hears at once.
-        if (!error.retryable || this.closing || this.display === 'inline' || !this.isOpen) this.emitError(error)
+        if (!error.retryable || this.closing || this.inline || !this.isOpen) this.emitError(error)
         else this.pendingError = error
     }
 
@@ -234,8 +251,8 @@ export class PyasConnect {
     /* ------------------------------ actions ------------------------------ */
 
     private choose(provider: Provider) {
-        // 1.x asked for a name when the page had none to give.
-        if (this.legacy && !this.legacy.name) {
+        // 1.x asked for a name and email when the page had none to give (v1's API needs the email).
+        if (this.legacy && (!this.legacy.name || !this.legacy.email)) {
             this.detailsFor = provider
             return
         }
@@ -245,13 +262,16 @@ export class PyasConnect {
 
     private submitDetails(event: Event) {
         event.preventDefault()
-        if (!this.nameInput.trim()) {
-            this.nameError = true
+        this.nameError = !this.nameInput.trim()
+        this.emailError = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.emailInput.trim())
+        if (this.nameError || this.emailError) {
+            const first = this.el.shadowRoot?.getElementById(`${this.uid}-${this.nameError ? 'name' : 'email'}`) as HTMLInputElement | null
+            first?.focus()
             return
         }
         if (this.legacy) {
             this.legacy.name = this.nameInput.trim()
-            this.legacy.email = this.emailInput.trim() || undefined
+            this.legacy.email = this.emailInput.trim()
         }
         const provider = this.detailsFor!
         this.detailsFor = null
@@ -259,7 +279,7 @@ export class PyasConnect {
     }
 
     private onKeyDown = (event: KeyboardEvent) => {
-        if (event.key === 'Escape' && this.display === 'dialog') {
+        if (event.key === 'Escape' && !this.inline) {
             event.stopPropagation()
             void this.close()
             return
@@ -284,7 +304,7 @@ export class PyasConnect {
     }
 
     componentDidRender() {
-        if (this.display !== 'dialog' || !this.isOpen) return
+        if (this.inline || !this.isOpen) return
         // Focus moves into the dialog, and to the new screen's first control when the screen changes.
         const root = this.el.shadowRoot
         const dialog = root?.querySelector<HTMLElement>('.dialog')
@@ -306,7 +326,7 @@ export class PyasConnect {
             <div class="header" part="header">
                 {icon ? <img class="app-icon" src={icon} alt="" /> : <span class="app-initial" aria-hidden="true">{name.slice(0, 1).toUpperCase()}</span>}
                 <span class="app-name">{name}</span>
-                {this.display === 'dialog' && (
+                {!this.inline && (
                     <button type="button" class="close" aria-label={this.t.close} onClick={() => void this.close()}>
                         <CloseGlyph />
                     </button>
@@ -350,7 +370,9 @@ export class PyasConnect {
                         </div>
                         <div class="field">
                             <label htmlFor={`${this.uid}-email`}>{t.detailsEmail}</label>
-                            <input id={`${this.uid}-email`} type="email" autocomplete="email" value={this.emailInput} onInput={(e) => { this.emailInput = (e.target as HTMLInputElement).value }} />
+                            <input id={`${this.uid}-email`} type="email" autocomplete="email" value={this.emailInput} aria-invalid={this.emailError ? 'true' : undefined} aria-describedby={this.emailError ? `${this.uid}-email-error` : undefined}
+                                onInput={(e) => { this.emailInput = (e.target as HTMLInputElement).value; this.emailError = false }} />
+                            {this.emailError && <p class="field-error" id={`${this.uid}-email-error`}>{t.detailsEmailNeeded}</p>}
                         </div>
                         <button type="submit" class="primary" part="primary-button">{t.detailsContinue}</button>
                     </form>
@@ -425,7 +447,7 @@ export class PyasConnect {
                             <span class="badge success"><CheckGlyph /></span>
                             {title(t.connectedTitle)}
                             <p class="account"><strong>{s.account?.email}</strong><span>{calendarName(s.account?.provider ?? provider)}</span></p>
-                            {this.display === 'dialog' && (
+                            {!this.inline && (
                                 <div class="actions"><button type="button" class="primary" part="primary-button" onClick={() => void this.close()}>{t.done}</button></div>
                             )}
                         </div>
@@ -452,7 +474,7 @@ export class PyasConnect {
             : code === 'BILLING_CONNECTION_LIMIT' || code === 'BILLING_SUBSCRIPTION_REQUIRED' ? view(t.limitTitle, t.limitBody, null, false)
             : code === 'CONNECT_INVALID_CONFIG' || code === 'AUTH_ORIGIN_NOT_ALLOWED' || code === 'CONNECTION_PROVIDER_NOT_CONFIGURED' ? view(t.configTitle, t.configBody, null, false)
             : view(t.genericTitle, t.genericBody, t.tryAgain, true)
-        const canClose = this.display === 'dialog' && !v.retryLabel
+        const canClose = !this.inline && !v.retryLabel
         return {
             announce: fill(v.head, values),
             body: (
@@ -474,7 +496,7 @@ export class PyasConnect {
         const s = this.snap
         if (!s) return null
         const { body, announce } = this.screen(s)
-        const isDialog = this.display === 'dialog'
+        const isDialog = !this.inline
         return (
             <div
                 class="dialog"
@@ -497,7 +519,7 @@ export class PyasConnect {
     }
 
     render() {
-        if (this.display === 'inline') return <Host class="inline">{this.panel()}</Host>
+        if (this.inline) return <Host class="inline">{this.panel()}</Host>
         return (
             <Host>
                 {!this.hideTrigger && (

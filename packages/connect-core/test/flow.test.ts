@@ -36,7 +36,8 @@ const fakeApi = (over: Partial<ConnectApi> = {}): ConnectApi => ({
     authorize: vi.fn(async (_t: string, provider?: string) => ({ provider: provider as any, url: `https://accounts.google.test/o/oauth2/auth?state=${encodeURIComponent(STATE)}`, expiresAt: '' })),
     complete: vi.fn(async () => ({ accountId: 'acc-1', provider: 'google', email: 'ana@example.com', name: 'Ana', subjectId: null })),
     redirectUrl: vi.fn((t: string, p?: string) => `${API}/v2/connect/go?token=${t}&provider=${p}`),
-    legacyInit: vi.fn(async () => `https://accounts.google.test/o/oauth2/auth?state=${encodeURIComponent('app_id=app-1_rest=mystate.sig')}`),
+    // As v1 writes it: the app, the page's own state, then the opener's signed origin.
+    legacyInit: vi.fn(async () => `https://accounts.google.test/o/oauth2/auth?state=${encodeURIComponent('app_id=app-1_rest=mystate~pyasorigin~aHR0cHM6Ly9hY21lLnRlc3Q.sig')}`),
     legacyConnect: vi.fn(async () => ({ accountId: 'acc-legacy', provider: 'google', email: 'ana@example.com', name: 'Ana', subjectId: null })),
     ...over,
 } as ConnectApi)
@@ -242,10 +243,29 @@ describe('the connect flow', () => {
         flow.choose('google')
         await flush()
         expect(api.legacyInit).toHaveBeenCalledWith(expect.objectContaining({ provider: 'google', clientId: 'client-1', tokenName: 'web' }))
-        w.post({ type: 'pyas-oauth-complete', code: 'c1', state: 'mystate.sig' })
+        // The callback page posts the page's own state, the signed origin stripped.
+        w.post({ type: 'pyas-oauth-complete', code: 'c1', state: 'notmine' })
+        await flush()
+        expect(api.legacyConnect).not.toHaveBeenCalled()
+        w.post({ type: 'pyas-oauth-complete', code: 'c1', state: 'mystate' })
         await flush()
         expect(api.legacyConnect).toHaveBeenCalledWith(expect.objectContaining({ code: 'c1', clientId: 'client-1', name: 'Ana' }))
         expect(flow.getSnapshot()).toMatchObject({ status: 'connected', account: { accountId: 'acc-legacy' } })
+    })
+
+    it("1.x keys with no state of the page's own: the empty state the callback page posts is accepted", async () => {
+        const api = fakeApi({ legacyInit: vi.fn(async () => `https://accounts.google.test/o/oauth2/auth?state=${encodeURIComponent('app_id=app-1_rest=~pyasorigin~aHR0cHM6Ly9hY21lLnRlc3Q.sig')}`) })
+        const { flow } = make({ session: undefined, legacy: { clientId: 'client-1', tokenName: 'web', name: 'Ana' } }, api)
+        flow.choose('google')
+        await flush()
+        // Only from the window this attempt opened.
+        w.post({ type: 'pyas-oauth-complete', code: 'c1', state: '' }, { source: {} })
+        await flush()
+        expect(api.legacyConnect).not.toHaveBeenCalled()
+        w.post({ type: 'pyas-oauth-complete', code: 'c1', state: '' })
+        await flush()
+        expect(api.legacyConnect).toHaveBeenCalledWith(expect.objectContaining({ code: 'c1' }))
+        expect(flow.getSnapshot()).toMatchObject({ status: 'connected' })
     })
 
     it("start reads whose app is asking and the session's providers, then waits for a click; nothing works without credentials", async () => {

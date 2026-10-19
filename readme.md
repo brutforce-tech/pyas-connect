@@ -11,8 +11,9 @@ with thin wrappers for React, Vue and Angular.
   shows a small "Secured by Pyas" line.
 - **Nobody gets stuck.** Every wait says what is happening, every failure
   offers a way forward, and pop-up blockers and phones are handled.
-- **Accessible.** A real dialog: focus stays inside it, Escape closes it, a
-  screen reader hears each step, and reduced motion is respected.
+- **Accessible.** A real dialog: focus stays inside it, Escape closes it and
+  returns focus, a screen reader hears each step, and reduced motion is
+  respected. Every state is checked with axe against WCAG 2.2 AA.
 
 | Package | For |
 |---|---|
@@ -174,7 +175,14 @@ npm install
 npm run build   # every package, in order
 npm test        # core, element and wrapper tests
 npm run size    # the bundle budget: 25 KB gzipped for the element with the core
+npm run e2e     # the widget in React, Vue and Angular apps against a local API
 ```
+
+The end-to-end suite needs [pyas-api](https://github.com/brutforce-tech/pyas-api)
+next to this repo (or `PYAS_API_DIR`) with its test databases up
+(`npm run test:db:up` there). It starts the API in its own database, plays
+Google's, Microsoft's and Zoom's sign-in pages, and runs every journey in each
+example app, then screenshots and axe-checks every state of the dialog.
 
 Releases are published from a version tag only:
 

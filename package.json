@@ -2,10 +2,11 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    "packages/angular-workspace/projects/*",
-    "examples/vue-example"
+    "packages/angular-workspace/projects/*"
   ],
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "1.64.1",
     "@types/node": "^22.15.19",
     "typescript": "^5.8.3"
   },
@@ -14,6 +15,7 @@
     "test": "npm test -w @pyas/connect-core && npm run test:spec -w @pyas/connect && npm test -w @pyas/connect-react && npm test -w @pyas/connect-vue",
     "size": "node scripts/check-size.mjs",
     "version:set": "node scripts/set-version.mjs",
-    "release": "node scripts/publish.mjs"
+    "release": "node scripts/publish.mjs",
+    "e2e": "playwright test"
   }
 }

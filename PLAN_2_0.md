@@ -9,7 +9,7 @@ build. Epic branch `connect-v2`; one `v2/connect-…` branch per step.
 | 2 | `v2/connect-2-component` | `<pyas-connect>` rebuilt on the core: every state designed, dialog or inline, light and dark, WCAG 2.2 AA, component tests | Done |
 | 3 | `v2/connect-3-wrappers` | React, Vue and Angular wrappers over the one element; 1.x props and events still work | Done |
 | 4 | `v2/connect-4-release` | Release on a version tag (not every push), MIT license, README rewritten, bundle budget (25 KB gzipped) in CI | Done |
-| 5 | `v2/connect-5-e2e` | Playwright against the local API in a React, a Vue and an Angular example; visual regression and axe on every state | |
+| 5 | `v2/connect-5-e2e` | Playwright against the local API in a React, a Vue and an Angular example; visual regression and axe on every state | Done |
 
 ## How a connection runs
 
@@ -102,3 +102,38 @@ differs, and why:
 - Each package ships `LICENSE.md` (MIT) and a short README pointing at the full
   guide in the root README. `@pyas/connect` installs at 2.3 MB unpacked, as
   1.x did; source maps are most of it, and none of it reaches the browser.
+
+## Step 5 notes
+
+- **The suite:** `npm run e2e` starts pyas-api's e2e server in its own
+  database (`pyas_e2e_connect`, port 3998) and the three example apps (React
+  4101, Vue 4102, Angular 4103). Eight journeys run in each app: connect,
+  refuse then try again, give up after a refusal, close, a used session, a
+  session per attempt, the page's own button, and 1.x keys. Fifteen states of
+  the dialog are screenshotted and checked with axe (WCAG 2.2 AA tags) in the
+  React app; there are no violations.
+- **Providers are played, not mocked out of the flow:** the sign-in window
+  really opens and really comes back. The tests serve the consent page
+  (`e2e/support/provider.ts`); the API answers the token and profile calls
+  itself (pyas-api `e2e/providers.ts`, on with `E2E_FAKE_PROVIDERS=1`), so
+  the code exchange, the account save and the callback page all run.
+- **What it found, all fixed:**
+  - Properties set before the element was defined were lost, so every React,
+    Vue and Angular page sent no session token (ES2022 class fields overwrote
+    them as the element upgraded). The element now has no prop initializers;
+    defaults apply where props are read.
+  - Popup sessions on Pyas's OAuth app came back to v1's provider callback,
+    which sent the window to the dashboard, never to the widget. They now use
+    Pyas's popup page `/oauth/callback`, 1.x's redirect URI, already
+    registered with each provider (pyas-api `v2/connect/oauth.ts`).
+  - 1.x pages that pass no `state` were never finished: the core expected a
+    state the callback page does not send.
+  - 1.x pages without an email went on to an API that requires one; the
+    details screen now asks for it.
+  - Angular ran every output handler twice (once with the CustomEvent).
+  - Escape did not return focus to the trigger; inline mode kept the dialog's
+    shadow; invalid fields had no error border.
+  - pyas-api's seed could fail on a second run (an index build racing the
+    drop); it waits for the builds first.
+- **Not in CI yet:** it needs pyas-api checked out next to it and Docker
+  databases. Screenshots are Windows baselines; CI on Linux would need its own.
