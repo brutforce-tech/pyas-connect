@@ -4,7 +4,8 @@ name: CI
 # the bundle to its budget (plan §59).
 on:
   push:
-    branches: [master, connect-v2]
+    # The epic and every feature branch, on each push.
+    branches: [master, connect-v2, 'v2/**']
   workflow_dispatch:
   pull_request:
 
