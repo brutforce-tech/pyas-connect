@@ -59,6 +59,16 @@ export class PyasConnect {
     @Prop({ attribute: 'show-google' }) showGoogle: boolean = true
     @Prop({ attribute: 'show-outlook' }) showOutlook: boolean = true
     @Prop({ attribute: 'show-zoom' }) showZoom: boolean = true
+    /** 1.x: the details screen's title (now also `strings.detailsTitle`). */
+    @Prop({ attribute: 'form-title' }) formTitle?: string
+    /** 1.x, accepted and unused: 2.0's buttons always carry their labels. */
+    @Prop({ attribute: 'show-labels' }) showLabels?: boolean
+    /** 1.x, accepted and unused: iCloud is not offered until Pyas supports it. */
+    @Prop({ attribute: 'show-icloud' }) showIcloud?: boolean
+    /** 1.x, accepted and unused: "Secured by Pyas" always shows (which plans may hide is open, plan §59). */
+    @Prop({ attribute: 'show-disclaimer' }) showDisclaimer?: boolean
+    /** 1.x, accepted and unused: the details screen has no description. */
+    @Prop({ attribute: 'form-description' }) formDescription?: string
 
     /** A calendar was connected. */
     @Event({ eventName: 'connected', composed: true }) connected!: EventEmitter<{ accountId: string; provider: string; email: string; name: string | null; subjectId: string | null }>
@@ -136,6 +146,7 @@ export class PyasConnect {
             ...DEFAULT_STRINGS,
             ...(this.modalTitle ? { chooseTitle: this.modalTitle } : {}),
             ...(this.modalDescription ? { chooseIntro: this.modalDescription } : {}),
+            ...(this.formTitle ? { detailsTitle: this.formTitle } : {}),
             ...custom,
         }
     }

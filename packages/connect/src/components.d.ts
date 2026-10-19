@@ -45,6 +45,14 @@ export namespace Components {
          */
         "display": 'dialog' | 'inline';
         /**
+          * 1.x, accepted and unused: the details screen has no description.
+         */
+        "formDescription"?: string;
+        /**
+          * 1.x: the details screen's title (now also `strings.detailsTitle`).
+         */
+        "formTitle"?: string;
+        /**
           * Or a function that fetches a new session token: then every failure can be tried again in place.
          */
         "getSessionToken"?: () => Promise<string>;
@@ -74,9 +82,21 @@ export namespace Components {
          */
         "sessionToken"?: string;
         /**
+          * 1.x, accepted and unused: "Secured by Pyas" always shows (which plans may hide is open, plan §59).
+         */
+        "showDisclaimer"?: boolean;
+        /**
           * @default true
          */
         "showGoogle": boolean;
+        /**
+          * 1.x, accepted and unused: iCloud is not offered until Pyas supports it.
+         */
+        "showIcloud"?: boolean;
+        /**
+          * 1.x, accepted and unused: 2.0's buttons always carry their labels.
+         */
+        "showLabels"?: boolean;
         /**
           * @default true
          */
@@ -176,6 +196,14 @@ declare namespace LocalJSX {
          */
         "display"?: 'dialog' | 'inline';
         /**
+          * 1.x, accepted and unused: the details screen has no description.
+         */
+        "formDescription"?: string;
+        /**
+          * 1.x: the details screen's title (now also `strings.detailsTitle`).
+         */
+        "formTitle"?: string;
+        /**
           * Or a function that fetches a new session token: then every failure can be tried again in place.
          */
         "getSessionToken"?: () => Promise<string>;
@@ -221,9 +249,21 @@ declare namespace LocalJSX {
          */
         "sessionToken"?: string;
         /**
+          * 1.x, accepted and unused: "Secured by Pyas" always shows (which plans may hide is open, plan §59).
+         */
+        "showDisclaimer"?: boolean;
+        /**
           * @default true
          */
         "showGoogle"?: boolean;
+        /**
+          * 1.x, accepted and unused: iCloud is not offered until Pyas supports it.
+         */
+        "showIcloud"?: boolean;
+        /**
+          * 1.x, accepted and unused: 2.0's buttons always carry their labels.
+         */
+        "showLabels"?: boolean;
         /**
           * @default true
          */
