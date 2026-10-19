@@ -1,0 +1,240 @@
+/*
+ * PyasConnect 2.0. Shadow DOM: the host page's CSS cannot reach in; these
+ * variables and the ::part() names below can. Values are the Pyas dashboard's
+ * design tokens; the font is the host page's.
+ */
+:host {
+    --pyas-connect-surface: #ffffff;
+    --pyas-connect-subtle: #fafafc;
+    --pyas-connect-text: #090936;
+    --pyas-connect-muted: #55557a;
+    --pyas-connect-border: #e4e4ec;
+    --pyas-connect-border-strong: #cfcfdc;
+    --pyas-connect-accent: #140f57;
+    --pyas-connect-accent-hover: #090936;
+    --pyas-connect-accent-text: #ffffff;
+    --pyas-connect-danger: #b42318;
+    --pyas-connect-warning: #8a5300;
+    --pyas-connect-warning-subtle: #fdf3d8;
+    --pyas-connect-success: #157347;
+    --pyas-connect-success-subtle: #e5f3eb;
+    --pyas-connect-focus: #140f57;
+    --pyas-connect-overlay: rgba(9, 9, 54, 0.45);
+    --pyas-connect-radius: 14px;
+    --pyas-connect-font: inherit;
+
+    /* The providers' own button colors (their branding guidelines). */
+    --pc-google-bg: #ffffff;
+    --pc-google-border: #747775;
+    --pc-google-text: #1f1f1f;
+    --pc-ms-bg: #ffffff;
+    --pc-ms-border: #8c8c8c;
+    --pc-ms-text: #5e5e5e;
+
+    display: inline-block;
+    font-family: var(--pyas-connect-font);
+}
+:host([display='inline']) { display: block; }
+
+/* Dark: chosen, or following the system when theme="auto". */
+:host([theme='dark']) {
+    --pyas-connect-surface: #13132b;
+    --pyas-connect-subtle: #181834;
+    --pyas-connect-text: #ececf7;
+    --pyas-connect-muted: #a8a8c6;
+    --pyas-connect-border: #2a2a4a;
+    --pyas-connect-border-strong: #3a3a60;
+    --pyas-connect-accent: #c9c7ff;
+    --pyas-connect-accent-hover: #e2e1ff;
+    --pyas-connect-accent-text: #090936;
+    --pyas-connect-danger: #ff8a7f;
+    --pyas-connect-warning: #f2c25b;
+    --pyas-connect-warning-subtle: #33270b;
+    --pyas-connect-success: #6fd39b;
+    --pyas-connect-success-subtle: #10301f;
+    --pyas-connect-focus: #c9c7ff;
+    --pyas-connect-overlay: rgba(0, 0, 0, 0.6);
+    --pc-google-bg: #131314;
+    --pc-google-border: #8e918f;
+    --pc-google-text: #e3e3e3;
+    --pc-ms-bg: #2f2f2f;
+    --pc-ms-border: #2f2f2f;
+    --pc-ms-text: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+    :host([theme='auto']) {
+        --pyas-connect-surface: #13132b;
+        --pyas-connect-subtle: #181834;
+        --pyas-connect-text: #ececf7;
+        --pyas-connect-muted: #a8a8c6;
+        --pyas-connect-border: #2a2a4a;
+        --pyas-connect-border-strong: #3a3a60;
+        --pyas-connect-accent: #c9c7ff;
+        --pyas-connect-accent-hover: #e2e1ff;
+        --pyas-connect-accent-text: #090936;
+        --pyas-connect-danger: #ff8a7f;
+        --pyas-connect-warning: #f2c25b;
+        --pyas-connect-warning-subtle: #33270b;
+        --pyas-connect-success: #6fd39b;
+        --pyas-connect-success-subtle: #10301f;
+        --pyas-connect-focus: #c9c7ff;
+        --pyas-connect-overlay: rgba(0, 0, 0, 0.6);
+        --pc-google-bg: #131314;
+        --pc-google-border: #8e918f;
+        --pc-google-text: #e3e3e3;
+        --pc-ms-bg: #2f2f2f;
+        --pc-ms-border: #2f2f2f;
+        --pc-ms-text: #ffffff;
+    }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+button, input { font: inherit; }
+
+.sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* The trigger: the page's own "Connect a calendar" button (1.x had one too). */
+.trigger {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 40px; padding: 0 18px; border: 0; border-radius: 10px;
+    background: var(--pyas-connect-accent); color: var(--pyas-connect-accent-text);
+    font-weight: 600; font-size: 15px; cursor: pointer;
+}
+.trigger:hover { background: var(--pyas-connect-accent-hover); }
+
+button:focus-visible, input:focus-visible, a:focus-visible, .dialog:focus-visible {
+    outline: 2px solid var(--pyas-connect-focus);
+    outline-offset: 2px;
+}
+
+/* Dialog */
+.overlay {
+    position: fixed; inset: 0; z-index: 2147483000;
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+    background: var(--pyas-connect-overlay);
+    animation: fade 160ms ease-out;
+}
+.dialog {
+    position: relative; display: flex; flex-direction: column;
+    width: 100%; max-width: 360px; max-height: calc(100vh - 48px); overflow: auto;
+    background: var(--pyas-connect-surface); color: var(--pyas-connect-text);
+    border: 1px solid var(--pyas-connect-border); border-radius: var(--pyas-connect-radius);
+    box-shadow: 0 24px 64px -12px rgba(9, 9, 54, 0.35), 0 2px 6px rgba(9, 9, 54, 0.08);
+    animation: rise 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    font-size: 14px; line-height: 1.5;
+}
+.inline .dialog { box-shadow: none; animation: none; max-height: none; }
+@media (max-width: 479px) {
+    .overlay { padding: 0; align-items: stretch; }
+    .dialog { max-width: none; max-height: none; height: 100%; border-radius: 0; border: 0; }
+}
+
+.header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 16px 0 20px; min-height: 56px;
+}
+.app-icon {
+    width: 32px; height: 32px; flex: none; border-radius: 8px; object-fit: cover;
+    border: 1px solid var(--pyas-connect-border);
+}
+.app-initial {
+    display: grid; place-items: center; width: 32px; height: 32px; flex: none; border-radius: 8px;
+    background: var(--pyas-connect-subtle); border: 1px solid var(--pyas-connect-border);
+    font-weight: 700; font-size: 14px; color: var(--pyas-connect-muted);
+}
+.app-name { flex: 1; min-width: 0; font-weight: 600; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.close {
+    display: grid; place-items: center; width: 36px; height: 36px; flex: none;
+    border: 0; border-radius: 8px; background: transparent; color: var(--pyas-connect-muted); cursor: pointer;
+}
+.close:hover { background: var(--pyas-connect-subtle); color: var(--pyas-connect-text); }
+.glyph { width: 20px; height: 20px; }
+
+.body { display: flex; flex-direction: column; gap: 16px; padding: 20px 20px 24px; flex: 1; }
+.title { margin: 0; font-size: 18px; line-height: 1.35; font-weight: 650; letter-spacing: -0.005em; }
+.lead { margin: -8px 0 0; color: var(--pyas-connect-muted); }
+.centered { align-items: center; text-align: center; }
+.centered .lead { margin-top: -10px; }
+
+.actions { display: flex; flex-direction: column; gap: 10px; }
+/* Centered screens still give their buttons the dialog's full width, as the chooser does. */
+.centered .actions { align-self: stretch; }
+
+/* Provider buttons: each provider's own look. */
+.provider {
+    display: flex; align-items: center; justify-content: center; gap: 12px; position: relative;
+    width: 100%; min-height: 44px; padding: 0 16px; border-radius: 10px; cursor: pointer;
+    font-weight: 500; font-size: 15px; border: 1px solid;
+}
+.provider .mark { width: 20px; height: 20px; position: absolute; left: 14px; }
+.provider.google { background: var(--pc-google-bg); border-color: var(--pc-google-border); color: var(--pc-google-text); font-family: Roboto, var(--pyas-connect-font), sans-serif; }
+.provider.microsoft { background: var(--pc-ms-bg); border-color: var(--pc-ms-border); color: var(--pc-ms-text); font-family: 'Segoe UI', var(--pyas-connect-font), sans-serif; font-weight: 600; }
+.provider.zoom { background: var(--pyas-connect-surface); border-color: var(--pyas-connect-border-strong); color: var(--pyas-connect-text); }
+.provider:hover { filter: brightness(0.97); }
+:host([theme='dark']) .provider:hover { filter: brightness(1.15); }
+
+.primary, .secondary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; min-height: 44px; padding: 0 16px; border-radius: 10px; cursor: pointer;
+    font-weight: 600; font-size: 15px;
+}
+.primary { border: 0; background: var(--pyas-connect-accent); color: var(--pyas-connect-accent-text); }
+.primary:hover { background: var(--pyas-connect-accent-hover); }
+.secondary { border: 1px solid var(--pyas-connect-border-strong); background: transparent; color: var(--pyas-connect-text); }
+.secondary:hover { background: var(--pyas-connect-subtle); }
+.link {
+    align-self: center; border: 0; background: none; padding: 6px 8px; min-height: 32px; border-radius: 6px;
+    color: var(--pyas-connect-accent); font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 3px;
+}
+button[disabled] { opacity: 0.55; cursor: not-allowed; }
+
+/* State marks */
+.badge { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 999px; }
+.badge .glyph { width: 26px; height: 26px; }
+.badge.success { background: var(--pyas-connect-success-subtle); color: var(--pyas-connect-success); }
+.badge.warning { background: var(--pyas-connect-warning-subtle); color: var(--pyas-connect-warning); }
+.badge.provider-badge { width: 48px; height: 48px; background: var(--pyas-connect-subtle); border: 1px solid var(--pyas-connect-border); }
+.badge.provider-badge .mark { width: 24px; height: 24px; }
+.account { margin: -6px 0 0; }
+.account strong { display: block; font-weight: 600; word-break: break-all; }
+.account span { color: var(--pyas-connect-muted); }
+
+.note {
+    margin: 0; padding: 10px 12px; border-radius: 10px;
+    background: var(--pyas-connect-warning-subtle); color: var(--pyas-connect-text); font-size: 13.5px;
+}
+
+.spinner {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 3px solid var(--pyas-connect-border); border-top-color: var(--pyas-connect-accent);
+    animation: spin 0.9s linear infinite;
+}
+
+/* Your details (1.x keys only) */
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-weight: 600; font-size: 13.5px; }
+.field input {
+    min-height: 44px; padding: 0 12px; border-radius: 10px;
+    border: 1px solid var(--pyas-connect-border-strong); background: var(--pyas-connect-surface); color: var(--pyas-connect-text);
+}
+.field-error { margin: 0; color: var(--pyas-connect-danger); font-size: 13px; }
+
+.footer {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 12px 20px 16px; border-top: 1px solid var(--pyas-connect-border);
+    color: var(--pyas-connect-muted); font-size: 12.5px;
+}
+.footer .glyph { width: 14px; height: 14px; }
+.footer a { color: inherit; text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rise { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+    .overlay, .dialog { animation: none; }
+    .spinner { animation-duration: 2.4s; }
+}

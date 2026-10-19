@@ -12,12 +12,21 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     }
   },
-  "files": ["dist/"],
-  "publishConfig": { "access": "public" },
-  "repository": { "type": "git", "url": "https://github.com/brutforce-tech/pyas-connect.git", "directory": "packages/connect-core" },
+  "files": [
+    "dist/"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brutforce-tech/pyas-connect.git",
+    "directory": "packages/connect-core"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "test": "vitest run",

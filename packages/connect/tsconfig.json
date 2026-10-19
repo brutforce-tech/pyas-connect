@@ -16,12 +16,15 @@
     "jsx": "react",
     "jsxFactory": "h",
     "jsxFragmentFactory": "h.Fragment",
-     "skipLibCheck": true,
+    "skipLibCheck": true,
+    "types": ["jest", "node"]
   },
   "include": [
     "src"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "src/**/*.spec.tsx",
+    "src/**/*.spec.ts"
   ]
 }

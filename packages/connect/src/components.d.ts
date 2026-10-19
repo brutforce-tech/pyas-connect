@@ -5,45 +5,78 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { PyasConnectStrings } from "./components/pyas-connect/strings";
+import { ConnectErrorInfo } from "@pyas/connect-core";
+export { PyasConnectStrings } from "./components/pyas-connect/strings";
+export { ConnectErrorInfo } from "@pyas/connect-core";
 export namespace Components {
+    /**
+     * PyasConnect 2.0: the dialog a developer's users connect a calendar in
+     * (plan §59; screens and copy in the PyasConnect 2.0 Design doc).
+     *   <pyas-connect session-token="pcs_..."></pyas-connect>
+     * The flow is
+     * @pyas /connect-core's; this renders it. 1.x keeps working:
+     * `client-id` + `token-name`, the trigger button with its slot, the
+     * `show-*` props, and the `accountConnected` / `connectError` events, sent
+     * alongside the new `connected` / `error` / `cancel`.
+     * Events follow the design's table: `connected` at once; an `error` that a
+     * new attempt cannot fix (an expired session) at once, so the page can make
+     * a new one; one the person can still recover from only if they give up and
+     * close; `cancel` when they close without connecting.
+     */
     interface PyasConnect {
-        "clientId": string;
         /**
-          * @default ''
+          * The Pyas API: production by default; a sandbox, preview or local API otherwise.
+          * @default 'https://api.pyas.io'
          */
-        "formDescription": string;
+        "apiUrl": string;
         /**
-          * @default 'Enter Your Details'
+          * Origins of your own OAuth callback page, when your app signs in with its own OAuth app.
          */
-        "formTitle": string;
+        "callbackOrigins"?: string;
+        "clientId"?: string;
         /**
-          * @default ''
+          * Closes the dialog, reporting how it ended.
          */
-        "modalDescription": string;
+        "close": () => Promise<void>;
         /**
-          * @default 'Connect an Account'
+          * `dialog` (default, opened from the trigger or `open()`) or `inline`, in the page.
+          * @default 'dialog'
          */
-        "modalTitle": string;
+        "display": 'dialog' | 'inline';
         /**
-          * @default 'This app'
+          * Or a function that fetches a new session token: then every failure can be tried again in place.
          */
-        "productName": string;
+        "getSessionToken"?: () => Promise<string>;
         /**
-          * @default true
+          * No trigger button: open it with `open()` from your own.
+          * @default false
          */
-        "showDisclaimer": boolean;
+        "hideTrigger": boolean;
+        "modalDescription"?: string;
+        "modalTitle"?: string;
+        /**
+          * `popup` (default), or `redirect` for a full-page round trip (popup blockers, in-app browsers).
+          * @default 'popup'
+         */
+        "mode": 'popup' | 'redirect';
+        /**
+          * Opens the dialog. Call it from a click (a sign-in window may only open from one).
+         */
+        "open": () => Promise<void>;
+        "productName"?: string;
+        /**
+          * The providers to offer (`google,microsoft,zoom`); the session's own list still applies.
+         */
+        "providers"?: string | string[];
+        /**
+          * A connect session's token, made on your server (`POST /v2/connect/sessions`).
+         */
+        "sessionToken"?: string;
         /**
           * @default true
          */
         "showGoogle": boolean;
-        /**
-          * @default false
-         */
-        "showIcloud": boolean;
-        /**
-          * @default true
-         */
-        "showLabels": boolean;
         /**
           * @default true
          */
@@ -52,15 +85,17 @@ export namespace Components {
           * @default true
          */
         "showZoom": boolean;
+        "state"?: string;
         /**
-          * @default ''
+          * Any of the widget's words, replaced (also how a translation is supplied): an object, or JSON in the attribute.
          */
-        "state": string;
+        "strings"?: Partial<PyasConnectStrings> | string;
         /**
+          * `light`, `dark`, or `auto` (follows the system setting).
           * @default 'light'
          */
-        "theme": 'light' | 'dark';
-        "tokenName": string;
+        "theme": 'light' | 'dark' | 'auto';
+        "tokenName"?: string;
         "userEmail"?: string;
         "userName"?: string;
     }
@@ -71,9 +106,26 @@ export interface PyasConnectCustomEvent<T> extends CustomEvent<T> {
 }
 declare global {
     interface HTMLPyasConnectElementEventMap {
-        "accountConnected": { provider: string; accountId: string, name: string, email: string, scopes: string[], status: string };
-        "connectError": { message: string, code: string|number|undefined, error?: any };
+        "connected": { accountId: string; provider: string; email: string; name: string | null; subjectId: string | null };
+        "error": ConnectErrorInfo;
+        "cancel": void;
+        "accountConnected": any;
+        "connectError": { message: string; code: string };
     }
+    /**
+     * PyasConnect 2.0: the dialog a developer's users connect a calendar in
+     * (plan §59; screens and copy in the PyasConnect 2.0 Design doc).
+     *   <pyas-connect session-token="pcs_..."></pyas-connect>
+     * The flow is
+     * @pyas /connect-core's; this renders it. 1.x keeps working:
+     * `client-id` + `token-name`, the trigger button with its slot, the
+     * `show-*` props, and the `accountConnected` / `connectError` events, sent
+     * alongside the new `connected` / `error` / `cancel`.
+     * Events follow the design's table: `connected` at once; an `error` that a
+     * new attempt cannot fix (an expired session) at once, so the page can make
+     * a new one; one the person can still recover from only if they give up and
+     * close; `cancel` when they close without connecting.
+     */
     interface HTMLPyasConnectElement extends Components.PyasConnect, HTMLStencilElement {
         addEventListener<K extends keyof HTMLPyasConnectElementEventMap>(type: K, listener: (this: HTMLPyasConnectElement, ev: PyasConnectCustomEvent<HTMLPyasConnectElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -93,52 +145,85 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    /**
+     * PyasConnect 2.0: the dialog a developer's users connect a calendar in
+     * (plan §59; screens and copy in the PyasConnect 2.0 Design doc).
+     *   <pyas-connect session-token="pcs_..."></pyas-connect>
+     * The flow is
+     * @pyas /connect-core's; this renders it. 1.x keeps working:
+     * `client-id` + `token-name`, the trigger button with its slot, the
+     * `show-*` props, and the `accountConnected` / `connectError` events, sent
+     * alongside the new `connected` / `error` / `cancel`.
+     * Events follow the design's table: `connected` at once; an `error` that a
+     * new attempt cannot fix (an expired session) at once, so the page can make
+     * a new one; one the person can still recover from only if they give up and
+     * close; `cancel` when they close without connecting.
+     */
     interface PyasConnect {
+        /**
+          * The Pyas API: production by default; a sandbox, preview or local API otherwise.
+          * @default 'https://api.pyas.io'
+         */
+        "apiUrl"?: string;
+        /**
+          * Origins of your own OAuth callback page, when your app signs in with its own OAuth app.
+         */
+        "callbackOrigins"?: string;
         "clientId"?: string;
         /**
-          * @default ''
+          * `dialog` (default, opened from the trigger or `open()`) or `inline`, in the page.
+          * @default 'dialog'
          */
-        "formDescription"?: string;
+        "display"?: 'dialog' | 'inline';
         /**
-          * @default 'Enter Your Details'
+          * Or a function that fetches a new session token: then every failure can be tried again in place.
          */
-        "formTitle"?: string;
+        "getSessionToken"?: () => Promise<string>;
         /**
-          * @default ''
+          * No trigger button: open it with `open()` from your own.
+          * @default false
          */
+        "hideTrigger"?: boolean;
         "modalDescription"?: string;
-        /**
-          * @default 'Connect an Account'
-         */
         "modalTitle"?: string;
         /**
-          * Emit connection result
+          * `popup` (default), or `redirect` for a full-page round trip (popup blockers, in-app browsers).
+          * @default 'popup'
          */
-        "onAccountConnected"?: (event: PyasConnectCustomEvent<{ provider: string; accountId: string, name: string, email: string, scopes: string[], status: string }>) => void;
+        "mode"?: 'popup' | 'redirect';
         /**
-          * Emit error result
+          * 1.x: as `connected`.
          */
-        "onConnectError"?: (event: PyasConnectCustomEvent<{ message: string, code: string|number|undefined, error?: any }>) => void;
+        "onAccountConnected"?: (event: PyasConnectCustomEvent<any>) => void;
         /**
-          * @default 'This app'
+          * The person closed it without connecting.
          */
+        "onCancel"?: (event: PyasConnectCustomEvent<void>) => void;
+        /**
+          * 1.x: as `error`.
+         */
+        "onConnectError"?: (event: PyasConnectCustomEvent<{ message: string; code: string }>) => void;
+        /**
+          * A calendar was connected.
+         */
+        "onConnected"?: (event: PyasConnectCustomEvent<{ accountId: string; provider: string; email: string; name: string | null; subjectId: string | null }>) => void;
+        /**
+          * The flow ended without connecting: `code`, `message`, `retryable`.
+         */
+        "onError"?: (event: PyasConnectCustomEvent<ConnectErrorInfo>) => void;
         "productName"?: string;
         /**
-          * @default true
+          * The providers to offer (`google,microsoft,zoom`); the session's own list still applies.
          */
-        "showDisclaimer"?: boolean;
+        "providers"?: string | string[];
+        /**
+          * A connect session's token, made on your server (`POST /v2/connect/sessions`).
+         */
+        "sessionToken"?: string;
         /**
           * @default true
          */
         "showGoogle"?: boolean;
-        /**
-          * @default false
-         */
-        "showIcloud"?: boolean;
-        /**
-          * @default true
-         */
-        "showLabels"?: boolean;
         /**
           * @default true
          */
@@ -147,14 +232,16 @@ declare namespace LocalJSX {
           * @default true
          */
         "showZoom"?: boolean;
-        /**
-          * @default ''
-         */
         "state"?: string;
         /**
+          * Any of the widget's words, replaced (also how a translation is supplied): an object, or JSON in the attribute.
+         */
+        "strings"?: Partial<PyasConnectStrings> | string;
+        /**
+          * `light`, `dark`, or `auto` (follows the system setting).
           * @default 'light'
          */
-        "theme"?: 'light' | 'dark';
+        "theme"?: 'light' | 'dark' | 'auto';
         "tokenName"?: string;
         "userEmail"?: string;
         "userName"?: string;
@@ -167,6 +254,20 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            /**
+             * PyasConnect 2.0: the dialog a developer's users connect a calendar in
+             * (plan §59; screens and copy in the PyasConnect 2.0 Design doc).
+             *   <pyas-connect session-token="pcs_..."></pyas-connect>
+             * The flow is
+             * @pyas /connect-core's; this renders it. 1.x keeps working:
+             * `client-id` + `token-name`, the trigger button with its slot, the
+             * `show-*` props, and the `accountConnected` / `connectError` events, sent
+             * alongside the new `connected` / `error` / `cancel`.
+             * Events follow the design's table: `connected` at once; an `error` that a
+             * new attempt cannot fix (an expired session) at once, so the page can make
+             * a new one; one the person can still recover from only if they give up and
+             * close; `cancel` when they close without connecting.
+             */
             "pyas-connect": LocalJSX.PyasConnect & JSXBase.HTMLAttributes<HTMLPyasConnectElement>;
         }
     }
