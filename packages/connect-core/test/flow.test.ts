@@ -32,6 +32,7 @@ const fakeWindow = () => {
 
 const fakeApi = (over: Partial<ConnectApi> = {}): ConnectApi => ({
     origin: API,
+    info: vi.fn(async () => ({ app: { name: 'Acme Scheduling', iconUrl: 'https://icons.test/acme.png' }, providers: ['google', 'microsoft'], reconnect: null, loginHint: null, expiresAt: '' })) as any,
     authorize: vi.fn(async (_t: string, provider?: string) => ({ provider: provider as any, url: `https://accounts.google.test/o/oauth2/auth?state=${encodeURIComponent(STATE)}`, expiresAt: '' })),
     complete: vi.fn(async () => ({ accountId: 'acc-1', provider: 'google', email: 'ana@example.com', name: 'Ana', subjectId: null })),
     redirectUrl: vi.fn((t: string, p?: string) => `${API}/v2/connect/go?token=${t}&provider=${p}`),
@@ -112,16 +113,29 @@ describe('the connect flow', () => {
         expect(api.authorize).toHaveBeenCalledTimes(2)
     })
 
-    it('times out after the consent window, closing the window', async () => {
+    it('after the consent wait it asks whether they are still there and keeps waiting; giving up then is CONNECT_TIMEOUT', async () => {
         vi.useFakeTimers()
-        const { flow } = make({ consentTimeoutMs: 5_000 })
+        const { flow, api, events } = make({ consentTimeoutMs: 5_000 })
         flow.choose('google')
         await vi.advanceTimersByTimeAsync(0)
-        expect(flow.getSnapshot().status).toBe('waiting')
         await vi.advanceTimersByTimeAsync(5_000)
-        expect(flow.getSnapshot()).toMatchObject({ status: 'failed', error: { code: 'CONNECT_TIMEOUT' } })
+        // No time limit they cannot extend: still waiting, and the answer still counts.
+        expect(flow.getSnapshot()).toMatchObject({ status: 'waiting', slow: true })
+        expect(events.error).not.toHaveBeenCalled()
+        flow.cancel()
+        expect(events.error).toHaveBeenCalledWith(expect.objectContaining({ code: 'CONNECT_TIMEOUT' }))
+        expect(events.cancel).not.toHaveBeenCalled()
         expect(w.popups[0].closed).toBe(true)
         expect(w.listeners.size).toBe(0)
+
+        // Answering late still connects.
+        const late = make({ consentTimeoutMs: 5_000 })
+        late.flow.choose('google')
+        await vi.advanceTimersByTimeAsync(10_000)
+        w.post({ type: 'pyas-oauth-complete', code: 'c', state: 'pcs1.cs_abc.nonce1' })
+        await vi.advanceTimersByTimeAsync(0)
+        expect(late.flow.getSnapshot().status).toBe('connected')
+        expect(api.complete).not.toHaveBeenCalled()
     })
 
     it('a window that reads as closed is a hint, not a cancel: the result still counts, and it can be opened again', async () => {
@@ -203,6 +217,7 @@ describe('the connect flow', () => {
         flow.choose('google')
         await vi.advanceTimersByTimeAsync(0)
         flow.destroy()
+        expect(flow.getSnapshot().slow).toBe(false)
         await vi.advanceTimersByTimeAsync(5_000)
         expect(w.listeners.size).toBe(0)
         expect(events.error).not.toHaveBeenCalled()
@@ -233,22 +248,51 @@ describe('the connect flow', () => {
         expect(flow.getSnapshot()).toMatchObject({ status: 'connected', account: { accountId: 'acc-legacy' } })
     })
 
-    it('start opens on the chooser, or straight on the only or named provider; nothing works without credentials', async () => {
-        const many = make()
-        many.flow.start()
-        expect(many.flow.getSnapshot()).toMatchObject({ status: 'choosing', providers: ['google', 'microsoft', 'zoom'] })
+    it("start reads whose app is asking and the session's providers, then waits for a click; nothing works without credentials", async () => {
+        const { flow, api } = make({ providers: ['google', 'microsoft', 'zoom'] })
+        const loading = flow.start()
+        expect(flow.getSnapshot().status).toBe('loading')
+        await loading
+        expect(api.info).toHaveBeenCalledWith('pcs_token')
+        // Narrowed to the session's own providers; no window opened without a click.
+        expect(flow.getSnapshot()).toMatchObject({ status: 'choosing', app: { name: 'Acme Scheduling' }, providers: ['google', 'microsoft'], reconnect: null })
         expect(w.raw.open).not.toHaveBeenCalled()
+        flow.choose('zoom')
+        expect(flow.getSnapshot()).toMatchObject({ status: 'failed', error: { code: 'CONNECT_INVALID_CONFIG' } })
 
-        const one = make({ providers: ['zoom'] })
-        one.flow.start()
-        expect(one.flow.getSnapshot()).toMatchObject({ status: 'authorizing', provider: 'zoom' })
-
-        const named = make({ provider: 'microsoft' })
-        named.flow.start()
-        expect(named.flow.getSnapshot().provider).toBe('microsoft')
+        const legacy = make({ session: undefined, legacy: { clientId: 'c', tokenName: 't' } })
+        await legacy.flow.start()
+        expect(legacy.flow.getSnapshot()).toMatchObject({ status: 'choosing', app: null })
 
         const none = make({ session: undefined })
         none.flow.choose('google')
         expect(none.flow.getSnapshot()).toMatchObject({ status: 'failed', error: { code: 'CONNECT_INVALID_CONFIG' } })
+    })
+
+    it("a reconnect names the account and its provider; a token function's first token is used for the first attempt", async () => {
+        let n = 0
+        const api = fakeApi({ info: vi.fn(async () => ({ app: { name: 'Acme', iconUrl: null }, providers: ['microsoft'], reconnect: { email: 'bo@contoso.test', provider: 'microsoft' }, loginHint: null, expiresAt: '' })) as any })
+        const { flow } = make({ session: async () => `pcs_${++n}` }, api)
+        await flow.start()
+        expect(flow.getSnapshot()).toMatchObject({ status: 'choosing', provider: 'microsoft', reconnect: { email: 'bo@contoso.test' } })
+        flow.choose('microsoft')
+        await flush()
+        expect(api.authorize).toHaveBeenCalledWith('pcs_1', 'microsoft')
+        expect(n).toBe(1)
+    })
+
+    it('a session that cannot be read fails with the API code; a token function can load again', async () => {
+        const expired = new ConnectError({ code: 'AUTH_INVALID_CONNECT_SESSION', message: 'expired', retryable: false })
+        const fixed = make({}, fakeApi({ info: vi.fn(async () => { throw expired }) as any }))
+        await fixed.flow.start()
+        expect(fixed.flow.getSnapshot()).toMatchObject({ status: 'failed', error: { code: 'AUTH_INVALID_CONNECT_SESSION', retryable: false } })
+
+        const info = vi.fn().mockRejectedValueOnce(expired).mockResolvedValue({ app: { name: 'Acme', iconUrl: null }, providers: ['google'], reconnect: null, loginHint: null, expiresAt: '' })
+        const fresh = make({ session: async () => 'pcs_new' }, fakeApi({ info: info as any }))
+        await fresh.flow.start()
+        expect(fresh.flow.getSnapshot().error).toMatchObject({ retryable: true })
+        fresh.flow.retry()
+        await flush()
+        expect(fresh.flow.getSnapshot()).toMatchObject({ status: 'choosing', providers: ['google'] })
     })
 })

@@ -14,28 +14,38 @@
  *
  * A popup that reads as closed is only a hint: Google's sign-in pages set a
  * Cross-Origin-Opener-Policy, after which `closed` can read true while the
- * person is still signing in. The flow ends on the message, a cancel or the
- * consent timeout; the person can open the window again meanwhile.
+ * person is still signing in. The flow ends on the message or a cancel; the
+ * person can open the window again meanwhile.
+ *
+ * No time limit the person cannot extend (WCAG 2.2): after the consent wait
+ * the flow asks whether they are still there (`slow`) and keeps listening.
+ * Giving up then reports CONNECT_TIMEOUT instead of a plain cancel.
  *
  * `choose()`, `retry()` and `reopen()` open a window, so call them straight
  * from a click: a window opened after an `await` is blocked.
  */
 
-import { ConnectApi, ConnectedAccount, createApi, Provider } from './api'
+import { ConnectApi, ConnectedAccount, createApi, Provider, SessionInfo } from './api'
 import { ConnectError, connectError, ConnectErrorInfo } from './errors'
 
-export type ConnectStatus = 'choosing' | 'authorizing' | 'waiting' | 'completing' | 'connected' | 'failed' | 'cancelled' | 'redirecting'
+export type ConnectStatus = 'loading' | 'choosing' | 'authorizing' | 'waiting' | 'completing' | 'connected' | 'failed' | 'cancelled' | 'redirecting'
 
 export interface ConnectSnapshot {
     status: ConnectStatus
-    /** The providers offered. */
+    /** The providers offered: the widget's list, narrowed to the session's. */
     providers: Provider[]
+    /** Whose app is asking (from the dashboard): sessions only, once loaded. */
+    app: SessionInfo['app'] | null
+    /** A reconnect: the account it is for. */
+    reconnect: SessionInfo['reconnect']
     /** The provider of the current or last attempt. */
     provider: Provider | null
     account: ConnectedAccount | null
     error: ConnectErrorInfo | null
     /** Waiting, and the sign-in window may have been closed: offer to open it again. */
     windowMaybeClosed: boolean
+    /** Waiting past the consent wait: ask whether they are still there (the window may be behind this one). */
+    slow: boolean
 }
 
 export interface LegacyCredentials {
@@ -63,7 +73,7 @@ export interface ConnectFlowOptions {
     provider?: Provider
     /** `popup` (default) or `redirect` (the whole page goes, for popup blockers and mobile). */
     mode?: 'popup' | 'redirect'
-    /** How long to wait for the person at the provider. Default 2 minutes. */
+    /** How long before asking whether the person is still there. Default 60 seconds; the wait goes on. */
     consentTimeoutMs?: number
     /** Origins besides the API's whose callback page may post the result (your own, on your own OAuth app). */
     callbackOrigins?: string[]
@@ -82,12 +92,12 @@ const PROVIDER_NAMES: Record<Provider, string> = { google: 'Google', microsoft: 
 export const createConnectFlow = (opts: ConnectFlowOptions) => {
     const win = opts.window ?? window
     const api = opts.api ?? createApi({ apiUrl: opts.apiUrl ?? 'https://api.pyas.io' })
-    const consentTimeoutMs = opts.consentTimeoutMs ?? 120_000
+    const consentTimeoutMs = opts.consentTimeoutMs ?? 60_000
     // The page's own origin too: a callback page on it (postCallbackResult) could control this page anyway.
     const trusted = new Set([api.origin, win.location.origin, ...(opts.callbackOrigins ?? []).map((o) => new URL(o).origin)])
     const providers = (opts.providers?.length ? opts.providers : ALL_PROVIDERS).filter((p, i, a) => ALL_PROVIDERS.includes(p) && a.indexOf(p) === i)
 
-    let snapshot: ConnectSnapshot = { status: 'choosing', providers, provider: null, account: null, error: null, windowMaybeClosed: false }
+    let snapshot: ConnectSnapshot = { status: opts.session ? 'loading' : 'choosing', providers, app: null, reconnect: null, provider: null, account: null, error: null, windowMaybeClosed: false, slow: false }
     const listeners = new Set<(s: ConnectSnapshot) => void>()
     const set = (patch: Partial<ConnectSnapshot>) => {
         snapshot = { ...snapshot, ...patch }
@@ -119,7 +129,7 @@ export const createConnectFlow = (opts: ConnectFlowOptions) => {
         if (forAttempt !== attempt || destroyed) return
         stopWaiting()
         closePopup()
-        set({ status: 'failed', error: error.toJSON(), windowMaybeClosed: false })
+        set({ status: 'failed', error: error.toJSON(), windowMaybeClosed: false, slow: false })
         opts.onError?.(error.toJSON())
     }
     /** A failure the API answered with: a spent session can be retried only with a new token. */
@@ -134,7 +144,16 @@ export const createConnectFlow = (opts: ConnectFlowOptions) => {
         return e
     }
 
+    // The token start() fetched to read the session's info: the first attempt uses it.
+    let preparedToken: string | null = null
+    // The session's info could not be read: retry() reads it again.
+    let loadFailed = false
     const tokenFor = async (): Promise<string> => {
+        if (preparedToken) {
+            const t = preparedToken
+            preparedToken = null
+            return t
+        }
         if (typeof opts.session === 'function') {
             const fresh = await opts.session()
             if (typeof fresh !== 'string' || !fresh) throw connectError('CONNECT_INVALID_CONFIG', 'The connect session could not be created. Try again.')
@@ -168,7 +187,7 @@ export const createConnectFlow = (opts: ConnectFlowOptions) => {
     }
 
     const finish = async (code: string, state: string, forAttempt: number) => {
-        set({ status: 'completing', windowMaybeClosed: false })
+        set({ status: 'completing', windowMaybeClosed: false, slow: false })
         closePopup()
         try {
             const account = opts.legacy
@@ -183,9 +202,10 @@ export const createConnectFlow = (opts: ConnectFlowOptions) => {
     }
 
     const waitForConsent = (forAttempt: number) => {
-        set({ status: 'waiting', windowMaybeClosed: false })
+        set({ status: 'waiting', windowMaybeClosed: false, slow: false })
         win.addEventListener('message', onMessage)
-        timeout = setTimeout(() => fail(connectError('CONNECT_TIMEOUT'), forAttempt), consentTimeoutMs)
+        // Not an end: a question, and the wait goes on.
+        timeout = setTimeout(() => { if (forAttempt === attempt && !destroyed) set({ slow: true }) }, consentTimeoutMs)
         closedPoll = setInterval(() => {
             let closed = false
             try { closed = !popup || popup.closed } catch { closed = false }
@@ -196,7 +216,7 @@ export const createConnectFlow = (opts: ConnectFlowOptions) => {
     /** Start with a provider. Call it straight from the click. */
     const choose = (provider: Provider) => {
         if (destroyed) return
-        if (!providers.includes(provider)) {
+        if (!snapshot.providers.includes(provider)) {
             fail(connectError('CONNECT_INVALID_CONFIG', `${provider} is not offered here.`), attempt)
             return
         }
@@ -206,10 +226,11 @@ export const createConnectFlow = (opts: ConnectFlowOptions) => {
         }
         stopWaiting()
         closePopup()
+        loadFailed = false
         const forAttempt = ++attempt
         consentUrl = null
         expectedState = null
-        set({ status: (opts.mode ?? 'popup') === 'redirect' ? 'redirecting' : 'authorizing', provider, account: null, error: null, windowMaybeClosed: false })
+        set({ status: (opts.mode ?? 'popup') === 'redirect' ? 'redirecting' : 'authorizing', provider, account: null, error: null, windowMaybeClosed: false, slow: false })
 
         if ((opts.mode ?? 'popup') === 'redirect') {
             if (opts.legacy) {
@@ -263,17 +284,42 @@ export const createConnectFlow = (opts: ConnectFlowOptions) => {
         })()
     }
 
-    return {
+    const flow = {
         getSnapshot: () => snapshot,
         subscribe(listener: (s: ConnectSnapshot) => void) {
             listeners.add(listener)
             return () => { listeners.delete(listener) }
         },
-        /** Opens on the chooser, or straight on a provider when there is only one (call it from the click). */
-        start() {
-            if (opts.provider) return choose(opts.provider)
-            if (providers.length === 1) return choose(providers[0])
-            set({ status: 'choosing', provider: null, account: null, error: null, windowMaybeClosed: false })
+        /**
+         * Reads what to show (sessions: the app, the providers, a reconnect's
+         * account) and lands on the chooser. Opening a provider's window waits
+         * for the person's click on it.
+         */
+        async start() {
+            if (destroyed) return
+            if (!opts.session) {
+                set({ status: 'choosing', provider: null, account: null, error: null, windowMaybeClosed: false, slow: false })
+                return
+            }
+            const forAttempt = ++attempt
+            loadFailed = false
+            set({ status: 'loading', error: null })
+            try {
+                const token = await tokenFor()
+                const info = await api.info(token)
+                if (forAttempt !== attempt || destroyed) return
+                preparedToken = typeof opts.session === 'function' ? token : null
+                const offered = providers.filter((p) => info.providers.includes(p))
+                set({
+                    status: 'choosing', app: info.app, reconnect: info.reconnect,
+                    providers: offered.length ? offered : info.providers,
+                    provider: info.reconnect?.provider ?? opts.provider ?? null,
+                    account: null, error: null, windowMaybeClosed: false, slow: false,
+                })
+            } catch (error) {
+                loadFailed = true
+                fail(sessionFailure(error), forAttempt)
+            }
         },
         choose,
         /** The sign-in window again, while waiting (call it from the click). */
@@ -285,12 +331,18 @@ export const createConnectFlow = (opts: ConnectFlowOptions) => {
                 return
             }
             popup = again
-            set({ windowMaybeClosed: false })
+            set({ windowMaybeClosed: false, slow: false })
+            // Asked again after another full wait.
+            if (timeout) clearTimeout(timeout)
+            const forAttempt = attempt
+            timeout = setTimeout(() => { if (forAttempt === attempt && !destroyed) set({ slow: true }) }, consentTimeoutMs)
         },
         /** After a failure that can be retried: the same provider again (call it from the click). */
         retry() {
             if (snapshot.status !== 'failed' && snapshot.status !== 'cancelled') return
             if (snapshot.error && !snapshot.error.retryable) return
+            // The session's info never loaded: load it again (no window to open yet).
+            if (loadFailed) return void flow.start()
             if (snapshot.provider) choose(snapshot.provider)
             else set({ status: 'choosing', error: null })
         },
@@ -299,15 +351,18 @@ export const createConnectFlow = (opts: ConnectFlowOptions) => {
             attempt++
             stopWaiting()
             closePopup()
-            set({ status: 'choosing', provider: null, error: null, account: null, windowMaybeClosed: false })
+            set({ status: 'choosing', provider: null, error: null, account: null, windowMaybeClosed: false, slow: false })
         },
         cancel() {
             if (snapshot.status === 'connected' || snapshot.status === 'cancelled') return
+            // Giving up after being asked whether they were still there: the wait timed out.
+            const gaveUp = snapshot.status === 'waiting' && snapshot.slow
             attempt++
             stopWaiting()
             closePopup()
-            set({ status: 'cancelled', windowMaybeClosed: false })
-            opts.onCancel?.()
+            set({ status: 'cancelled', windowMaybeClosed: false, slow: false })
+            if (gaveUp) opts.onError?.(connectError('CONNECT_TIMEOUT').toJSON())
+            else opts.onCancel?.()
         },
         /** Everything this flow started, stopped: listeners, timers, the window. */
         destroy() {
@@ -318,6 +373,7 @@ export const createConnectFlow = (opts: ConnectFlowOptions) => {
             listeners.clear()
         },
     }
+    return flow
 }
 
 export type ConnectFlow = ReturnType<typeof createConnectFlow>

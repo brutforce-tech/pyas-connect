@@ -23,13 +23,22 @@ export interface ConnectedAccount {
     existing?: boolean
 }
 
+export interface SessionInfo {
+    app: { name: string; iconUrl: string | null }
+    providers: Provider[]
+    /** A reconnect: the account it is for. */
+    reconnect: { email: string | null; provider: Provider } | null
+    loginHint: string | null
+    expiresAt: string
+}
+
 export interface ApiOptions {
     /** Where the Pyas API is: production, a sandbox, a preview or a local API. */
     apiUrl: string
     fetch?: typeof fetch
     /** Per request. Default 15 seconds. */
     requestTimeoutMs?: number
-    /** Retries for the consent URL. Default 2. */
+    /** Retries for the consent URL. Default 3. */
     retries?: number
     sleep?: (ms: number) => Promise<void>
 }
@@ -40,7 +49,7 @@ export const createApi = (opts: ApiOptions) => {
     const base = opts.apiUrl.replace(/\/+$/, '')
     const doFetch = opts.fetch ?? ((...args: Parameters<typeof fetch>) => fetch(...args))
     const timeoutMs = opts.requestTimeoutMs ?? 15_000
-    const retries = opts.retries ?? 2
+    const retries = opts.retries ?? 3
     const sleep = opts.sleep ?? defaultSleep
 
     const once = async (method: 'GET' | 'POST', path: string, body?: unknown): Promise<{ status: number; body: any; retryAfterMs: number | null }> => {
@@ -87,6 +96,10 @@ export const createApi = (opts: ApiOptions) => {
     }
 
     return {
+        /** Sessions: what to show before anyone signs in (the app's name and icon, the providers, a reconnect's account). */
+        info: (token: string) =>
+            request<SessionInfo>('POST', '/v2/connect/info', { token }, true),
+
         /** Sessions: the consent URL for one of the session's providers (each call is a new attempt). */
         authorize: (token: string, provider?: Provider) =>
             request<{ provider: Provider; url: string; expiresAt: string }>('POST', '/v2/connect/authorize', { token, ...(provider ? { provider } : {}) }, true),
