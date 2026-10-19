@@ -47,7 +47,7 @@
     "vue": "^3.0.0"
   },
   "dependencies": {
-    "@pyas/connect": "^2.0.0-alpha.0"
+    "@pyas/connect": "2.0.0-alpha.0"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.1",

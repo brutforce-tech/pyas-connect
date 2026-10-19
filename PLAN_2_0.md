@@ -8,7 +8,7 @@ build. Epic branch `connect-v2`; one `v2/connect-…` branch per step.
 | 1 | `v2/connect-1-core` | `@pyas/connect-core`: the flow as a framework-free state machine (sessions and legacy keys, popup and redirect, every timeout, retry and cleanup), unit tests | Done |
 | 2 | `v2/connect-2-component` | `<pyas-connect>` rebuilt on the core: every state designed, dialog or inline, light and dark, WCAG 2.2 AA, component tests | Done |
 | 3 | `v2/connect-3-wrappers` | React, Vue and Angular wrappers over the one element; 1.x props and events still work | Done |
-| 4 | `v2/connect-4-release` | Release on a version tag (not every push), MIT license, README rewritten, bundle budget (25 KB gzipped) in CI | |
+| 4 | `v2/connect-4-release` | Release on a version tag (not every push), MIT license, README rewritten, bundle budget (25 KB gzipped) in CI | Done |
 | 5 | `v2/connect-5-e2e` | Playwright against the local API in a React, a Vue and an Angular example; visual regression and axe on every state | |
 
 ## How a connection runs
@@ -84,3 +84,21 @@ differs, and why:
   `show-disclaimer`, `form-title`, `form-description`) are accepted.
 - Angular has no unit tests of its own: it is covered by step 5's end-to-end
   runs in an Angular example.
+
+## Step 4 notes
+
+- **One version for every package**, set with `npm run version:set -- X`
+  (internal dependencies follow). Lerna is gone: the root `build`, `test` and
+  `size` scripts run the five packages in order.
+- **Publishing happens on a `v*` tag only** (`release.yml`): it checks the tag
+  matches the packages' version, builds, tests, checks the size, then publishes
+  with provenance. A pre-release version goes to npm's `next` tag. The
+  repository needs an `NPM_TOKEN` secret (an npm automation token) before the
+  first tag; it is not set yet.
+- **CI** (`ci.yml`) builds, tests and checks the bundle budget on every push to
+  `master` and `connect-v2` and on pull requests. Today: 15.4 KB gzipped for
+  the element with the core, plus Stencil's runtime (16.7 KB), which the
+  budget does not count because a page with other Stencil components shares it.
+- Each package ships `LICENSE.md` (MIT) and a short README pointing at the full
+  guide in the root README. `@pyas/connect` installs at 2.3 MB unpacked, as
+  1.x did; source maps are most of it, and none of it reaches the browser.

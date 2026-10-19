@@ -18,7 +18,7 @@
     "google api"
   ],
   "scripts": {
-    "build": "ng build connect-angular --configuration production"
+    "build": "cd ../.. && ng build connect-angular --configuration production"
   },
   "author": "Pyas Team <support@pyas.io>",
   "homepage": "https://github.com/brutforce-tech/pyas-connect",
@@ -35,7 +35,7 @@
     "rxjs": "^7.0.0"
   },
   "dependencies": {
-    "@pyas/connect": "^2.0.0-alpha.0"
+    "@pyas/connect": "2.0.0-alpha.0"
   },
   "devDependencies": {
     "@angular/compiler": "^19.0.0",

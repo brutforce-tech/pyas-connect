@@ -1,0 +1,33 @@
+name: Release
+
+# Publishing happens only when a version tag is pushed (v2.0.0, v2.0.0-rc.1),
+# never on a merge. The tag must match every package's version
+# (npm run version:set -- 2.0.0, commit, tag). A pre-release goes to npm's
+# `next` tag, so `latest` stays on the last release.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  id-token: write # npm provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - run: npm run size
+      - run: npm run release -- "${GITHUB_REF_NAME}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
