@@ -1,0 +1,31 @@
+{
+  "name": "@pyas/connect-core",
+  "version": "2.0.0-alpha.0",
+  "description": "The PyasConnect flow without a UI: connect sessions (and 1.x keys), popup and redirect, with every timeout, retry and cleanup. Framework-free, no runtime dependencies.",
+  "author": "Pyas Team <support@pyas.io>",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist/"],
+  "publishConfig": { "access": "public" },
+  "repository": { "type": "git", "url": "https://github.com/brutforce-tech/pyas-connect.git", "directory": "packages/connect-core" },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "jsdom": "^25.0.1",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}
