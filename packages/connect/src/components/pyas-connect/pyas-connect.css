@@ -23,14 +23,6 @@
     --pyas-connect-radius: 14px;
     --pyas-connect-font: inherit;
 
-    /* The providers' own button colors (their branding guidelines). */
-    --pc-google-bg: #ffffff;
-    --pc-google-border: #747775;
-    --pc-google-text: #1f1f1f;
-    --pc-ms-bg: #ffffff;
-    --pc-ms-border: #8c8c8c;
-    --pc-ms-text: #5e5e5e;
-
     display: inline-block;
     font-family: var(--pyas-connect-font);
 }
@@ -54,12 +46,6 @@
     --pyas-connect-success-subtle: #10301f;
     --pyas-connect-focus: #c9c7ff;
     --pyas-connect-overlay: rgba(0, 0, 0, 0.6);
-    --pc-google-bg: #131314;
-    --pc-google-border: #8e918f;
-    --pc-google-text: #e3e3e3;
-    --pc-ms-bg: #2f2f2f;
-    --pc-ms-border: #2f2f2f;
-    --pc-ms-text: #ffffff;
 }
 @media (prefers-color-scheme: dark) {
     :host([theme='auto']) {
@@ -79,12 +65,6 @@
         --pyas-connect-success-subtle: #10301f;
         --pyas-connect-focus: #c9c7ff;
         --pyas-connect-overlay: rgba(0, 0, 0, 0.6);
-        --pc-google-bg: #131314;
-        --pc-google-border: #8e918f;
-        --pc-google-text: #e3e3e3;
-        --pc-ms-bg: #2f2f2f;
-        --pc-ms-border: #2f2f2f;
-        --pc-ms-text: #ffffff;
     }
 }
 
@@ -164,18 +144,18 @@ button:focus-visible, input:focus-visible, a:focus-visible, .dialog:focus-visibl
 /* Centered screens still give their buttons the dialog's full width, as the chooser does. */
 .centered .actions { align-self: stretch; }
 
-/* Provider buttons: each provider's own look. */
+/* Provider buttons: the product's icon and name, alike for every provider. */
 .provider {
-    display: flex; align-items: center; justify-content: center; gap: 12px; position: relative;
-    width: 100%; min-height: 44px; padding: 0 16px; border-radius: 10px; cursor: pointer;
-    font-weight: 500; font-size: 15px; border: 1px solid;
+    display: flex; align-items: center; gap: 12px;
+    width: 100%; min-height: 48px; padding: 0 12px 0 14px; border-radius: 10px; cursor: pointer;
+    border: 1px solid var(--pyas-connect-border-strong); background: var(--pyas-connect-surface); color: var(--pyas-connect-text);
+    font: inherit; font-weight: 500; font-size: 15px; text-align: left;
 }
-.provider .mark { width: 20px; height: 20px; position: absolute; left: 14px; }
-.provider.google { background: var(--pc-google-bg); border-color: var(--pc-google-border); color: var(--pc-google-text); font-family: Roboto, var(--pyas-connect-font), sans-serif; }
-.provider.microsoft { background: var(--pc-ms-bg); border-color: var(--pc-ms-border); color: var(--pc-ms-text); font-family: 'Segoe UI', var(--pyas-connect-font), sans-serif; font-weight: 600; }
-.provider.zoom { background: var(--pyas-connect-surface); border-color: var(--pyas-connect-border-strong); color: var(--pyas-connect-text); }
-.provider:hover { filter: brightness(0.97); }
-:host([theme='dark']) .provider:hover { filter: brightness(1.15); }
+.mark > svg { display: block; width: 100%; height: 100%; }
+.provider .mark { width: 24px; height: 24px; flex: none; }
+.provider .label { flex: 1; }
+.provider .chevron { width: 16px; height: 16px; flex: none; color: var(--pyas-connect-muted); }
+.provider:hover { background: var(--pyas-connect-subtle); }
 
 .primary, .secondary {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;

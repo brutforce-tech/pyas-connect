@@ -23,7 +23,7 @@ test('the playground connects a calendar with a session its server makes', async
     const dialog = page.getByRole('dialog')
     await expect(dialog).toContainText(seedState().appName)
     const popup = page.waitForEvent('popup')
-    await dialog.getByRole('button', { name: 'Continue with Google' }).click()
+    await dialog.getByRole('button', { name: 'Google Calendar' }).click()
     await (await popup).getByRole('button', { name: 'Allow' }).click()
     await expect(dialog.getByRole('heading', { name: 'Account connected' })).toBeVisible()
     await expect(page.locator('#events')).toContainText('play@example.test')

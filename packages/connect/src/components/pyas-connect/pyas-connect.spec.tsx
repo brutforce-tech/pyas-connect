@@ -66,9 +66,9 @@ describe('<pyas-connect>', () => {
         expect(dialog.getAttribute('aria-modal')).toBe('true')
         expect(t.shadow().getElementById(dialog.getAttribute('aria-labelledby')!)!.textContent).toBe('Connect an account')
         expect(t.text()).toContain('Acme Scheduling sees only what you allow on the next screen.')
-        expect(t.buttons()).toEqual(expect.arrayContaining(['Continue with Google', 'Continue with Microsoft']))
+        expect(t.buttons()).toEqual(expect.arrayContaining(['Google Calendar', 'Outlook']))
         expect(t.shadow().querySelector('.footer')!.textContent).toContain('Powered by Pyas')
-        await t.click('Continue with Google')
+        await t.click('Google Calendar')
         expect(t.flow().choose).toHaveBeenCalledWith('google')
     })
 
@@ -77,8 +77,8 @@ describe('<pyas-connect>', () => {
         await t.click('Connect an account')
         await t.set({ status: 'choosing', provider: 'microsoft', reconnect: { email: 'bo@contoso.test', provider: 'microsoft' } })
         expect(t.text()).toContain('Reconnect your account')
-        expect(t.text()).toContain('Your Microsoft connection for bo@contoso.test stopped working.')
-        await t.click('Reconnect Microsoft')
+        expect(t.text()).toContain('Your Outlook connection for bo@contoso.test stopped working.')
+        await t.click('Reconnect Outlook')
         expect(t.flow().choose).toHaveBeenCalledWith('microsoft')
     })
 
@@ -184,7 +184,7 @@ describe('<pyas-connect>', () => {
         expect(t.flow().opts.session).toBeUndefined()
         await t.set({ status: 'choosing', app: null })
         expect(t.text()).toContain('Acme sees only what you allow')
-        await t.click('Continue with Google')
+        await t.click('Google Calendar')
         expect(t.text()).toContain('Your details')
         // The test DOM does not submit a form from its button; a browser does.
         const submit = async () => { t.shadow().querySelector('form')!.dispatchEvent(new Event('submit')); await t.p.waitForChanges() }

@@ -14,13 +14,14 @@ export const DEFAULT_STRINGS = {
 
     chooseTitle: 'Connect an account',
     chooseIntro: '{app} sees only what you allow on the next screen.',
-    continueWith: 'Continue with {provider}',
-    connectZoom: 'Connect Zoom',
+    googleButton: 'Google Calendar',
+    microsoftButton: 'Outlook',
+    zoomButton: 'Zoom',
 
     reconnectTitle: 'Reconnect your account',
-    reconnectIntro: 'Your {provider} connection for {email} stopped working. Reconnect it to keep it working.',
-    reconnectIntroNoEmail: 'Your {provider} connection stopped working. Reconnect it to keep it working.',
-    reconnectButton: 'Reconnect {provider}',
+    reconnectIntro: 'Your {calendar} connection for {email} stopped working. Reconnect it to continue.',
+    reconnectIntroNoEmail: 'Your {calendar} connection stopped working. Reconnect it to continue.',
+    reconnectButton: 'Reconnect {calendar}',
 
     detailsTitle: 'Your details',
     detailsName: 'Name',
@@ -71,7 +72,7 @@ export const DEFAULT_STRINGS = {
 
 export type PyasConnectStrings = typeof DEFAULT_STRINGS
 
-const CALENDAR_NAMES: Record<string, string> = { google: 'Google Calendar', microsoft: 'Outlook Calendar', zoom: 'Zoom' }
+const CALENDAR_NAMES: Record<string, string> = { google: 'Google Calendar', microsoft: 'Outlook', zoom: 'Zoom' }
 const PROVIDER_NAMES: Record<string, string> = { google: 'Google', microsoft: 'Microsoft', zoom: 'Zoom' }
 
 export const providerName = (provider: string | null | undefined) => (provider ? PROVIDER_NAMES[provider] ?? provider : '')

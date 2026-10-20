@@ -1,6 +1,6 @@
 import { Component, Element, Event, EventEmitter, h, Host, Method, Prop, State, Watch } from '@stencil/core'
 import { createConnectFlow, ConnectFlow, ConnectFlowOptions, ConnectSnapshot, ConnectErrorInfo, ConnectedAccount, Provider } from '@pyas/connect-core'
-import { AlertGlyph, CheckGlyph, CloseGlyph, providerMark } from './marks'
+import { AlertGlyph, CheckGlyph, ChevronGlyph, CloseGlyph, providerMark } from './marks'
 import { calendarName, DEFAULT_STRINGS, fill, providerName, PyasConnectStrings } from './strings'
 
 const ALL: Provider[] = ['google', 'microsoft', 'zoom']
@@ -336,11 +336,12 @@ export class PyasConnect {
     }
 
     private providerButton(provider: Provider) {
-        const label = provider === 'zoom' ? this.t.connectZoom : fill(this.t.continueWith, { provider: providerName(provider) })
+        const label = provider === 'google' ? this.t.googleButton : provider === 'microsoft' ? this.t.microsoftButton : this.t.zoomButton
         return (
             <button type="button" class={`provider ${provider}`} part="provider-button" onClick={() => this.choose(provider)}>
                 {providerMark(provider)}
-                <span>{label}</span>
+                <span class="label">{label}</span>
+                <ChevronGlyph />
             </button>
         )
     }

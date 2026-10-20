@@ -24,7 +24,7 @@ test('connects a Google calendar, and the page hears about it', async ({ page, c
     const dialog = await openWidget(page)
     await expect(dialog).toContainText(seedState().appName)
     const popup = page.waitForEvent('popup')
-    await dialog.getByRole('button', { name: 'Continue with Google' }).click()
+    await dialog.getByRole('button', { name: 'Google Calendar' }).click()
     const signIn = await popup
     await expect(dialog.getByRole('heading', { name: 'Continue in Google' })).toBeVisible()
     await signIn.getByRole('button', { name: 'Allow' }).click()
@@ -46,7 +46,7 @@ test('a refusal at the provider can be tried again in place', async ({ page, con
     const dialog = await openWidget(page)
 
     let popup = page.waitForEvent('popup')
-    await dialog.getByRole('button', { name: 'Continue with Google' }).click()
+    await dialog.getByRole('button', { name: 'Google Calendar' }).click()
     await (await popup).getByRole('button', { name: 'Cancel' }).click()
     await expect(dialog.getByRole('heading', { name: "Access wasn't granted" })).toBeVisible()
     // Not sent yet: the person can still recover here.
@@ -64,7 +64,7 @@ test('giving up after a refusal sends the error to the page', async ({ page, con
     await page.goto(examplePath({ token: await makeSession(request) }))
     const dialog = await openWidget(page)
     const popup = page.waitForEvent('popup')
-    await dialog.getByRole('button', { name: 'Continue with Google' }).click()
+    await dialog.getByRole('button', { name: 'Google Calendar' }).click()
     await (await popup).getByRole('button', { name: 'Cancel' }).click()
     await expect(dialog.getByRole('heading', { name: "Access wasn't granted" })).toBeVisible()
 
@@ -89,7 +89,7 @@ test('a session that was already used is reported at once', async ({ page, conte
     await page.goto(examplePath({ token }))
     let dialog = await openWidget(page)
     const popup = page.waitForEvent('popup')
-    await dialog.getByRole('button', { name: 'Continue with Google' }).click()
+    await dialog.getByRole('button', { name: 'Google Calendar' }).click()
     await (await popup).getByRole('button', { name: 'Allow' }).click()
     await expect(dialog.getByRole('heading', { name: 'Account connected' })).toBeVisible()
 
@@ -113,7 +113,7 @@ test('with a session per attempt, an expired sign-in is tried again without relo
 
     provider.signInAs('e2e-expired')
     let popup = page.waitForEvent('popup')
-    await dialog.getByRole('button', { name: 'Continue with Google' }).click()
+    await dialog.getByRole('button', { name: 'Google Calendar' }).click()
     await (await popup).getByRole('button', { name: 'Allow' }).click()
     await expect(dialog.getByRole('heading', { name: "We couldn't connect your account" })).toBeVisible()
 
@@ -134,7 +134,7 @@ test('opened from the page\'s own button', async ({ page, context, request }) =>
     await expect(page.getByRole('dialog', { name: 'Connect an account' })).toBeVisible()
     const dialog = page.getByRole('dialog')
     const popup = page.waitForEvent('popup')
-    await dialog.getByRole('button', { name: 'Continue with Google' }).click()
+    await dialog.getByRole('button', { name: 'Google Calendar' }).click()
     await (await popup).getByRole('button', { name: 'Allow' }).click()
     await expect(dialog.getByRole('heading', { name: 'Account connected' })).toBeVisible()
 })
@@ -145,7 +145,7 @@ test('1.x keys (client id and token name) still connect', async ({ page, context
     const { clientId, tokenName } = seedState()
     await page.goto(examplePath({ clientId, tokenName }))
     const dialog = await openWidget(page)
-    await dialog.getByRole('button', { name: 'Continue with Google' }).click()
+    await dialog.getByRole('button', { name: 'Google Calendar' }).click()
     // 1.x asked for the person's name and email when the page gave none; 2.0 still does.
     await expect(dialog.getByRole('heading', { name: 'Your details' })).toBeVisible()
     await dialog.getByLabel('Name').fill('Lee Gacy')
