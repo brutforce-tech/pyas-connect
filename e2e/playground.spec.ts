@@ -19,19 +19,19 @@ test('the playground connects a calendar with a session its server makes', async
     await page.goto(PLAYGROUND.url)
     await expect(page.getByText('API http://localhost:3998')).toBeVisible()
 
-    await page.getByRole('button', { name: 'Connect a calendar' }).click()
+    await page.getByRole('button', { name: 'Connect an account' }).click()
     const dialog = page.getByRole('dialog')
     await expect(dialog).toContainText(seedState().appName)
     const popup = page.waitForEvent('popup')
     await dialog.getByRole('button', { name: 'Continue with Google' }).click()
     await (await popup).getByRole('button', { name: 'Allow' }).click()
-    await expect(dialog.getByRole('heading', { name: 'Calendar connected' })).toBeVisible()
+    await expect(dialog.getByRole('heading', { name: 'Account connected' })).toBeVisible()
     await expect(page.locator('#events')).toContainText('play@example.test')
     expect(sessions).toBeGreaterThanOrEqual(1)
 
     // Settings rebuild the widget, as a page re-rendering it would.
     await dialog.getByRole('button', { name: 'Done' }).click()
     await page.getByText('Inline', { exact: true }).click()
-    await expect(page.getByRole('heading', { name: 'Connect your calendar' })).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Connect a calendar' })).toHaveCount(0)
+    await expect(page.getByRole('heading', { name: 'Connect an account' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Connect an account' })).toHaveCount(0)
 })

@@ -57,26 +57,26 @@ const page = async (html = '<pyas-connect session-token="pcs_t"></pyas-connect>'
 describe('<pyas-connect>', () => {
     it('a trigger opens a labelled modal dialog on the chooser, the developer\'s name first, Pyas in the footer', async () => {
         const t = await page()
-        expect(t.buttons()).toEqual(['Connect a calendar'])
-        await t.click('Connect a calendar')
+        expect(t.buttons()).toEqual(['Connect an account'])
+        await t.click('Connect an account')
         expect(t.flow().opts).toMatchObject({ session: 'pcs_t', providers: ['google', 'microsoft', 'zoom'] })
         expect(t.flow().start).toHaveBeenCalled()
         await t.set({ status: 'choosing' })
         const dialog = t.shadow().querySelector('[role="dialog"]')!
         expect(dialog.getAttribute('aria-modal')).toBe('true')
-        expect(t.shadow().getElementById(dialog.getAttribute('aria-labelledby')!)!.textContent).toBe('Connect your calendar')
+        expect(t.shadow().getElementById(dialog.getAttribute('aria-labelledby')!)!.textContent).toBe('Connect an account')
         expect(t.text()).toContain('Acme Scheduling sees only what you allow on the next screen.')
         expect(t.buttons()).toEqual(expect.arrayContaining(['Continue with Google', 'Continue with Microsoft']))
-        expect(t.shadow().querySelector('.footer')!.textContent).toContain('Secured by Pyas')
+        expect(t.shadow().querySelector('.footer')!.textContent).toContain('Powered by Pyas')
         await t.click('Continue with Google')
         expect(t.flow().choose).toHaveBeenCalledWith('google')
     })
 
     it('a reconnect names the account and goes straight to its provider', async () => {
         const t = await page()
-        await t.click('Connect a calendar')
+        await t.click('Connect an account')
         await t.set({ status: 'choosing', provider: 'microsoft', reconnect: { email: 'bo@contoso.test', provider: 'microsoft' } })
-        expect(t.text()).toContain('Reconnect your calendar')
+        expect(t.text()).toContain('Reconnect your account')
         expect(t.text()).toContain('Your Microsoft connection for bo@contoso.test stopped working.')
         await t.click('Reconnect Microsoft')
         expect(t.flow().choose).toHaveBeenCalledWith('microsoft')
@@ -84,7 +84,7 @@ describe('<pyas-connect>', () => {
 
     it('waiting names the window and offers it again; after the wait it asks whether they are still there', async () => {
         const t = await page()
-        await t.click('Connect a calendar')
+        await t.click('Connect an account')
         await t.set({ status: 'waiting', provider: 'google' })
         expect(t.text()).toContain('Continue in Google')
         expect(t.text()).toContain('Allow access in the window that opened, then come back.')
@@ -95,17 +95,17 @@ describe('<pyas-connect>', () => {
         expect(t.buttons()).toEqual(expect.arrayContaining(['Open it again', 'Start over']))
         await t.set({ slow: false, windowMaybeClosed: true })
         expect(t.text()).toContain('Did the window close?')
-        await t.click('Choose another calendar')
+        await t.click('Choose another account')
         expect(t.flow().back).toHaveBeenCalled()
     })
 
     it('connected shows which account, and the page hears at once (1.x event too)', async () => {
         const t = await page()
-        await t.click('Connect a calendar')
+        await t.click('Connect an account')
         const account = { accountId: 'acc-1', provider: 'google', email: 'ana@acme.test', name: 'Ana', subjectId: 'u1' }
         t.flow().opts.onConnected(account)
         await t.set({ status: 'connected', provider: 'google', account })
-        expect(t.text()).toContain('Calendar connected')
+        expect(t.text()).toContain('Account connected')
         expect(t.text()).toContain('ana@acme.test')
         expect(t.text()).toContain('Google Calendar')
         expect(t.events.connected).toEqual([{ accountId: 'acc-1', provider: 'google', email: 'ana@acme.test', name: 'Ana', subjectId: 'u1' }])
@@ -117,12 +117,12 @@ describe('<pyas-connect>', () => {
 
     it('a refusal offers a way forward and is reported only if they give up', async () => {
         const t = await page()
-        await t.click('Connect a calendar')
+        await t.click('Connect an account')
         const denied = { code: 'CONNECT_CONSENT_DENIED', message: 'Access was not allowed.', retryable: true }
         t.flow().opts.onError(denied)
         await t.set({ status: 'failed', provider: 'google', error: denied })
         expect(t.text()).toContain("Access wasn't granted")
-        expect(t.text()).toContain("Google didn't share your calendar.")
+        expect(t.text()).toContain("Google didn't grant access.")
         expect(t.events.error).toHaveLength(0)
         await t.click('Try again')
         expect(t.flow().retry).toHaveBeenCalled()
@@ -136,7 +136,7 @@ describe('<pyas-connect>', () => {
 
     it('an expired session is reported at once (the page makes a new one), and never shows the API\'s words', async () => {
         const t = await page()
-        await t.click('Connect a calendar')
+        await t.click('Connect an account')
         const expired = { code: 'AUTH_INVALID_CONNECT_SESSION', message: 'The connect session is missing, invalid, expired or already used.', retryable: false }
         t.flow().opts.onError(expired)
         await t.set({ status: 'failed', error: expired })
@@ -149,7 +149,7 @@ describe('<pyas-connect>', () => {
 
     it('closing without connecting is a cancel; Escape closes too and focus goes back', async () => {
         const t = await page()
-        await t.click('Connect a calendar')
+        await t.click('Connect an account')
         await t.set({ status: 'choosing' })
         const dialog = t.shadow().querySelector('.dialog') as HTMLElement
         dialog.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
@@ -164,7 +164,7 @@ describe('<pyas-connect>', () => {
         expect(t.flow().start).toHaveBeenCalled()
         await t.set({ status: 'choosing' })
         expect(t.shadow().querySelector('[role="region"]')).not.toBeNull()
-        expect(t.buttons()).not.toContain('Connect a calendar')
+        expect(t.buttons()).not.toContain('Connect an account')
         expect(t.shadow().querySelector('.close')).toBeNull()
     })
 
@@ -179,7 +179,7 @@ describe('<pyas-connect>', () => {
 
     it('1.x keys: the flow gets them, and a page without a name and email asks for them first', async () => {
         const t = await page('<pyas-connect client-id="client-1" token-name="web" product-name="Acme"></pyas-connect>')
-        await t.click('Connect a calendar')
+        await t.click('Connect an account')
         expect(t.flow().opts.legacy).toMatchObject({ clientId: 'client-1', tokenName: 'web' })
         expect(t.flow().opts.session).toBeUndefined()
         await t.set({ status: 'choosing', app: null })

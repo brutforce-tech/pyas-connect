@@ -25,15 +25,15 @@ const check = async (page: Page, name: string) => {
 }
 
 const open = async (page: Page) => {
-    await page.getByRole('button', { name: 'Connect a calendar' }).click()
-    await expect(page.getByRole('dialog', { name: 'Connect your calendar' })).toBeVisible()
+    await page.getByRole('button', { name: 'Connect an account' }).click()
+    await expect(page.getByRole('dialog', { name: 'Connect an account' })).toBeVisible()
     await expect(page.getByRole('dialog')).toContainText(seedState().appName)
     return page.getByRole('dialog')
 }
 
 test('the trigger, in the page', async ({ page, request }) => {
     await page.goto(examplePath({ token: await makeSession(request) }))
-    await expect(page.getByRole('button', { name: 'Connect a calendar' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Connect an account' })).toBeVisible()
     await check(page, 'trigger')
 })
 
@@ -72,14 +72,14 @@ test.describe('on a phone', () => {
         const popup = page.waitForEvent('popup')
         await dialog.getByRole('button', { name: 'Continue with Google' }).click()
         await (await popup).getByRole('button', { name: 'Allow' }).click()
-        await expect(dialog.getByRole('heading', { name: 'Calendar connected' })).toBeVisible()
+        await expect(dialog.getByRole('heading', { name: 'Account connected' })).toBeVisible()
         await check(page, 'phone-connected')
     })
 })
 
 test('inline, in the page', async ({ page, request }) => {
     await page.goto(examplePath({ token: await makeSession(request), display: 'inline' }))
-    await expect(page.getByRole('heading', { name: 'Connect your calendar' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Connect an account' })).toBeVisible()
     await expect(page.locator('pyas-connect')).toContainText(seedState().appName)
     await check(page, 'inline')
 })
@@ -120,7 +120,7 @@ test('connected', async ({ page, context, request }) => {
     const popup = page.waitForEvent('popup')
     await dialog.getByRole('button', { name: 'Continue with Google' }).click()
     await (await popup).getByRole('button', { name: 'Allow' }).click()
-    await expect(dialog.getByRole('heading', { name: 'Calendar connected' })).toBeVisible()
+    await expect(dialog.getByRole('heading', { name: 'Account connected' })).toBeVisible()
     await check(page, 'connected')
 })
 
@@ -135,7 +135,7 @@ test('the browser blocked the sign-in window', async ({ page, request }) => {
 
 test('an expired session', async ({ page }) => {
     await page.goto(examplePath({ token: 'pcs_not-a-real-session' }))
-    await page.getByRole('button', { name: 'Connect a calendar' }).click()
+    await page.getByRole('button', { name: 'Connect an account' }).click()
     await expect(page.getByRole('heading', { name: 'This sign-in link has expired' })).toBeVisible()
     await check(page, 'expired')
 })
@@ -143,7 +143,7 @@ test('an expired session', async ({ page }) => {
 test('1.x: the details screen, with its errors', async ({ page }) => {
     const { clientId, tokenName } = seedState()
     await page.goto(examplePath({ clientId, tokenName }))
-    await page.getByRole('button', { name: 'Connect a calendar' }).click()
+    await page.getByRole('button', { name: 'Connect an account' }).click()
     const dialog = page.getByRole('dialog')
     await dialog.getByRole('button', { name: 'Continue with Google' }).click()
     await expect(dialog.getByRole('heading', { name: 'Your details' })).toBeVisible()
@@ -160,14 +160,14 @@ test('reconnecting an account', async ({ page, request }) => {
         json: { success: true, data: { app: { name: seedState().appName, iconUrl: null }, providers: ['google'], reconnect: { email: 'maria@example.test', provider: 'google' }, loginHint: 'maria@example.test', expiresAt: new Date(Date.now() + 600_000).toISOString() } },
     }))
     await page.goto(examplePath({ token: await makeSession(request) }))
-    await page.getByRole('button', { name: 'Connect a calendar' }).click()
-    await expect(page.getByRole('heading', { name: 'Reconnect your calendar' })).toBeVisible()
+    await page.getByRole('button', { name: 'Connect an account' }).click()
+    await expect(page.getByRole('heading', { name: 'Reconnect your account' })).toBeVisible()
     await check(page, 'reconnect')
 })
 
 test('keyboard: focus moves into the dialog, stays there, and Escape returns it', async ({ page, request }) => {
     await page.goto(examplePath({ token: await makeSession(request) }))
-    const trigger = page.getByRole('button', { name: 'Connect a calendar' })
+    const trigger = page.getByRole('button', { name: 'Connect an account' })
     await trigger.focus()
     await page.keyboard.press('Enter')
     const dialog = page.getByRole('dialog')

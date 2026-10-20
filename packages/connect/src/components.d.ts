@@ -78,7 +78,7 @@ export namespace Components {
          */
         "sessionToken"?: string;
         /**
-          * 1.x, accepted and unused: "Secured by Pyas" always shows (which plans may hide is open, plan §59).
+          * 1.x, accepted and unused: "Powered by Pyas" always shows (which plans may hide is open, plan §59).
          */
         "showDisclaimer"?: boolean;
         /**
@@ -234,7 +234,7 @@ declare namespace LocalJSX {
          */
         "sessionToken"?: string;
         /**
-          * 1.x, accepted and unused: "Secured by Pyas" always shows (which plans may hide is open, plan §59).
+          * 1.x, accepted and unused: "Powered by Pyas" always shows (which plans may hide is open, plan §59).
          */
         "showDisclaimer"?: boolean;
         /**

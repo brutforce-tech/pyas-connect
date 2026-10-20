@@ -57,9 +57,3 @@ export const AlertGlyph = () => (
     </svg>
 )
 
-export const LockGlyph = () => (
-    <svg class="glyph" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-        <rect x="3.5" y="7" width="9" height="6.5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.3" />
-        <path d="M5.5 7V5.25a2.5 2.5 0 0 1 5 0V7" fill="none" stroke="currentColor" stroke-width="1.3" />
-    </svg>
-)

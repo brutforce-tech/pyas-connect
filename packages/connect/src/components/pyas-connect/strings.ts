@@ -8,18 +8,18 @@
  * failures say what happened in their words, and the developer gets the code.
  */
 export const DEFAULT_STRINGS = {
-    trigger: 'Connect a calendar',
+    trigger: 'Connect an account',
     close: 'Close',
     loading: 'Loading',
 
-    chooseTitle: 'Connect your calendar',
+    chooseTitle: 'Connect an account',
     chooseIntro: '{app} sees only what you allow on the next screen.',
     continueWith: 'Continue with {provider}',
     connectZoom: 'Connect Zoom',
 
-    reconnectTitle: 'Reconnect your calendar',
-    reconnectIntro: 'Your {provider} connection for {email} stopped working. Reconnect to keep events in sync.',
-    reconnectIntroNoEmail: 'Your {provider} connection stopped working. Reconnect to keep events in sync.',
+    reconnectTitle: 'Reconnect your account',
+    reconnectIntro: 'Your {provider} connection for {email} stopped working. Reconnect it to keep it working.',
+    reconnectIntroNoEmail: 'Your {provider} connection stopped working. Reconnect it to keep it working.',
     reconnectButton: 'Reconnect {provider}',
 
     detailsTitle: 'Your details',
@@ -37,35 +37,35 @@ export const DEFAULT_STRINGS = {
     stillThere: 'Still there? The window may be behind this one.',
     startOver: 'Start over',
     cancel: 'Cancel',
-    chooseAnother: 'Choose another calendar',
+    chooseAnother: 'Choose another account',
     finishing: 'Finishing up',
     redirecting: 'Taking you to {provider}',
 
-    connectedTitle: 'Calendar connected',
+    connectedTitle: 'Account connected',
     done: 'Done',
 
     deniedTitle: "Access wasn't granted",
-    deniedBody: "{provider} didn't share your calendar. Try again or pick another one.",
+    deniedBody: "{provider} didn't grant access. Try again or choose another account.",
     tryAgain: 'Try again',
     blockedTitle: 'Your browser blocked the sign-in window',
     blockedBody: 'Open it with the button below. If it is blocked again, allow pop-ups for this site.',
     openWindow: 'Open window',
-    scopeTitle: 'Calendar access is needed',
-    scopeBody: 'Try again and leave calendar access ticked.',
+    scopeTitle: 'More access is needed',
+    scopeBody: 'Try again and allow everything on the permissions screen.',
     unavailableTitle: "{provider} isn't responding",
     unavailableBody: 'Try again in a few minutes.',
     networkTitle: "We couldn't reach the sign-in service",
     networkBody: 'Check your connection and try again.',
     expiredTitle: 'This sign-in link has expired',
     expiredBody: 'Close this and start again.',
-    limitTitle: "{app} can't add more calendars right now",
+    limitTitle: "{app} can't add more accounts right now",
     limitBody: 'Close this and try again later.',
-    genericTitle: "We couldn't connect your calendar",
+    genericTitle: "We couldn't connect your account",
     genericBody: 'Try again in a moment.',
     configTitle: "This connect button isn't set up yet",
     configBody: 'Let the people who run this site know.',
 
-    securedBy: 'Secured by Pyas',
+    poweredBy: 'Powered by Pyas',
     fallbackApp: 'This app',
 }
 

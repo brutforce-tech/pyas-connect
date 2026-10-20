@@ -8,7 +8,7 @@ with thin wrappers for React, Vue and Angular.
   browser never holds your API key.
 - **Looks like your product.** Your app's name and icon (from the Pyas
   dashboard) come first; it inherits your page's font, follows your theme, and
-  shows a small "Secured by Pyas" line.
+  shows a small "Powered by Pyas" line.
 - **Nobody gets stuck.** Every wait says what is happening, every failure
   offers a way forward, and pop-up blockers and phones are handled.
 - **Accessible.** A real dialog: focus stays inside it, Escape closes it and

@@ -10,9 +10,9 @@ import { playProviders } from './support/provider'
 const events = (page: Page, name: string) => page.locator(`[data-testid="events"] li[data-event="${name}"]`)
 
 const openWidget = async (page: Page) => {
-    await page.getByRole('button', { name: 'Connect a calendar' }).click()
+    await page.getByRole('button', { name: 'Connect an account' }).click()
     // Named after its current heading, so found without the name once open.
-    await expect(page.getByRole('dialog', { name: 'Connect your calendar' })).toBeVisible()
+    await expect(page.getByRole('dialog', { name: 'Connect an account' })).toBeVisible()
     return page.getByRole('dialog')
 }
 
@@ -29,7 +29,7 @@ test('connects a Google calendar, and the page hears about it', async ({ page, c
     await expect(dialog.getByRole('heading', { name: 'Continue in Google' })).toBeVisible()
     await signIn.getByRole('button', { name: 'Allow' }).click()
 
-    await expect(dialog.getByRole('heading', { name: 'Calendar connected' })).toBeVisible()
+    await expect(dialog.getByRole('heading', { name: 'Account connected' })).toBeVisible()
     await expect(dialog).toContainText('maria@example.test')
     await expect(events(page, 'connected')).toContainText('"email":"maria@example.test"')
     await expect(events(page, 'connected')).toContainText('"subjectId":"user_42"')
@@ -55,7 +55,7 @@ test('a refusal at the provider can be tried again in place', async ({ page, con
     popup = page.waitForEvent('popup')
     await dialog.getByRole('button', { name: 'Try again' }).click()
     await (await popup).getByRole('button', { name: 'Allow' }).click()
-    await expect(dialog.getByRole('heading', { name: 'Calendar connected' })).toBeVisible()
+    await expect(dialog.getByRole('heading', { name: 'Account connected' })).toBeVisible()
     await expect(events(page, 'connected')).toHaveCount(1)
 })
 
@@ -91,11 +91,11 @@ test('a session that was already used is reported at once', async ({ page, conte
     const popup = page.waitForEvent('popup')
     await dialog.getByRole('button', { name: 'Continue with Google' }).click()
     await (await popup).getByRole('button', { name: 'Allow' }).click()
-    await expect(dialog.getByRole('heading', { name: 'Calendar connected' })).toBeVisible()
+    await expect(dialog.getByRole('heading', { name: 'Account connected' })).toBeVisible()
 
     // The same token on a new page: the developer's page must make a new session.
     await page.goto(examplePath({ token }))
-    await page.getByRole('button', { name: 'Connect a calendar' }).click()
+    await page.getByRole('button', { name: 'Connect an account' }).click()
     dialog = page.getByRole('dialog')
     await expect(dialog.getByRole('heading', { name: 'This sign-in link has expired' })).toBeVisible()
     await expect(events(page, 'error')).toContainText('AUTH_INVALID_CONNECT_SESSION')
@@ -115,13 +115,13 @@ test('with a session per attempt, an expired sign-in is tried again without relo
     let popup = page.waitForEvent('popup')
     await dialog.getByRole('button', { name: 'Continue with Google' }).click()
     await (await popup).getByRole('button', { name: 'Allow' }).click()
-    await expect(dialog.getByRole('heading', { name: "We couldn't connect your calendar" })).toBeVisible()
+    await expect(dialog.getByRole('heading', { name: "We couldn't connect your account" })).toBeVisible()
 
     provider.signInAs({ email: 'second@example.test', name: 'Second Try' })
     popup = page.waitForEvent('popup')
     await dialog.getByRole('button', { name: 'Try again' }).click()
     await (await popup).getByRole('button', { name: 'Allow' }).click()
-    await expect(dialog.getByRole('heading', { name: 'Calendar connected' })).toBeVisible()
+    await expect(dialog.getByRole('heading', { name: 'Account connected' })).toBeVisible()
     await expect(events(page, 'connected')).toContainText('second@example.test')
     expect(made).toBeGreaterThanOrEqual(2)
 })
@@ -129,14 +129,14 @@ test('with a session per attempt, an expired sign-in is tried again without relo
 test('opened from the page\'s own button', async ({ page, context, request }) => {
     await playProviders(context)
     await page.goto(examplePath({ token: await makeSession(request), hideTrigger: '1' }))
-    await expect(page.getByRole('button', { name: 'Connect a calendar' })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Connect an account' })).toHaveCount(0)
     await page.getByRole('button', { name: 'Add a calendar' }).click()
-    await expect(page.getByRole('dialog', { name: 'Connect your calendar' })).toBeVisible()
+    await expect(page.getByRole('dialog', { name: 'Connect an account' })).toBeVisible()
     const dialog = page.getByRole('dialog')
     const popup = page.waitForEvent('popup')
     await dialog.getByRole('button', { name: 'Continue with Google' }).click()
     await (await popup).getByRole('button', { name: 'Allow' }).click()
-    await expect(dialog.getByRole('heading', { name: 'Calendar connected' })).toBeVisible()
+    await expect(dialog.getByRole('heading', { name: 'Account connected' })).toBeVisible()
 })
 
 test('1.x keys (client id and token name) still connect', async ({ page, context }) => {
@@ -153,7 +153,7 @@ test('1.x keys (client id and token name) still connect', async ({ page, context
     const popup = page.waitForEvent('popup')
     await dialog.getByRole('button', { name: 'Continue', exact: true }).click()
     await (await popup).getByRole('button', { name: 'Allow' }).click()
-    await expect(dialog.getByRole('heading', { name: 'Calendar connected' })).toBeVisible()
+    await expect(dialog.getByRole('heading', { name: 'Account connected' })).toBeVisible()
     await expect(events(page, 'accountConnected')).toContainText('legacy@example.test')
     await expect(events(page, 'connected')).toContainText('legacy@example.test')
 })

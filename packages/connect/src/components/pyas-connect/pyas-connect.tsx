@@ -1,6 +1,6 @@
 import { Component, Element, Event, EventEmitter, h, Host, Method, Prop, State, Watch } from '@stencil/core'
 import { createConnectFlow, ConnectFlow, ConnectFlowOptions, ConnectSnapshot, ConnectErrorInfo, ConnectedAccount, Provider } from '@pyas/connect-core'
-import { AlertGlyph, CheckGlyph, CloseGlyph, LockGlyph, providerMark } from './marks'
+import { AlertGlyph, CheckGlyph, CloseGlyph, providerMark } from './marks'
 import { calendarName, DEFAULT_STRINGS, fill, providerName, PyasConnectStrings } from './strings'
 
 const ALL: Provider[] = ['google', 'microsoft', 'zoom']
@@ -73,7 +73,7 @@ export class PyasConnect {
     @Prop({ attribute: 'show-labels' }) showLabels?: boolean
     /** 1.x, accepted and unused: iCloud is not offered until Pyas supports it. */
     @Prop({ attribute: 'show-icloud' }) showIcloud?: boolean
-    /** 1.x, accepted and unused: "Secured by Pyas" always shows (which plans may hide is open, plan §59). */
+    /** 1.x, accepted and unused: "Powered by Pyas" always shows (which plans may hide is open, plan §59). */
     @Prop({ attribute: 'show-disclaimer' }) showDisclaimer?: boolean
     /** 1.x, accepted and unused: the details screen has no description. */
     @Prop({ attribute: 'form-description' }) formDescription?: string
@@ -511,8 +511,7 @@ export class PyasConnect {
                 {body}
                 <div class="sr-only" aria-live="polite">{announce}</div>
                 <div class="footer" part="footer">
-                    <LockGlyph />
-                    <a href="https://pyas.io" target="_blank" rel="noopener noreferrer">{this.t.securedBy}</a>
+                    <a href="https://pyas.io" target="_blank" rel="noopener noreferrer">{this.t.poweredBy}</a>
                 </div>
             </div>
         )
