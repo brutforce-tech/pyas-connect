@@ -1,0 +1,42 @@
+/*
+ * A product's settings page, so the widget is seen where it will live. The
+ * same file is in every example (React, Vue, Angular).
+ */
+:root {
+  --page: #f6f7f9;
+  --card: #ffffff;
+  --ink: #16181d;
+  --muted: #5b616e;
+  --line: #e3e6eb;
+  color-scheme: light;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: var(--ink);
+  background: var(--page);
+}
+:root[data-theme='dark'] {
+  --page: #0f1115;
+  --card: #171a20;
+  --ink: #eef0f3;
+  --muted: #a3a9b5;
+  --line: #2a2f38;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); }
+.example-page { max-width: 720px; margin: 0 auto; padding: 48px 16px; }
+.example-page header { margin-bottom: 24px; }
+.example-page .crumb { font-size: 13px; color: var(--muted); margin: 0 0 6px; }
+.example-page h1 { font-size: 24px; line-height: 1.25; margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+.example-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+.example-card h2 { font-size: 16px; margin: 0 0 4px; font-weight: 600; }
+.example-card p { margin: 0 0 20px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+.example-own-button {
+  font: inherit; font-size: 14px; font-weight: 500; padding: 9px 14px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer;
+}
+.example-connected { list-style: none; margin: 20px 0 0; padding: 0; border-top: 1px solid var(--line); }
+.example-connected li { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.example-connected li span:last-child { color: var(--muted); }
+.example-log { margin-top: 24px; font-size: 12px; color: var(--muted); }
+.example-log summary { cursor: pointer; }
+.example-log ol { margin: 8px 0 0; padding-left: 20px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; word-break: break-all; }

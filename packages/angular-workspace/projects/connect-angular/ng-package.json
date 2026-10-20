@@ -3,12 +3,12 @@
   "dest": "./dist",
   "lib": {
     "entryFile": "src/public-api.ts",
-    "flatModuleFile": "index",
-    "styleIncludePaths": [
-      "../../../node_modules/@pyas/connect/dist/theme"
-    ]
+    "flatModuleFile": "index"
   },
   "allowedNonPeerDependencies": [
     "@pyas/connect"
+  ],
+  "assets": [
+    "LICENSE.md"
   ]
 }

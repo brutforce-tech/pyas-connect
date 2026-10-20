@@ -1,7 +1,7 @@
 {
   "name": "@pyas/connect-angular",
-  "version": "1.0.11",
-  "description": "An Angular plugin wrapper around the Pyas Connect Web Component, exposing PyasConnect as a first-class Angular component",
+  "version": "2.0.0-alpha.0",
+  "description": "PyasConnect for Angular: the <pyas-connect> element with Angular inputs and outputs.",
   "keywords": [
     "pyas",
     "pyas-connect",
@@ -18,34 +18,24 @@
     "google api"
   ],
   "scripts": {
-    "build": "ng build connect-angular --configuration production"
+    "build": "cd ../.. && ng build connect-angular --configuration production"
   },
   "author": "Pyas Team <support@pyas.io>",
   "homepage": "https://github.com/brutforce-tech/pyas-connect",
-  "main": "dist/fesm2022/index.mjs",
-  "module": "dist/fesm2022/index.mjs",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/fesm2022/index.mjs",
-      "require": "./dist/fesm2022/index.mjs"
-    }
-  },
   "files": [
     "dist"
   ],
   "publishConfig": {
     "access": "public"
   },
-  "license": "ISC",
+  "license": "MIT",
   "peerDependencies": {
     "@angular/common": ">=19.0.0",
     "@angular/core": ">=19.0.0",
     "rxjs": "^7.0.0"
   },
   "dependencies": {
-    "@pyas/connect": "^1.0.11"
+    "@pyas/connect": "2.0.0-alpha.0"
   },
   "devDependencies": {
     "@angular/compiler": "^19.0.0",

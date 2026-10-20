@@ -1,44 +1,32 @@
-# Vue 3 — `@pyas/connect-vue`
+# @pyas/connect-vue
 
-> A Vue 3 plugin wrapper around the Pyas Connect Web Component <https://www.npmjs.com/package/@pyas/connect>, exposing PyasConnect as a first-class Vue component
-
-## Usage
+PyasConnect for Vue 3: the dialog your users connect their Google, Microsoft or
+Zoom calendar in, for apps built on [Pyas](https://pyas.io).
 
 ```bash
-npm install @pyas/connect-vue # core (@pyas/connect) auto‑installed
+npm install @pyas/connect-vue
 ```
-Use the wrapper directly inside any component file. No need to modify main.ts or register a global plugin.
+
+Your server makes a connect session (`POST /v2/connect/sessions` with your API
+key) and gives the page its token:
 
 ```vue
 <script setup>
 import { PyasConnect } from '@pyas/connect-vue'
-
-const handleConnected = (event) => {
-  console.log('Account connected:', event)
-}
-
-const handleConnectError = (error) => {
-  console.error('Connect error:', error)
-}
-
+defineProps(['token'])
 </script>
 
 <template>
-   <PyasConnect
-    client-id="YOUR_CLIENT_ID"
-    token-name="YOUR_TOKEN_NAME"
-    :user-email="email"
-    :user-name="name"
-    theme="dark"
-    :show-disclaimer="true"
-    @account-connected="handleConnected"
-    @connect-error="handleConnectError"
-  >
-    <span>Connect an Account</span>
-  </PyasConnect>
+  <PyasConnect :session-token="token" theme="auto" @connected="(account) => save(account.accountId)" />
 </template>
 ```
 
-## Full Documentation
-Full usage documentation can be found on the core component on npm: <https://www.npmjs.com/package/@pyas/connect>
-And also on GitHub: <https://github.com/brutforce-tech/pyas-connect>
+Events carry the event's data. To open it from your own button, set
+`hide-trigger`, take a template ref and call its `open()` from a click. The
+element is loaded in the browser only, so Nuxt and server rendering work as
+they are.
+
+Every prop, event and styling hook:
+[the full guide](https://github.com/brutforce-tech/pyas-connect#readme).
+
+MIT

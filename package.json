@@ -2,18 +2,21 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    "packages/angular-workspace/projects/*",
-    "examples/vue-example"
+    "packages/angular-workspace/projects/*"
   ],
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "1.64.1",
     "@types/node": "^22.15.19",
-    "lerna": "^8.2.2",
     "typescript": "^5.8.3"
   },
   "scripts": {
-    "bootstrap": "lerna bootstrap",
-    "build": "lerna run build --ignore \"*example\" --no-private",
-    "version:libs": "npx lerna version --conventional-commits --no-private --ignore-changes \"*example\" --yes --create-release=github",
-    "publish:libs": "npm_config_userconfig=.npmrc.publish lerna publish from-package --ignore-changes \"*example\" --yes"
+    "build": "npm run build -w @pyas/connect-core && npm run build -w @pyas/connect && npm run build -w @pyas/connect-react && npm run build -w @pyas/connect-vue && npm run build -w @pyas/connect-angular",
+    "test": "npm test -w @pyas/connect-core && npm run test:spec -w @pyas/connect && npm test -w @pyas/connect-react && npm test -w @pyas/connect-vue",
+    "size": "node scripts/check-size.mjs",
+    "version:set": "node scripts/set-version.mjs",
+    "release": "node scripts/publish.mjs",
+    "e2e": "playwright test",
+    "playground": "node playground/server.mjs"
   }
 }

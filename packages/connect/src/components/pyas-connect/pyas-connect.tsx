@@ -1,297 +1,538 @@
-import { Component, h, Prop, Event, EventEmitter, State, Element as HostEl, Watch } from '@stencil/core'
-import { getOauthUrl, openOAuthPopup } from '../../utils/oauth'
-import { renderProviderButton } from '../../utils/provider-button';
-import { renderProviderIcon } from '../../utils/provider-icons';
-import { CloseIcon } from '../../icons';
+import { Component, Element, Event, EventEmitter, h, Host, Method, Prop, State, Watch } from '@stencil/core'
+import { createConnectFlow, ConnectFlow, ConnectFlowOptions, ConnectSnapshot, ConnectErrorInfo, ConnectedAccount, Provider } from '@pyas/connect-core'
+import { AlertGlyph, CheckGlyph, ChevronGlyph, CloseGlyph, providerMark } from './marks'
+import { calendarName, DEFAULT_STRINGS, fill, providerName, PyasConnectStrings } from './strings'
 
-@Component({
-    tag: 'pyas-connect',
-    styleUrl: '../../theme/main.css',
-    shadow: true,
-})
+const ALL: Provider[] = ['google', 'microsoft', 'zoom']
+const DEFAULT_API_URL = 'https://api.pyas.io'
+let instances = 0
+
+/**
+ * PyasConnect 2.0: the dialog a developer's users connect a calendar in
+ * (plan §59; screens and copy in the PyasConnect 2.0 Design doc).
+ *
+ *   <pyas-connect session-token="pcs_..."></pyas-connect>
+ *
+ * The flow is @pyas/connect-core's; this renders it. 1.x keeps working:
+ * `client-id` + `token-name`, the trigger button with its slot, the
+ * `show-*` props, and the `accountConnected` / `connectError` events, sent
+ * alongside the new `connected` / `error` / `cancel`.
+ *
+ * Events follow the design's table: `connected` at once; an `error` that a
+ * new attempt cannot fix (an expired session) at once, so the page can make
+ * a new one; one the person can still recover from only if they give up and
+ * close; `cancel` when they close without connecting.
+ */
+@Component({ tag: 'pyas-connect', styleUrl: 'pyas-connect.css', shadow: true })
 export class PyasConnect {
-    @HostEl() el!: HTMLElement;
-    // Required
-    @Prop({ attribute: 'client-id' }) clientId: string;
-    @Prop({ attribute: 'token-name' }) tokenName: string;
+    @Element() el!: HTMLElement
 
-    // Optional UI
-    @Prop({ attribute: 'show-labels', reflect: true }) showLabels: boolean = true;
-    @Prop({ attribute: 'theme', reflect: true }) theme: 'light' | 'dark' = 'light';
-    @Prop({ attribute: 'modal-title', reflect: true  }) modalTitle: string = 'Connect an Account';
-    @Prop({ attribute: 'modal-description', reflect: true  }) modalDescription: string = '';
-    @Prop({ attribute: 'form-title', reflect: true  }) formTitle: string = 'Enter Your Details';
-    @Prop({ attribute: 'form-description' }) formDescription: string = '';
+    /*
+     * No prop has an initializer: a page (or a framework wrapper) may set a
+     * property before the element is defined, and an initializer would
+     * overwrite it as the element upgrades. Defaults apply where props are read.
+     */
 
-    // Providers
-    @Prop({ attribute: 'show-icloud', reflect: true }) showIcloud: boolean = false;
-    @Prop({ attribute: 'show-zoom', reflect: true }) showZoom: boolean = true;
-    @Prop({ attribute: 'show-google', reflect: true  }) showGoogle: boolean = true;
-    @Prop({ attribute: 'show-outlook', reflect: true }) showOutlook: boolean = true;
+    /** A connect session's token, made on your server (`POST /v2/connect/sessions`). */
+    @Prop({ attribute: 'session-token' }) sessionToken?: string
+    /** Or a function that fetches a new session token: then every failure can be tried again in place. */
+    @Prop() getSessionToken?: () => Promise<string>
+    /** The providers to offer (`google,microsoft,zoom`); the session's own list still applies. */
+    @Prop() providers?: string | string[]
+    /** The Pyas API: production (`https://api.pyas.io`) by default; a sandbox, preview or local API otherwise. */
+    @Prop({ attribute: 'api-url' }) apiUrl?: string
+    /** `popup` (default), or `redirect` for a full-page round trip (popup blockers, in-app browsers). */
+    @Prop() mode?: 'popup' | 'redirect'
+    /** `dialog` (default, opened from the trigger or `open()`) or `inline`, in the page. */
+    @Prop({ reflect: true }) display?: 'dialog' | 'inline'
+    /** `light` (default), `dark`, or `auto` (follows the system setting). */
+    @Prop({ reflect: true }) theme?: 'light' | 'dark' | 'auto'
+    /** Any of the widget's words, replaced (also how a translation is supplied): an object, or JSON in the attribute. */
+    @Prop() strings?: Partial<PyasConnectStrings> | string
+    /** No trigger button: open it with `open()` from your own. */
+    @Prop({ attribute: 'hide-trigger' }) hideTrigger?: boolean
+    /** Origins of your own OAuth callback page, when your app signs in with its own OAuth app. */
+    @Prop({ attribute: 'callback-origins' }) callbackOrigins?: string
 
-    // User Info Props
-    @Prop({ attribute: 'user-email', reflect: true }) userEmail?: string;
-    @Prop({ attribute: 'user-name', reflect: true  }) userName?: string;
+    /* 1.x, kept so upgrading changes nothing. Sessions are the way for new code. */
+    @Prop({ attribute: 'client-id' }) clientId?: string
+    @Prop({ attribute: 'token-name' }) tokenName?: string
+    @Prop({ attribute: 'user-name' }) userName?: string
+    @Prop({ attribute: 'user-email' }) userEmail?: string
+    @Prop({ attribute: 'product-name' }) productName?: string
+    @Prop() state?: string
+    @Prop({ attribute: 'modal-title' }) modalTitle?: string
+    @Prop({ attribute: 'modal-description' }) modalDescription?: string
+    /** 1.x: shown unless false. */
+    @Prop({ attribute: 'show-google' }) showGoogle?: boolean
+    @Prop({ attribute: 'show-outlook' }) showOutlook?: boolean
+    @Prop({ attribute: 'show-zoom' }) showZoom?: boolean
+    /** 1.x: the details screen's title (now also `strings.detailsTitle`). */
+    @Prop({ attribute: 'form-title' }) formTitle?: string
+    /** 1.x, accepted and unused: 2.0's buttons always carry their labels. */
+    @Prop({ attribute: 'show-labels' }) showLabels?: boolean
+    /** 1.x, accepted and unused: iCloud is not offered until Pyas supports it. */
+    @Prop({ attribute: 'show-icloud' }) showIcloud?: boolean
+    /** 1.x, accepted and unused: "Powered by Pyas" always shows (which plans may hide is open, plan §59). */
+    @Prop({ attribute: 'show-disclaimer' }) showDisclaimer?: boolean
+    /** 1.x, accepted and unused: the details screen has no description. */
+    @Prop({ attribute: 'form-description' }) formDescription?: string
 
-    // Misc
-    @Prop({ attribute: 'show-disclaimer', reflect: true  }) showDisclaimer: boolean = true;
-    @Prop({ attribute: 'product-name', reflect: true  }) productName: string = 'This app';
-    @Prop({ attribute: 'state', reflect: true  }) state: string = '';
+    /** A calendar was connected. */
+    @Event({ eventName: 'connected', composed: true }) connected!: EventEmitter<{ accountId: string; provider: string; email: string; name: string | null; subjectId: string | null }>
+    /** The flow ended without connecting: `code`, `message`, `retryable`. */
+    @Event({ eventName: 'error', composed: true }) errorEvent!: EventEmitter<ConnectErrorInfo>
+    /** The person closed it without connecting. */
+    @Event({ eventName: 'cancel', composed: true }) cancelEvent!: EventEmitter<void>
+    /** 1.x: as `connected`. */
+    @Event({ eventName: 'accountConnected', composed: true }) accountConnected!: EventEmitter<any>
+    /** 1.x: as `error`. */
+    @Event({ eventName: 'connectError', composed: true }) connectError!: EventEmitter<{ message: string; code: string }>
 
-    // Internal reactive state
-    @State() email: string = '';
-    @State() name: string = '';
-    @State() selectedProvider: string = '';
-    @State() modalStep: 1 | 2 = 1;
-    @State() isLoading: boolean = false;
-    @State() modalOpen: boolean = false;
-    @State() selectedProviderLabel: string = '';
+    @State() snap: ConnectSnapshot | null = null
+    @State() isOpen = false
+    @State() detailsFor: Provider | null = null
+    @State() nameInput = ''
+    @State() emailInput = ''
+    @State() nameError = false
+    @State() emailError = false
 
-    /** Emit connection result */
-    @Event() accountConnected: EventEmitter<{ provider: string; accountId: string, name: string, email: string, scopes: string[], status: string }>
-    /** Emit error result */
-    @Event() connectError: EventEmitter<{ message: string, code: string|number|undefined, error?: any }>
+    private flow: ConnectFlow | null = null
+    private unsubscribe: (() => void) | null = null
+    private pendingError: ConnectErrorInfo | null = null
+    private returnFocus: HTMLElement | null = null
+    private readonly uid = `pyas-connect-${++instances}`
+    private legacy: { clientId: string; tokenName: string; state?: string; email?: string; name?: string } | null = null
+    private bodyOverflow = ''
+    // Closing: whatever the flow reports now is how it ended, so it is sent.
+    private closing = false
 
-    // Watchers to sync prop changes
-    @Watch('userEmail')
-    handleUserEmailChange(newVal: string) {
-        this.email = newVal || '';
+    private get inline() {
+        return this.display === 'inline'
     }
 
-    @Watch('userName')
-    handleUserNameChange(newVal: string) {
-        this.name = newVal || '';
+    @Watch('sessionToken')
+    @Watch('clientId')
+    @Watch('tokenName')
+    credentialsChanged() {
+        // A new session for a dialog not yet in use takes effect on the next open.
+        if (!this.isOpen && this.inline) this.restart()
     }
 
-    private getProviderLabel(provider: string): string {
-        switch (provider) {
-            case 'google':
-                return 'Google Calendar';
-            case 'microsoft':
-                return 'Microsoft Outlook';
-            case 'icloud':
-                return 'iCloud Calendar';
-            case 'zoom':
-                return 'Zoom';
+    componentDidLoad() {
+        if (this.inline) this.restart()
+    }
+
+    disconnectedCallback() {
+        this.teardown()
+    }
+
+    /** Opens the dialog. Call it from a click (a sign-in window may only open from one). */
+    @Method()
+    async open() {
+        if (this.inline || this.isOpen) return
+        // The focused element itself, inside any shadow root (the trigger is in this one).
+        let active = document.activeElement as HTMLElement | null
+        while (active?.shadowRoot?.activeElement) active = active.shadowRoot.activeElement as HTMLElement
+        this.returnFocus = active
+        this.isOpen = true
+        this.bodyOverflow = document.body.style.overflow
+        document.body.style.overflow = 'hidden'
+        this.restart()
+    }
+
+    /** Closes the dialog, reporting how it ended. */
+    @Method()
+    async close() {
+        if (this.inline || !this.isOpen) return
+        this.finish()
+        this.isOpen = false
+        document.body.style.overflow = this.bodyOverflow
+        this.returnFocus?.focus?.()
+    }
+
+    private get t(): PyasConnectStrings {
+        let custom: Partial<PyasConnectStrings> = {}
+        if (typeof this.strings === 'string') {
+            try { custom = JSON.parse(this.strings) } catch { custom = {} }
+        } else if (this.strings) {
+            custom = this.strings
+        }
+        return {
+            ...DEFAULT_STRINGS,
+            ...(this.modalTitle ? { chooseTitle: this.modalTitle } : {}),
+            ...(this.modalDescription ? { chooseIntro: this.modalDescription } : {}),
+            ...(this.formTitle ? { detailsTitle: this.formTitle } : {}),
+            ...custom,
+        }
+    }
+
+    private offered(): Provider[] {
+        const raw = this.providers
+        if (raw) {
+            const list = (Array.isArray(raw) ? raw : raw.split(',')).map((p) => p.trim().toLowerCase())
+            return ALL.filter((p) => list.includes(p))
+        }
+        return ALL.filter((p) => (p === 'google' ? this.showGoogle : p === 'microsoft' ? this.showOutlook : this.showZoom) !== false)
+    }
+
+    private restart() {
+        this.teardown()
+        this.pendingError = null
+        this.detailsFor = null
+        this.nameInput = this.userName ?? ''
+        this.emailInput = this.userEmail ?? ''
+        this.nameError = false
+        this.emailError = false
+        const usesSession = !!(this.getSessionToken || this.sessionToken)
+        this.legacy = !usesSession && this.clientId && this.tokenName
+            ? { clientId: this.clientId, tokenName: this.tokenName, state: this.state || undefined, email: this.userEmail || undefined, name: this.userName || undefined }
+            : null
+        const options: ConnectFlowOptions = {
+            apiUrl: this.apiUrl || DEFAULT_API_URL,
+            session: this.getSessionToken ?? this.sessionToken ?? undefined,
+            legacy: this.legacy ?? undefined,
+            providers: this.offered(),
+            mode: this.mode ?? 'popup',
+            callbackOrigins: (this.callbackOrigins ?? '').split(',').map((o) => o.trim()).filter(Boolean),
+            onConnected: (account) => this.onConnected(account),
+            onError: (error) => this.onError(error),
+            onCancel: () => this.cancelEvent.emit(),
+        }
+        this.flow = createConnectFlow(options)
+        this.unsubscribe = this.flow.subscribe((s) => { this.snap = s })
+        this.snap = this.flow.getSnapshot()
+        void this.flow.start()
+    }
+
+    private teardown() {
+        this.unsubscribe?.()
+        this.flow?.destroy()
+        this.unsubscribe = null
+        this.flow = null
+    }
+
+    /** How the dialog ended, told once as it closes. */
+    private finish() {
+        this.closing = true
+        const s = this.flow?.getSnapshot()
+        if (s && s.status !== 'connected') {
+            if (s.status === 'failed') {
+                if (this.pendingError) this.emitError(this.pendingError)
+                else if (!s.error) this.cancelEvent.emit()
+            } else {
+                // Waiting after the "still there?" question reports CONNECT_TIMEOUT; anything else is a cancel.
+                this.flow!.cancel()
+            }
+        }
+        this.pendingError = null
+        this.teardown()
+        this.closing = false
+    }
+
+    private onConnected(account: ConnectedAccount) {
+        this.pendingError = null
+        const detail = { accountId: account.accountId, provider: account.provider, email: account.email, name: account.name ?? null, subjectId: account.subjectId ?? null }
+        this.connected.emit(detail)
+        this.accountConnected.emit({ ...account, provider: account.provider, accountId: account.accountId, name: account.name, email: account.email })
+    }
+
+    private onError(error: ConnectErrorInfo) {
+        // Nothing the person can do here: the page can (a new session), so it hears at once.
+        if (!error.retryable || this.closing || this.inline || !this.isOpen) this.emitError(error)
+        else this.pendingError = error
+    }
+
+    private emitError(error: ConnectErrorInfo) {
+        this.errorEvent.emit(error)
+        this.connectError.emit({ message: error.message, code: error.code })
+    }
+
+    /* ------------------------------ actions ------------------------------ */
+
+    private choose(provider: Provider) {
+        // 1.x asked for a name and email when the page had none to give (v1's API needs the email).
+        if (this.legacy && (!this.legacy.name || !this.legacy.email)) {
+            this.detailsFor = provider
+            return
+        }
+        this.pendingError = null
+        this.flow?.choose(provider)
+    }
+
+    private submitDetails(event: Event) {
+        event.preventDefault()
+        this.nameError = !this.nameInput.trim()
+        this.emailError = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.emailInput.trim())
+        if (this.nameError || this.emailError) {
+            const first = this.el.shadowRoot?.getElementById(`${this.uid}-${this.nameError ? 'name' : 'email'}`) as HTMLInputElement | null
+            first?.focus()
+            return
+        }
+        if (this.legacy) {
+            this.legacy.name = this.nameInput.trim()
+            this.legacy.email = this.emailInput.trim()
+        }
+        const provider = this.detailsFor!
+        this.detailsFor = null
+        this.flow?.choose(provider)
+    }
+
+    private onKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape' && !this.inline) {
+            event.stopPropagation()
+            void this.close()
+            return
+        }
+        if (event.key !== 'Tab') return
+        // Focus stays inside the dialog.
+        const root = this.el.shadowRoot
+        const dialog = root?.querySelector('.dialog')
+        if (!root || !dialog) return
+        const focusables = Array.from(dialog.querySelectorAll<HTMLElement>('button:not([disabled]), input, a[href], [tabindex]:not([tabindex="-1"])'))
+        if (!focusables.length) return
+        const first = focusables[0]
+        const last = focusables[focusables.length - 1]
+        const active = root.activeElement as HTMLElement | null
+        if (event.shiftKey && (active === first || !dialog.contains(active))) {
+            event.preventDefault()
+            last.focus()
+        } else if (!event.shiftKey && active === last) {
+            event.preventDefault()
+            first.focus()
+        }
+    }
+
+    componentDidRender() {
+        if (this.inline || !this.isOpen) return
+        // Focus moves into the dialog, and to the new screen's first control when the screen changes.
+        const root = this.el.shadowRoot
+        const dialog = root?.querySelector<HTMLElement>('.dialog')
+        if (!root || !dialog || dialog.contains(root.activeElement)) return
+        const target = dialog.querySelector<HTMLElement>('.body button:not([disabled]), .body input') ?? dialog
+        target.focus()
+    }
+
+    /* ------------------------------ screens ------------------------------ */
+
+    private appName() {
+        return this.snap?.app?.name || this.productName || this.t.fallbackApp
+    }
+
+    private header() {
+        const name = this.appName()
+        const icon = this.snap?.app?.iconUrl
+        return (
+            <div class="header" part="header">
+                {icon ? <img class="app-icon" src={icon} alt="" /> : <span class="app-initial" aria-hidden="true">{name.slice(0, 1).toUpperCase()}</span>}
+                <span class="app-name">{name}</span>
+                {!this.inline && (
+                    <button type="button" class="close" aria-label={this.t.close} onClick={() => void this.close()}>
+                        <CloseGlyph />
+                    </button>
+                )}
+            </div>
+        )
+    }
+
+    private providerButton(provider: Provider) {
+        const label = provider === 'google' ? this.t.googleButton : provider === 'microsoft' ? this.t.microsoftButton : this.t.zoomButton
+        return (
+            <button type="button" class={`provider ${provider}`} part="provider-button" onClick={() => this.choose(provider)}>
+                {providerMark(provider)}
+                <span class="label">{label}</span>
+                <ChevronGlyph />
+            </button>
+        )
+    }
+
+    private titleId() {
+        return `${this.uid}-title`
+    }
+
+    private screen(s: ConnectSnapshot) {
+        const t = this.t
+        const provider = s.provider
+        const values = { app: this.appName(), provider: providerName(provider), calendar: calendarName(provider), email: s.reconnect?.email ?? this.snap?.account?.email ?? '' }
+        const many = s.providers.length > 1
+        const title = (text: string) => <h2 class="title" id={this.titleId()} part="title">{text}</h2>
+
+        if (this.detailsFor) {
+            return {
+                announce: t.detailsTitle,
+                body: (
+                    <form class="body" onSubmit={(e) => this.submitDetails(e)} novalidate>
+                        {title(t.detailsTitle)}
+                        <div class="field">
+                            <label htmlFor={`${this.uid}-name`}>{t.detailsName}</label>
+                            <input id={`${this.uid}-name`} autocomplete="name" value={this.nameInput} aria-invalid={this.nameError ? 'true' : undefined} aria-describedby={this.nameError ? `${this.uid}-name-error` : undefined}
+                                onInput={(e) => { this.nameInput = (e.target as HTMLInputElement).value; this.nameError = false }} />
+                            {this.nameError && <p class="field-error" id={`${this.uid}-name-error`}>{t.detailsNameNeeded}</p>}
+                        </div>
+                        <div class="field">
+                            <label htmlFor={`${this.uid}-email`}>{t.detailsEmail}</label>
+                            <input id={`${this.uid}-email`} type="email" autocomplete="email" value={this.emailInput} aria-invalid={this.emailError ? 'true' : undefined} aria-describedby={this.emailError ? `${this.uid}-email-error` : undefined}
+                                onInput={(e) => { this.emailInput = (e.target as HTMLInputElement).value; this.emailError = false }} />
+                            {this.emailError && <p class="field-error" id={`${this.uid}-email-error`}>{t.detailsEmailNeeded}</p>}
+                        </div>
+                        <button type="submit" class="primary" part="primary-button">{t.detailsContinue}</button>
+                    </form>
+                ),
+            }
+        }
+
+        switch (s.status) {
+            case 'loading':
+                return {
+                    announce: t.loading,
+                    body: <div class="body centered">{title(t.loading)}<div class="spinner" aria-hidden="true" /></div>,
+                }
+            case 'choosing':
+                if (s.reconnect && provider) {
+                    return {
+                        announce: t.reconnectTitle,
+                        body: (
+                            <div class="body">
+                                {title(t.reconnectTitle)}
+                                <p class="lead">{fill(s.reconnect.email ? t.reconnectIntro : t.reconnectIntroNoEmail, values)}</p>
+                                <div class="actions">
+                                    <button type="button" class="primary" part="primary-button" onClick={() => this.choose(provider)}>{fill(t.reconnectButton, values)}</button>
+                                </div>
+                            </div>
+                        ),
+                    }
+                }
+                return {
+                    announce: t.chooseTitle,
+                    body: (
+                        <div class="body">
+                            {title(t.chooseTitle)}
+                            <p class="lead">{fill(t.chooseIntro, values)}</p>
+                            <div class="actions">{s.providers.map((p) => this.providerButton(p))}</div>
+                        </div>
+                    ),
+                }
+            case 'authorizing':
+            case 'waiting':
+                return {
+                    announce: fill(t.waitingTitle, values),
+                    body: (
+                        <div class="body centered">
+                            {title(fill(t.waitingTitle, values))}
+                            <div class="spinner" aria-hidden="true" />
+                            <p class="lead">{t.waitingBody}</p>
+                            {s.slow && <p class="note" role="status">{t.stillThere}</p>}
+                            {!s.slow && s.windowMaybeClosed && <p class="note" role="status">{t.windowClosed}</p>}
+                            <div class="actions">
+                                {(s.slow || s.windowMaybeClosed)
+                                    ? <button type="button" class="primary" part="primary-button" onClick={() => this.flow?.reopen()}>{t.openAgain}</button>
+                                    : <button type="button" class="link" disabled={s.status !== 'waiting'} onClick={() => this.flow?.reopen()}>{t.reopen}</button>}
+                                {s.slow
+                                    ? <button type="button" class="secondary" part="secondary-button" onClick={() => this.flow?.back()}>{t.startOver}</button>
+                                    : s.windowMaybeClosed && many
+                                        ? <button type="button" class="secondary" part="secondary-button" onClick={() => this.flow?.back()}>{t.chooseAnother}</button>
+                                        : <button type="button" class="secondary" part="secondary-button" onClick={() => this.flow?.back()}>{t.cancel}</button>}
+                            </div>
+                        </div>
+                    ),
+                }
+            case 'completing':
+                return { announce: t.finishing, body: <div class="body centered">{title(t.finishing)}<div class="spinner" aria-hidden="true" /></div> }
+            case 'redirecting':
+                return { announce: fill(t.redirecting, values), body: <div class="body centered">{title(fill(t.redirecting, values))}<div class="spinner" aria-hidden="true" /></div> }
+            case 'connected':
+                return {
+                    announce: t.connectedTitle,
+                    body: (
+                        <div class="body centered">
+                            <span class="badge success"><CheckGlyph /></span>
+                            {title(t.connectedTitle)}
+                            <p class="account"><strong>{s.account?.email}</strong><span>{calendarName(s.account?.provider ?? provider)}</span></p>
+                            {!this.inline && (
+                                <div class="actions"><button type="button" class="primary" part="primary-button" onClick={() => void this.close()}>{t.done}</button></div>
+                            )}
+                        </div>
+                    ),
+                }
+            case 'failed':
+            case 'cancelled':
             default:
-                return '';
+                return this.failure(s, values, many)
         }
     }
 
-    componentWillLoad() {
-        this.syncPropsToState();
-    }
-
-    private syncPropsToState() {
-        this.name = this.userName || '';
-        this.email = this.userEmail || '';
-    }
-
-    private resetState() {
-        this.syncPropsToState();
-        this.selectedProvider = '';
-        this.selectedProviderLabel = '';
-    }
-
-
-    private handleNext(provider: string) {
-        this.selectedProvider = provider
-        this.modalStep = 2
-        this.selectedProviderLabel = this.getProviderLabel(provider);
-    }
-
-    private handlePrev() {
-        this.modalStep = 1
-    }
-
-    private async startOauthFlow(provider: string) {
-        try {
-            const payload = {
-                provider,
-                clientId: this.clientId,
-                tokenName: this.tokenName,
-                state: this.state,
-                email: this.email,
-            }
-
-            this.isLoading = true
-
-            const res = await getOauthUrl(payload)
-
-            if (!res || !res.url || !res.success) {
-                this.isLoading = false
-                this.connectError.emit(res?.error)
-                return
-            }
-
-            const popupPayload = {
-                ...payload,
-                url: res.url,
-                name: this.name,
-            }
-
-            const popupRes = await openOAuthPopup(popupPayload)
-
-            if (!popupRes || !popupRes.success) {
-                this.isLoading = false
-                this.connectError.emit(popupRes?.error)
-                return
-            }
-
-            this.accountConnected.emit(popupRes?.account);
-            this.isLoading = false
-
-
-        } catch(e) {
-            console.error('[Pyas] OAuth flow error:', e)
-            this.connectError.emit({
-                message: 'Failed to start OAuth flow',
-                code: 'oauth_flow_error',
-                error: e
-            })
+    private failure(s: ConnectSnapshot, values: Record<string, string>, many: boolean) {
+        const t = this.t
+        const code = s.error?.code ?? 'CONNECT_CANCELLED'
+        const retryable = s.error ? s.error.retryable : true
+        const view = (head: string, body: string, retryLabel: string | null, another: boolean) => ({ head, body, retryLabel: retryable ? retryLabel : null, another: another && many })
+        const v = code === 'CONNECT_CONSENT_DENIED' ? view(t.deniedTitle, t.deniedBody, t.tryAgain, true)
+            : code === 'CONNECT_POPUP_BLOCKED' ? view(t.blockedTitle, t.blockedBody, t.openWindow, true)
+            : code === 'CONNECTION_SCOPE_INSUFFICIENT' ? view(t.scopeTitle, t.scopeBody, t.tryAgain, false)
+            : code === 'PROVIDER_UNAVAILABLE' || code === 'PROVIDER_TIMEOUT' ? view(t.unavailableTitle, t.unavailableBody, t.tryAgain, true)
+            : code === 'CONNECT_NETWORK_ERROR' ? view(t.networkTitle, t.networkBody, t.tryAgain, false)
+            : code === 'AUTH_INVALID_CONNECT_SESSION' ? view(t.expiredTitle, t.expiredBody, t.tryAgain, false)
+            : code === 'BILLING_CONNECTION_LIMIT' || code === 'BILLING_SUBSCRIPTION_REQUIRED' ? view(t.limitTitle, t.limitBody, null, false)
+            : code === 'CONNECT_INVALID_CONFIG' || code === 'AUTH_ORIGIN_NOT_ALLOWED' || code === 'CONNECTION_PROVIDER_NOT_CONFIGURED' ? view(t.configTitle, t.configBody, null, false)
+            : view(t.genericTitle, t.genericBody, t.tryAgain, true)
+        const canClose = !this.inline && !v.retryLabel
+        return {
+            announce: fill(v.head, values),
+            body: (
+                <div class="body centered">
+                    <span class="badge warning"><AlertGlyph /></span>
+                    <h2 class="title" id={this.titleId()} part="title">{fill(v.head, values)}</h2>
+                    <p class="lead">{fill(v.body, values)}</p>
+                    <div class="actions">
+                        {v.retryLabel && <button type="button" class="primary" part="primary-button" onClick={() => { this.pendingError = null; this.flow?.retry() }}>{v.retryLabel}</button>}
+                        {v.another && <button type="button" class="secondary" part="secondary-button" onClick={() => { this.pendingError = null; this.flow?.back() }}>{t.chooseAnother}</button>}
+                        {canClose && <button type="button" class="primary" part="primary-button" onClick={() => void this.close()}>{t.close}</button>}
+                    </div>
+                </div>
+            ),
         }
     }
 
-    private closeModal() {
-        this.modalOpen = false
-        this.modalStep = 1
-        this.isLoading = false
-        this.resetState()
+    private panel() {
+        const s = this.snap
+        if (!s) return null
+        const { body, announce } = this.screen(s)
+        const isDialog = !this.inline
+        return (
+            <div
+                class="dialog"
+                part="dialog"
+                role={isDialog ? 'dialog' : 'region'}
+                aria-modal={isDialog ? 'true' : undefined}
+                aria-labelledby={this.titleId()}
+                tabindex="-1"
+                onKeyDown={this.onKeyDown}
+            >
+                {this.header()}
+                {body}
+                <div class="sr-only" aria-live="polite">{announce}</div>
+                <div class="footer" part="footer">
+                    <a href="https://pyas.io" target="_blank" rel="noopener noreferrer">{this.t.poweredBy}</a>
+                </div>
+            </div>
+        )
     }
 
     render() {
+        if (this.inline) return <Host class="inline">{this.panel()}</Host>
         return (
-            <div class="pyas-connect">
-                <button
-                    class="pyas-button"
-                    onClick={() => (this.modalOpen = true)}
-                >
-                    <slot>Connect a Provider</slot>
-                </button>
-
-                {this.modalOpen && (
-                    <div class="pyas-modal">
-                        <div class="pyas-modal-content">
-                            <div class="pyas-modal-header">
-                                {this.modalStep === 1 && (
-                                    <div class="modal-header-row">
-                                        <div>
-                                            <h3>{this.modalTitle}</h3>
-                                            <p>{this.modalDescription}</p>
-                                        </div>
-                                        <div class="close-modal-wrapper" onClick={() => this.closeModal()}>
-                                            <CloseIcon  />
-                                        </div>
-                                    </div>
-                                )}
-
-                                {this.modalStep === 2 && (
-                                    <>
-                                    <div class="modal-header-row">
-                                        <span class="form-icon">
-                                            {renderProviderIcon(this.selectedProvider)}
-                                            <span class="provider-label">{this.selectedProviderLabel}</span>
-                                        </span>
-                                        <div class="close-modal-wrapper" onClick={() => this.closeModal()}>
-                                            <CloseIcon />
-                                        </div>
-                                    </div>
-                                    <div class="form-header-divider">
-                                    </div>
-                                    <div class="modal-subheader">
-                                        <h3>{this.formTitle}</h3>
-                                        <p>{this.formDescription}</p>
-                                    </div>
-                                    </>
-                                )}
-                            </div>
-
-                            {this.modalStep === 1 && (
-                                <div>
-                                    <div class="pyas-modal-body">
-                                        <div class="pyas-provider-buttons">
-                                        { this.showGoogle && renderProviderButton('google', 'Google Calendar', this.showLabels, () => this.handleNext('google') ) }
-                                        { this.showOutlook && renderProviderButton('microsoft', 'Microsoft Outlook', this.showLabels, () => this.handleNext('microsoft') ) }
-                                        { this.showIcloud && renderProviderButton('icloud', 'iCloud Calendar', this.showLabels, () => this.handleNext('icloud')) }
-                                        { this.showZoom && renderProviderButton('zoom', 'Zoom', this.showLabels, () => this.handleNext('zoom') ) }
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {this.modalStep === 2 && (
-                                <div class="step-form">
-                                    <div class="step-form-content form-group">
-                                        <label class="form-label">
-                                        <span>Name</span>
-                                        <input
-                                            type="text"
-                                            class="form-input"
-                                            value={this.name}
-                                            onInput={(e: any) => (this.name = e.target.value)}
-                                            placeholder="Your name"
-                                            disabled={this.isLoading}
-                                        />
-                                        </label>
-
-                                        <label class="form-label">
-                                        <span>Email</span>
-                                        <input
-                                            type="email"
-                                            class="form-input"
-                                            value={this.email}
-                                            onInput={(e: any) => (this.email = e.target.value)}
-                                            placeholder="you@example.com"
-                                            disabled={this.isLoading}
-                                        />
-                                        </label>
-                                    </div>
-                                <div class="form-actions">
-                                    <button
-                                        disabled={this.isLoading}
-                                        class="form-back"
-                                        onClick={() => this.handlePrev()}>
-                                        Back
-                                    </button>
-                                    <button
-                                        disabled={this.isLoading}
-                                        class="form-submit"
-                                        onClick={() => this.startOauthFlow(this.selectedProvider)}
-                                    >
-                                        {this.isLoading ? (
-                                            <span class="spinner" part="spinner" aria-label="loading"></span>
-                                            ) : (
-                                            'Continue'
-                                        )}
-                                    </button>
-                                </div>
-                                </div>
-                            )}
-
-                            {this.showDisclaimer && (
-                                <div>
-                                    <div class="divider">
-                                        <hr />
-                                    </div>
-
-                                    <div class="pyas-disclaimer">
-                                        <span>
-                                            {this.productName} uses
-                                        </span>
-                                        <a href="https://pyas.io/" target="_blank">
-                                            <img class="pyas-logo" src="data:image/svg+xml,%3c?xml%20version=%271.0%27%20encoding=%27UTF-8%27?%3e%3csvg%20id=%27Layer_1%27%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20183%20100%27%3e%3cdefs%3e%3cstyle%3e.cls-1{fill:%23290066;}.cls-2{fill:%23ff9b19;}.cls-3{fill:%23b70053;}.cls-4{fill:%233d0099;}.cls-5{fill:%230f0b3a;}.cls-6{fill:%23ffd701;}.cls-7{fill:%23fb0062;}%3c/style%3e%3c/defs%3e%3cg%3e%3cpath%20class=%27cls-5%27%20d=%27M96.12,39.39c0,6.17-4.85,10.84-11.17,10.84h-5.18v10.84h-6.5V28.55h11.69c6.32,0,11.17,4.67,11.17,10.84Zm-6.69,0c0-2.69-1.98-4.71-4.62-4.71h-5.04v9.43h5.04c2.64,0,4.62-2.03,4.62-4.71Z%27/%3e%3cpath%20class=%27cls-5%27%20d=%27M124.16,37.03l-13.71,32.99h-6.6l3.86-9.19-9.85-23.8h6.97l6.22,16.35,6.22-16.35h6.88Z%27/%3e%3cpath%20class=%27cls-5%27%20d=%27M150.27,37.03v24.04h-6.13v-3.16c-1.89,2.31-4.57,3.72-7.82,3.72-6.69,0-11.73-5.42-11.73-12.58s5.04-12.58,11.73-12.58c3.25,0,5.94,1.41,7.82,3.72v-3.16h6.13Zm-6.13,12.02c0-3.77-2.83-6.65-6.64-6.65s-6.6,2.87-6.6,6.65,2.83,6.64,6.6,6.64,6.64-2.87,6.64-6.64Z%27/%3e%3cpath%20class=%27cls-5%27%20d=%27M154.6,53.86h6.17c0,1.51,1.27,2.73,2.87,2.73,1.51,0,2.69-.94,2.69-2.17,0-1.65-1.84-2.45-4.01-3.02-3.58-.85-7.4-2.69-7.4-7.54s4.01-7.4,8.62-7.4c4.95,0,8.67,3.3,8.67,7.4h-6.17c0-1.27-1.08-2.36-2.54-2.36-1.32,0-2.4,.9-2.4,1.98,0,1.51,1.7,2.4,4.19,3.02,3.72,.94,7.26,2.78,7.26,7.4,0,4.9-4.05,7.73-8.95,7.73-5.18,0-9-3.49-9-7.78Z%27/%3e%3c/g%3e%3cg%3e%3cpath%20class=%27cls-6%27%20d=%27M54.12,30.12H16.82c-.31-.48-.49-1.04-.49-1.65V8.39c0-1,.81-1.81,1.82-1.81,.37,0,.72,.11,1.01,.3,0,0,.01,0,.02,.01l31.39,20.38,1.13,.74h0c.87,.63,1.68,1.33,2.42,2.11Z%27/%3e%3cpath%20class=%27cls-4%27%20d=%27M23.35,39.35s-.09-.06-.14-.09l-12.37-8.03s-.05-.03-.07-.05c-.28-.18-.61-.28-.97-.28-1,0-1.81,.81-1.81,1.82v57.47c0,1,.81,1.82,1.81,1.82,.42,0,.8-.14,1.11-.38,.02-.01,.03-.03,.05-.04l12.48-9.75s.08-.06,.11-.09c.34-.28,.62-.64,.82-1.05,.19-.39,.29-.83,.29-1.3V41.85c0-1.04-.52-1.96-1.32-2.5Z%27/%3e%3cpath%20class=%27cls-2%27%20d=%27M58.31,38.19H28.28c-.22-.33-.49-.62-.82-.85-.02-.02-.04-.03-.07-.05l-9.68-6.29s-.04-.03-.06-.04c-.33-.23-.62-.52-.83-.86H54.12c2.09,2.2,3.57,4.98,4.19,8.08Z%27/%3e%3cpath%20class=%27cls-7%27%20d=%27M58.63,41.44c0,4.98-2.21,9.44-5.7,12.45-.03,.03-.06,.05-.1,.08,0,0-14.65,11.44-21.09,16.48-.01,0-.02,.02-.04,.03-.31,.25-.71,.39-1.13,.39-1,0-1.81-.81-1.81-1.82v-29.22c0-.61-.18-1.17-.49-1.65h30.03c.21,1.05,.32,2.13,.32,3.24Z%27/%3e%3cpath%20class=%27cls-3%27%20d=%27M28.76,43.28v-3.44c0-.61-.18-1.17-.49-1.65h30.03l-29.54,5.09Z%27/%3e%3cpath%20class=%27cls-1%27%20d=%27M24.38,80.69c-.19,.41-.47,.76-.82,1.05-.04,.03-.08,.06-.11,.09l-12.48,9.75s-.03,.03-.05,.04c-.31,.24-.69,.38-1.11,.38-1,0-1.81-.81-1.81-1.82V32.72c0,27.4,7.06,37.35,16.39,47.98Z%27/%3e%3c/g%3e%3c/svg%3e" alt="Pyas Logo" />
-                                        </a>
-
-                                        <span>
-                                            to securely connect your account
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+            <Host>
+                {!this.hideTrigger && (
+                    <button type="button" class="trigger" part="trigger" aria-haspopup="dialog" onClick={() => void this.open()}>
+                        <slot>{this.t.trigger}</slot>
+                    </button>
+                )}
+                {this.isOpen && (
+                    <div class="overlay" onClick={(e) => { if (e.target === e.currentTarget) void this.close() }}>
+                        {this.panel()}
                     </div>
                 )}
-            </div>
+            </Host>
         )
     }
 }

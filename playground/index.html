@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PyasConnect playground</title>
+<style>
+  :root {
+    --page: #f6f7f9; --card: #ffffff; --ink: #16181d; --muted: #5b616e; --line: #e3e6eb; --soft: #f1f3f6;
+    --accent: #13105a; --ok: #0f7a4d; --bad: #b42318;
+    color-scheme: light;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink); background: var(--page);
+  }
+  :root[data-theme='dark'] { --page: #0f1115; --card: #171a20; --ink: #eef0f3; --muted: #a3a9b5; --line: #2a2f38; --soft: #1e222a; --accent: #c9c6ff; color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); }
+  main { max-width: 1080px; margin: 0 auto; padding: 40px 16px 64px; }
+  header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; margin-bottom: 24px; }
+  h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+  .status { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+  .dot.ok { background: var(--ok); } .dot.bad { background: var(--bad); }
+  .layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 24px; align-items: start; }
+  @media (max-width: 820px) { .layout { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+  .card h2 { font-size: 14px; font-weight: 600; margin: 0 0 16px; }
+  fieldset { border: 0; margin: 0 0 18px; padding: 0; }
+  legend, label.title { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .check { display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 6px; }
+  .seg { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .seg label { flex: 1; text-align: center; font-size: 13px; padding: 7px 0; cursor: pointer; color: var(--muted); }
+  .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg label:has(input:checked) { background: var(--soft); color: var(--ink); font-weight: 600; }
+  .seg label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: -2px; }
+  input[type='text'] { width: 100%; font: inherit; font-size: 14px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink); }
+  .hint { font-size: 12px; color: var(--muted); margin: 6px 0 0; line-height: 1.45; }
+  .stage { min-height: 220px; display: flex; flex-direction: column; gap: 6px; }
+  .stage p { margin: 0 0 16px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+  .banner { border-radius: 10px; padding: 12px 14px; font-size: 14px; margin-bottom: 16px; background: var(--soft); }
+  .banner.ok { color: var(--ok); } .banner.bad { color: var(--bad); }
+  .log { margin-top: 24px; }
+  .log-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .log-head h2 { margin: 0; }
+  .log ol { list-style: none; margin: 0; padding: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+  .log li { padding: 8px 0; border-top: 1px solid var(--line); word-break: break-all; }
+  .log li b { font-weight: 600; margin-right: 8px; }
+  .log .empty { color: var(--muted); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 13px; border: 0; word-break: normal; }
+  button.text { font: inherit; font-size: 13px; background: none; border: 0; color: var(--muted); cursor: pointer; padding: 4px; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; background: var(--soft); padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>PyasConnect playground</h1>
+    <div class="status" id="status"><span class="dot"></span><span>Checking the setup</span></div>
+  </header>
+
+  <div class="layout">
+    <form class="card" id="settings" aria-label="Widget settings">
+      <h2>Settings</h2>
+      <fieldset>
+        <legend>Providers</legend>
+        <label class="check"><input type="checkbox" name="providers" value="google" checked> Google</label>
+        <label class="check"><input type="checkbox" name="providers" value="microsoft" checked> Microsoft</label>
+        <label class="check"><input type="checkbox" name="providers" value="zoom"> Zoom</label>
+      </fieldset>
+      <fieldset>
+        <legend>Theme</legend>
+        <div class="seg">
+          <label><input type="radio" name="theme" value="light" checked>Light</label>
+          <label><input type="radio" name="theme" value="dark">Dark</label>
+          <label><input type="radio" name="theme" value="auto">Auto</label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Display</legend>
+        <div class="seg">
+          <label><input type="radio" name="display" value="dialog" checked>Dialog</label>
+          <label><input type="radio" name="display" value="inline">Inline</label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Mode</legend>
+        <div class="seg">
+          <label><input type="radio" name="mode" value="popup" checked>Popup</label>
+          <label><input type="radio" name="mode" value="redirect">Redirect</label>
+        </div>
+        <p class="hint">Redirect leaves this page and comes back here with the result.</p>
+      </fieldset>
+      <fieldset>
+        <label class="title" for="subjectId">Subject id</label>
+        <input type="text" id="subjectId" name="subjectId" placeholder="user_123" autocomplete="off">
+        <p class="hint">Your user's id, saved on the account.</p>
+      </fieldset>
+      <fieldset>
+        <label class="title" for="loginHint">Login hint</label>
+        <input type="text" id="loginHint" name="loginHint" placeholder="person@example.com" autocomplete="off">
+      </fieldset>
+    </form>
+
+    <section>
+      <div class="card stage">
+        <div id="returned"></div>
+        <h2>Your calendars</h2>
+        <p>A new connect session is made for every attempt, by this playground's server with your key.</p>
+        <div id="mount"></div>
+      </div>
+
+      <div class="card log">
+        <div class="log-head"><h2>Events</h2><button type="button" class="text" id="clear">Clear</button></div>
+        <ol id="events" aria-live="polite"><li class="empty">Nothing yet. Connect a calendar to see the events your page receives.</li></ol>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script type="module">
+  // The element's loader, as the CDN script tag loads it: it defines <pyas-connect>.
+  import '/element/pyas-connect.esm.js'
+
+  const form = document.getElementById('settings')
+  const mount = document.getElementById('mount')
+  const events = document.getElementById('events')
+  let apiUrl = null
+
+  const settings = () => {
+    const data = new FormData(form)
+    return {
+      providers: data.getAll('providers'),
+      theme: data.get('theme'),
+      display: data.get('display'),
+      mode: data.get('mode'),
+      subjectId: data.get('subjectId').trim(),
+      loginHint: data.get('loginHint').trim(),
+    }
+  }
+
+  const log = (name, detail) => {
+    events.querySelector('.empty')?.remove()
+    const li = document.createElement('li')
+    const b = document.createElement('b')
+    b.textContent = name
+    li.append(b, document.createTextNode(detail === undefined ? '' : JSON.stringify(detail)))
+    events.prepend(li)
+  }
+
+  /** A fresh element for the current settings: what a page would render. */
+  const render = () => {
+    const s = settings()
+    document.documentElement.dataset.theme = s.theme === 'dark' || (s.theme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'
+    const el = document.createElement('pyas-connect')
+    el.apiUrl = apiUrl
+    el.theme = s.theme
+    el.display = s.display
+    el.mode = s.mode
+    el.providers = s.providers.join(',')
+    el.getSessionToken = async () => {
+      const res = await fetch('/api/pyas-session', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(s) })
+      const body = await res.json()
+      if (!res.ok) {
+        log('session not made', body.error ?? body)
+        throw new Error(body.error?.message ?? 'Session not made')
+      }
+      return body.token
+    }
+    for (const name of ['connected', 'error', 'cancel']) el.addEventListener(name, (e) => log(name, e.detail ?? undefined))
+    mount.replaceChildren(el)
+  }
+
+  const showReturn = () => {
+    const q = new URLSearchParams(location.search)
+    if (!q.get('returned')) return
+    const status = q.get('status')
+    const box = document.createElement('div')
+    box.className = `banner ${status === 'connected' ? 'ok' : 'bad'}`
+    box.textContent = status === 'connected'
+      ? `Back from the redirect: connected (account ${q.get('accountId')}). Your server confirms with GET /v2/connect/sessions/${q.get('sessionId')}.`
+      : `Back from the redirect: ${status}${q.get('error') ? ` (${q.get('error')})` : ''}.`
+    document.getElementById('returned').replaceChildren(box)
+    history.replaceState(null, '', '/')
+  }
+
+  const setStatus = (ok, text) => {
+    const el = document.getElementById('status')
+    el.querySelector('.dot').className = `dot ${ok ? 'ok' : 'bad'}`
+    el.querySelector('span:last-child').textContent = text
+  }
+
+  const config = await fetch('/api/config').then((r) => r.json())
+  apiUrl = config.apiUrl
+  setStatus(config.hasKey, config.hasKey ? `API ${config.apiUrl}` : 'No API key: set PYAS_API_KEY in playground/.env')
+  form.addEventListener('change', render)
+  document.getElementById('clear').addEventListener('click', () => {
+    events.innerHTML = '<li class="empty">Nothing yet. Connect a calendar to see the events your page receives.</li>'
+  })
+  showReturn()
+  render()
+</script>
+</body>
+</html>

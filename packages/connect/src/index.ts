@@ -1,18 +1,10 @@
 /**
- * @fileoverview entry point for your component library
- *
- * This is the entry point for your component library. Use this file to export utilities,
- * constants or data structure that accompany your components.
- *
- * DO NOT use this file to export your components. Instead, use the recommended approaches
- * to consume components of this package as outlined in the `README.md`.
+ * @pyas/connect: the <pyas-connect> element (PyasConnect 2.0, plan §59).
+ * The flow itself is @pyas/connect-core's; its types are re-exported here,
+ * with the helper for a callback page on your own OAuth app.
  */
-
-export { format } from './utils/utils';
-export type * from './components';
-
-export * from './utils/provider-button';
-export * from './utils/oauth';
-export * from './icons';
-export * from './icons/icons-html';
-import './theme/main.css';
+export type * from './components'
+export type { ConnectErrorInfo, ConnectedAccount, Provider } from '@pyas/connect-core'
+export { postCallbackResult } from '@pyas/connect-core'
+export { DEFAULT_STRINGS } from './components/pyas-connect/strings'
+export type { PyasConnectStrings } from './components/pyas-connect/strings'

@@ -1,54 +1,18 @@
-# React + TypeScript + Vite
+# PyasConnect: React example
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+`<PyasConnect>` on a product's settings page, built on the workspace's own
+packages (run `npm run build` at the root first). The end-to-end suite
+(`npm run e2e` at the root) runs its journeys in this app.
 
-Currently, two official plugins are available:
+What the widget is given comes from the page's address (`src/setup.ts`):
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+| Query | Gives the widget |
+|---|---|
+| `token=pcs_...` | A connect session's token (your server makes it: `POST /v2/connect/sessions`) |
+| `fresh=1` | A new session per attempt, from `POST /api/pyas-session` |
+| `api=http://localhost:3998` | The Pyas API to use |
+| `theme`, `display`, `mode`, `providers` | The same-named properties |
+| `hideTrigger=1` | The page's own "Add a calendar" button instead of the widget's |
+| `clientId`, `tokenName` | PyasConnect 1.x's keys instead of a session |
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+Every event the widget sends is listed under **Events** on the page.

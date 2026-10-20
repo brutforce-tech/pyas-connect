@@ -11,17 +11,21 @@
     "moduleResolution": "bundler",
     "module": "esnext",
     "target": "es2022",
+    "useDefineForClassFields": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "jsx": "react",
     "jsxFactory": "h",
     "jsxFragmentFactory": "h.Fragment",
-     "skipLibCheck": true,
+    "skipLibCheck": true,
+    "types": ["jest", "node"]
   },
   "include": [
     "src"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "src/**/*.spec.tsx",
+    "src/**/*.spec.ts"
   ]
 }

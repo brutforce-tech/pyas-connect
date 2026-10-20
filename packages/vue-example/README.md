@@ -1,33 +1,18 @@
-# vue-example
+# PyasConnect: Vue example
 
-This template should help get you started developing with Vue 3 in Vite.
+`<PyasConnect>` on a product's settings page, built on the workspace's own
+packages (run `npm run build` at the root first). The end-to-end suite
+(`npm run e2e` at the root) runs its journeys in this app.
 
-## Recommended IDE Setup
+What the widget is given comes from the page's address (`src/setup.ts`):
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+| Query | Gives the widget |
+|---|---|
+| `token=pcs_...` | A connect session's token (your server makes it: `POST /v2/connect/sessions`) |
+| `fresh=1` | A new session per attempt, from `POST /api/pyas-session` |
+| `api=http://localhost:3998` | The Pyas API to use |
+| `theme`, `display`, `mode`, `providers` | The same-named properties |
+| `hideTrigger=1` | The page's own "Add a calendar" button instead of the widget's |
+| `clientId`, `tokenName` | PyasConnect 1.x's keys instead of a session |
 
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
+Every event the widget sends is listed under **Events** on the page.

@@ -1,59 +1,18 @@
-# AngularExample
+# PyasConnect: Angular example
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.15.
+`<PyasConnect>` on a product's settings page, built on the workspace's own
+packages (run `npm run build` at the root first). The end-to-end suite
+(`npm run e2e` at the root) runs its journeys in this app.
 
-## Development server
+What the widget is given comes from the page's address (`src/setup.ts`):
 
-To start a local development server, run:
+| Query | Gives the widget |
+|---|---|
+| `token=pcs_...` | A connect session's token (your server makes it: `POST /v2/connect/sessions`) |
+| `fresh=1` | A new session per attempt, from `POST /api/pyas-session` |
+| `api=http://localhost:3998` | The Pyas API to use |
+| `theme`, `display`, `mode`, `providers` | The same-named properties |
+| `hideTrigger=1` | The page's own "Add a calendar" button instead of the widget's |
+| `clientId`, `tokenName` | PyasConnect 1.x's keys instead of a session |
 
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Every event the widget sends is listed under **Events** on the page.
