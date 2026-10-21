@@ -1,15 +1,15 @@
 # @pyas/connect-angular
 
-PyasConnect for Angular 19 and later: the dialog your users connect their
-Google, Microsoft or Zoom calendar in, for apps built on
+PyasConnect for Angular 19 and later. PyasConnect is the dialog where your
+users connect their Google, Microsoft or Zoom calendar to apps built on
 [Pyas](https://pyas.io).
 
 ```bash
 npm install @pyas/connect-angular
 ```
 
-Your server makes a connect session (`POST /v2/connect/sessions` with your API
-key) and gives the page its token:
+Your server creates a connect session (`POST /v2/connect/sessions` with your
+API key) and passes its token to the page:
 
 ```ts
 import { Component, input } from '@angular/core'
@@ -26,11 +26,11 @@ export class ConnectCalendar {
 }
 ```
 
-Outputs carry the event's data. `PyasConnectModule` is still exported for
-NgModule apps. The element is loaded in the browser only, so server rendering
-works as it is.
+Outputs emit the event's data. `PyasConnectModule` is still exported for
+NgModule apps. The element loads only in the browser, so server rendering works
+without changes.
 
-Every input, output and styling hook:
+For every input, output and styling hook, see
 [the full guide](https://github.com/brutforce-tech/pyas-connect#readme).
 
 MIT

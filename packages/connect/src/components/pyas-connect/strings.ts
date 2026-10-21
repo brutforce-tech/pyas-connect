@@ -55,7 +55,7 @@ export const DEFAULT_STRINGS = {
     scopeBody: 'Try again and allow everything on the permissions screen.',
     unavailableTitle: "{provider} isn't responding",
     unavailableBody: 'Try again in a few minutes.',
-    networkTitle: "We couldn't reach the sign-in service",
+    networkTitle: "We couldn't connect to the sign-in service",
     networkBody: 'Check your connection and try again.',
     expiredTitle: 'This sign-in link has expired',
     expiredBody: 'Close this and start again.',
