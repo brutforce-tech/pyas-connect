@@ -1,14 +1,14 @@
 # @pyas/connect-vue
 
-PyasConnect for Vue 3: the dialog your users connect their Google, Microsoft or
-Zoom calendar in, for apps built on [Pyas](https://pyas.io).
+PyasConnect for Vue 3. PyasConnect is the dialog where your users connect their
+Google, Microsoft or Zoom calendar to apps built on [Pyas](https://pyas.io).
 
 ```bash
 npm install @pyas/connect-vue
 ```
 
-Your server makes a connect session (`POST /v2/connect/sessions` with your API
-key) and gives the page its token:
+Your server creates a connect session (`POST /v2/connect/sessions` with your
+API key) and passes its token to the page:
 
 ```vue
 <script setup>
@@ -21,12 +21,12 @@ defineProps(['token'])
 </template>
 ```
 
-Events carry the event's data. To open it from your own button, set
-`hide-trigger`, take a template ref and call its `open()` from a click. The
-element is loaded in the browser only, so Nuxt and server rendering work as
-they are.
+Events include the event's data. To open the dialog from your own button, set
+`hide-trigger`, add a template ref, and call its `open()` method from a click.
+The element loads only in the browser, so Nuxt and server rendering work
+without changes.
 
-Every prop, event and styling hook:
+For every prop, event and styling hook, see
 [the full guide](https://github.com/brutforce-tech/pyas-connect#readme).
 
 MIT
