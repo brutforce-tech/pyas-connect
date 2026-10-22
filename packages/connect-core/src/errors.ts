@@ -14,6 +14,7 @@ export type ConnectErrorCode =
     | 'CONNECT_POPUP_BLOCKED'
     | 'CONNECT_CANCELLED'
     | 'CONNECT_NETWORK_ERROR'
+    | 'CONNECT_SESSION_FAILED'
     | 'CONNECT_PROVIDER_ERROR'
     | 'CONNECT_INVALID_CONFIG'
 
@@ -50,6 +51,7 @@ const MESSAGES: Record<ConnectErrorCode, { message: string; retryable: boolean }
     CONNECT_POPUP_BLOCKED: { message: 'Your browser blocked the sign-in window. Allow pop-ups for this site, then try again.', retryable: true },
     CONNECT_CANCELLED: { message: 'The connection was cancelled.', retryable: true },
     CONNECT_NETWORK_ERROR: { message: 'Pyas could not be reached. Check your connection and try again.', retryable: true },
+    CONNECT_SESSION_FAILED: { message: 'Your server could not create a connect session.', retryable: true },
     CONNECT_PROVIDER_ERROR: { message: 'The calendar provider could not finish the sign-in. Try again.', retryable: true },
     CONNECT_INVALID_CONFIG: { message: 'This connect button is not set up correctly.', retryable: false },
 }

@@ -144,7 +144,8 @@ can create a new session.
 Error codes come from the [error registry](https://developer.pyas.io/errors).
 The widget's own codes start with `CONNECT_` (`CONNECT_TIMEOUT`,
 `CONNECT_CONSENT_DENIED`, `CONNECT_POPUP_BLOCKED`, ...). The API's codes keep
-their own names.
+their own names. `CONNECT_SESSION_FAILED` means your own session endpoint failed
+or answered without a token; its `message` includes your endpoint's message.
 
 ## Styling
 

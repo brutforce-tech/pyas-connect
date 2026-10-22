@@ -158,8 +158,18 @@ export const createConnectFlow = (opts: ConnectFlowOptions) => {
             return t
         }
         if (typeof opts.session === 'function') {
-            const fresh = await opts.session()
-            if (typeof fresh !== 'string' || !fresh) throw connectError('CONNECT_INVALID_CONFIG', 'The connect session could not be created. Try again.')
+            // The developer's own endpoint: its failure is theirs to read, never "Pyas could not be reached".
+            let fresh: unknown
+            try {
+                fresh = await opts.session()
+            } catch (error) {
+                if (error instanceof ConnectError) throw error
+                const said = error instanceof Error && error.message ? error.message : ''
+                throw connectError('CONNECT_SESSION_FAILED', said ? `Your session endpoint failed: ${said}` : undefined)
+            }
+            if (typeof fresh !== 'string' || !fresh) {
+                throw connectError('CONNECT_SESSION_FAILED', 'Your session endpoint answered without a token. It should answer { "token": "pcs_..." }, as the SDK\'s sessionHandler does.')
+            }
             return fresh
         }
         return opts.session as string
