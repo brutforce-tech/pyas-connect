@@ -146,27 +146,41 @@
     events.prepend(li)
   }
 
-  /** A fresh element for the current settings: what a page would render. */
+  /**
+   * The element for the current settings, as a page would render it. One element, its
+   * properties updated as the settings change: a session is made only when someone opens it
+   * (or, inline, when it loads), never on every change. A new element only when inline and
+   * dialog swap, since inline starts as soon as it loads.
+   */
+  let el = null
+  let hasKey = false
   const render = () => {
     const s = settings()
     document.documentElement.dataset.theme = s.theme === 'dark' || (s.theme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'
-    const el = document.createElement('pyas-connect')
+    if (!hasKey) {
+      // Without a key every session would fail: say what to do instead of trying.
+      const note = document.createElement('p')
+      note.className = 'banner bad'
+      note.textContent = 'Set PYAS_API_KEY in playground/.env (a live key of the app to connect into), then restart npm run playground.'
+      mount.replaceChildren(note)
+      return
+    }
+    if (!el || el.display !== s.display) {
+      el = document.createElement('pyas-connect')
+      el.getSessionToken = async () => {
+        const res = await fetch('/api/pyas-session', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(settings()) })
+        const body = await res.json()
+        if (!res.ok) throw new Error(body.error?.message ?? 'Session not made')
+        return body.token
+      }
+      for (const name of ['connected', 'error', 'cancel']) el.addEventListener(name, (e) => log(name, e.detail ?? undefined))
+      el.display = s.display
+      mount.replaceChildren(el)
+    }
     el.apiUrl = apiUrl
     el.theme = s.theme
-    el.display = s.display
     el.mode = s.mode
     el.providers = s.providers.join(',')
-    el.getSessionToken = async () => {
-      const res = await fetch('/api/pyas-session', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(s) })
-      const body = await res.json()
-      if (!res.ok) {
-        log('session not made', body.error ?? body)
-        throw new Error(body.error?.message ?? 'Session not made')
-      }
-      return body.token
-    }
-    for (const name of ['connected', 'error', 'cancel']) el.addEventListener(name, (e) => log(name, e.detail ?? undefined))
-    mount.replaceChildren(el)
   }
 
   const showReturn = () => {
@@ -190,6 +204,7 @@
 
   const config = await fetch('/api/config').then((r) => r.json())
   apiUrl = config.apiUrl
+  hasKey = !!config.hasKey
   setStatus(config.hasKey, config.hasKey ? `API ${config.apiUrl}` : 'No API key: set PYAS_API_KEY in playground/.env')
   form.addEventListener('change', render)
   document.getElementById('clear').addEventListener('click', () => {

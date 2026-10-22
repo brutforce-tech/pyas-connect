@@ -471,6 +471,8 @@ export class PyasConnect {
             : code === 'CONNECTION_SCOPE_INSUFFICIENT' ? view(t.scopeTitle, t.scopeBody, t.tryAgain, false)
             : code === 'PROVIDER_UNAVAILABLE' || code === 'PROVIDER_TIMEOUT' ? view(t.unavailableTitle, t.unavailableBody, t.tryAgain, true)
             : code === 'CONNECT_NETWORK_ERROR' ? view(t.networkTitle, t.networkBody, t.tryAgain, false)
+            // The developer's session endpoint failed: the person can try again; the developer reads the error event.
+            : code === 'CONNECT_SESSION_FAILED' ? view(t.genericTitle, t.genericBody, t.tryAgain, false)
             : code === 'AUTH_INVALID_CONNECT_SESSION' ? view(t.expiredTitle, t.expiredBody, t.tryAgain, false)
             : code === 'BILLING_CONNECTION_LIMIT' || code === 'BILLING_SUBSCRIPTION_REQUIRED' ? view(t.limitTitle, t.limitBody, null, false)
             : code === 'CONNECT_INVALID_CONFIG' || code === 'AUTH_ORIGIN_NOT_ALLOWED' || code === 'CONNECTION_PROVIDER_NOT_CONFIGURED' ? view(t.configTitle, t.configBody, null, false)

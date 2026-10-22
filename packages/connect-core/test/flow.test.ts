@@ -289,6 +289,25 @@ describe('the connect flow', () => {
         expect(none.flow.getSnapshot()).toMatchObject({ status: 'failed', error: { code: 'CONNECT_INVALID_CONFIG' } })
     })
 
+    it("a session endpoint that fails says so, with its own message, never 'Pyas could not be reached'; the person can try again, which asks the endpoint again", async () => {
+        const failing = vi.fn(async () => { throw new Error('Set PYAS_API_KEY in playground/.env') })
+        const { flow, events, api } = make({ session: failing })
+        await flow.start()
+        expect(flow.getSnapshot()).toMatchObject({ status: 'failed', error: { code: 'CONNECT_SESSION_FAILED', message: 'Your session endpoint failed: Set PYAS_API_KEY in playground/.env', retryable: true } })
+        expect(events.error).toHaveBeenCalledWith(expect.objectContaining({ code: 'CONNECT_SESSION_FAILED' }))
+        expect(api.info).not.toHaveBeenCalled()
+        // Tried again only when the person asks: one call per attempt, never on its own.
+        expect(failing).toHaveBeenCalledTimes(1)
+        flow.retry()
+        await new Promise((resolve) => setTimeout(resolve, 0))
+        expect(failing).toHaveBeenCalledTimes(2)
+
+        // An endpoint that answers without a token: told what it should answer.
+        const empty = make({ session: async () => undefined as unknown as string })
+        await empty.flow.start()
+        expect(empty.flow.getSnapshot().error).toMatchObject({ code: 'CONNECT_SESSION_FAILED', message: expect.stringContaining('It should answer { "token": "pcs_..." }') })
+    })
+
     it("a reconnect names the account and its provider; a token function's first token is used for the first attempt", async () => {
         let n = 0
         const api = fakeApi({ info: vi.fn(async () => ({ app: { name: 'Acme', iconUrl: null }, providers: ['microsoft'], reconnect: { email: 'bo@contoso.test', provider: 'microsoft' }, loginHint: null, expiresAt: '' })) as any })
