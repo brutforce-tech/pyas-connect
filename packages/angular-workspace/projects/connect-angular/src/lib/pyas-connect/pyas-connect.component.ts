@@ -7,7 +7,7 @@ import type { ConnectErrorInfo, PyasConnectStrings } from '@pyas/connect'
 
 /**
  * PyasConnect for Angular: the <pyas-connect> element, with Angular inputs and
- * outputs. No UI of its own (plan §59): one element serves every framework.
+ * outputs. No UI of its own: one element serves every framework.
  * Its selector is the element's own tag, so the host Angular creates is the
  * element; inputs are set on it as properties, and its events come out as
  * outputs carrying the event's data, as 1.x's did.

@@ -4,9 +4,12 @@ import type { APIRequestContext } from '@playwright/test'
 
 const ROOT = path.resolve(__dirname, '..', '..')
 
-export const API_DIR = process.env.PYAS_API_DIR || path.resolve(ROOT, '..', 'pyas-api')
-export const API_URL = 'http://localhost:3998'
-export const STATE_FILE = path.join(ROOT, 'e2e', '.state.json')
+/**
+ * The Pyas API the suite runs against (its test server, which plays Google's, Microsoft's and
+ * Zoom's sign-in), and a JSON file with the test app it was set up with (SeedState).
+ */
+export const API_URL = (process.env.PYAS_E2E_API_URL ?? '').replace(/\/+$/, '')
+export const STATE_FILE = process.env.PYAS_E2E_STATE ?? ''
 
 /** The three example apps, each a project: the same journeys run in every one. */
 export const EXAMPLES = [
@@ -18,7 +21,10 @@ export const EXAMPLES = [
 /** The plain playground (playground/server.mjs), with the suite's key. */
 export const PLAYGROUND = { name: 'playground', url: 'http://localhost:4100', cwd: ROOT, command: 'node playground/server.mjs' }
 
-/** What the widget seed made (pyas-api/e2e/connectSeed.ts). */
+/**
+ * The test app (PYAS_E2E_STATE): its live key, ID and name, the client ID PyasConnect 1.x uses,
+ * and the name of the key. Its allowed origins include the example apps and the playground.
+ */
 export interface SeedState {
     apiKey: string
     appId: string

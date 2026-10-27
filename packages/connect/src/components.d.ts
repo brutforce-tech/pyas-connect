@@ -11,8 +11,7 @@ export { PyasConnectStrings } from "./components/pyas-connect/strings";
 export { ConnectErrorInfo } from "@pyas/connect-core";
 export namespace Components {
     /**
-     * PyasConnect 2.0: the dialog a developer's users connect a calendar in
-     * (plan §59; screens and copy in the PyasConnect 2.0 Design doc).
+     * PyasConnect 2.0: the dialog a developer's users connect a calendar in.
      *   <pyas-connect session-token="pcs_..."></pyas-connect>
      * The flow is
      * @pyas /connect-core's; this renders it. 1.x keeps working:
@@ -78,7 +77,7 @@ export namespace Components {
          */
         "sessionToken"?: string;
         /**
-          * 1.x, accepted and unused: "Powered by Pyas" always shows (which plans may hide is open, plan §59).
+          * 1.x, accepted and unused: "Powered by Pyas" always shows.
          */
         "showDisclaimer"?: boolean;
         /**
@@ -122,8 +121,7 @@ declare global {
         "connectError": { message: string; code: string };
     }
     /**
-     * PyasConnect 2.0: the dialog a developer's users connect a calendar in
-     * (plan §59; screens and copy in the PyasConnect 2.0 Design doc).
+     * PyasConnect 2.0: the dialog a developer's users connect a calendar in.
      *   <pyas-connect session-token="pcs_..."></pyas-connect>
      * The flow is
      * @pyas /connect-core's; this renders it. 1.x keeps working:
@@ -155,8 +153,7 @@ declare global {
 }
 declare namespace LocalJSX {
     /**
-     * PyasConnect 2.0: the dialog a developer's users connect a calendar in
-     * (plan §59; screens and copy in the PyasConnect 2.0 Design doc).
+     * PyasConnect 2.0: the dialog a developer's users connect a calendar in.
      *   <pyas-connect session-token="pcs_..."></pyas-connect>
      * The flow is
      * @pyas /connect-core's; this renders it. 1.x keeps working:
@@ -234,7 +231,7 @@ declare namespace LocalJSX {
          */
         "sessionToken"?: string;
         /**
-          * 1.x, accepted and unused: "Powered by Pyas" always shows (which plans may hide is open, plan §59).
+          * 1.x, accepted and unused: "Powered by Pyas" always shows.
          */
         "showDisclaimer"?: boolean;
         /**
@@ -273,8 +270,7 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             /**
-             * PyasConnect 2.0: the dialog a developer's users connect a calendar in
-             * (plan §59; screens and copy in the PyasConnect 2.0 Design doc).
+             * PyasConnect 2.0: the dialog a developer's users connect a calendar in.
              *   <pyas-connect session-token="pcs_..."></pyas-connect>
              * The flow is
              * @pyas /connect-core's; this renders it. 1.x keeps working:

@@ -3,7 +3,7 @@ import type { ConnectErrorInfo, PyasConnectStrings } from '@pyas/connect'
 
 /**
  * PyasConnect for React: the <pyas-connect> element, with React props and
- * callbacks. No UI of its own (plan §59): one element serves every framework.
+ * callbacks. No UI of its own: one element serves every framework.
  *
  *   <PyasConnect sessionToken={token} onConnected={(account) => save(account.accountId)} />
  *

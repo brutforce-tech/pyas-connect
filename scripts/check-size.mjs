@@ -1,4 +1,4 @@
-// The bundle budget (plan §59): the element with the core, gzipped, at most 25 KB.
+// The bundle budget: the element with the core, gzipped, at most 25 KB.
 // Stencil's runtime is shared by every Stencil component on a page and is reported, not counted.
 import fs from 'node:fs'
 import zlib from 'node:zlib'

@@ -4,8 +4,8 @@ import type { BrowserContext } from '@playwright/test'
  * Google's, Microsoft's and Zoom's consent pages, played in the sign-in
  * window. The page has Allow and Cancel, and sends the person back to the
  * redirect URI the way the provider would: with a code on Allow (the code
- * says who signed in, pyas-api/e2e/providers.ts) or `error=access_denied` on
- * Cancel.
+ * says who signed in, as the API's test server reads it) or
+ * `error=access_denied` on Cancel.
  */
 
 const CONSENT = /^https:\/\/(accounts\.google\.com\/o\/oauth2|login\.microsoftonline\.com\/common\/oauth2\/v2\.0\/authorize|zoom\.us\/oauth\/authorize)/
