@@ -1,5 +1,5 @@
 /**
- * @pyas/connect: the <pyas-connect> element (PyasConnect 2.0, plan §59).
+ * @pyas/connect: the <pyas-connect> element (PyasConnect 2.0).
  * The flow itself is @pyas/connect-core's; its types are re-exported here,
  * with the helper for a callback page on your own OAuth app.
  */

@@ -216,13 +216,13 @@ To see a change, rebuild the element and reload the page. Run
 `npm run build -w @pyas/connect`, or `npx stencil build --watch` in
 `packages/connect`.
 
-The end-to-end suite requires a
-[pyas-api](https://github.com/brutforce-tech/pyas-api) checkout next to this
-repository (or at `PYAS_API_DIR`), with its test databases running
-(`npm run test:db:up` in pyas-api). The suite starts the API with its own
-database and simulates Google's, Microsoft's and Zoom's sign-in pages. It runs
-every user journey in each example app, then captures a screenshot of every
-state of the dialog and checks each one with axe.
+The end-to-end suite runs against a Pyas API whose test server plays Google's,
+Microsoft's and Zoom's sign-in, set with two settings: `PYAS_E2E_API_URL`, the
+API, and `PYAS_E2E_STATE`, a JSON file with the test app's `apiKey` (a live
+key), `appId`, `appName`, `clientId` and `tokenName`. The app's allowed
+origins include the example apps and the playground (`http://localhost:4100`
+to `4103`). The suite runs every user journey in each example app, then
+captures a screenshot of every state of the dialog and checks each one with axe.
 
 Releases are published only from a version tag:
 

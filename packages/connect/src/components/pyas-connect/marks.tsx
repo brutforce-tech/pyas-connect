@@ -11,7 +11,7 @@ import { h } from '@stencil/core'
  * the widget renders in shadow DOM, so each widget's ids are its own.
  *
  * Zoom: the camera mark on Zoom blue; check it against Zoom's current brand
- * kit before release (plan §59).
+ * kit before release.
  */
 
 export const GoogleCalendarMark = () => (

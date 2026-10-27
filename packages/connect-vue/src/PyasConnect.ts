@@ -3,7 +3,7 @@ import type { ConnectErrorInfo, PyasConnectStrings } from '@pyas/connect'
 
 /**
  * PyasConnect for Vue: the <pyas-connect> element, with Vue props and events.
- * No UI of its own (plan §59): one element serves every framework.
+ * No UI of its own: one element serves every framework.
  *
  *   <PyasConnect :session-token="token" @connected="(account) => save(account.accountId)" />
  *

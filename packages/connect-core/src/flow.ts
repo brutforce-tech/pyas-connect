@@ -7,7 +7,7 @@
  *                            └─────────────┴────────────┴──▶ failed ─retry()─▶ authorizing
  *   any time: cancel() ─▶ cancelled; destroy() ─▶ nothing left behind
  *
- * Security (plan §59): a callback message is taken only from the API's origin
+ * Security: a callback message is taken only from the API's origin
  * (or an origin the developer listed for their own callback page), only from
  * the popup this flow opened, and only with this attempt's state. Anything
  * else is ignored, not reported. Codes are single-use on the API's side.
@@ -89,7 +89,7 @@ const ALL_PROVIDERS: Provider[] = ['google', 'microsoft', 'zoom']
 const POPUP_NAME = 'pyas_connect'
 const PROVIDER_NAMES: Record<Provider, string> = { google: 'Google', microsoft: 'Microsoft', zoom: 'Zoom' }
 
-/** Where v1 appends the opener's signed origin to a 1.x state (pyas-api helpers/connectOrigin). */
+/** Where the API appends the opener's signed origin to a 1.x state. */
 const SIGNED_ORIGIN = '~pyasorigin~'
 
 export const createConnectFlow = (opts: ConnectFlowOptions) => {

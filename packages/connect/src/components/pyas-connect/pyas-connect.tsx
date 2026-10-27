@@ -8,8 +8,7 @@ const DEFAULT_API_URL = 'https://api.pyas.io'
 let instances = 0
 
 /**
- * PyasConnect 2.0: the dialog a developer's users connect a calendar in
- * (plan §59; screens and copy in the PyasConnect 2.0 Design doc).
+ * PyasConnect 2.0: the dialog a developer's users connect a calendar in.
  *
  *   <pyas-connect session-token="pcs_..."></pyas-connect>
  *
@@ -73,7 +72,7 @@ export class PyasConnect {
     @Prop({ attribute: 'show-labels' }) showLabels?: boolean
     /** 1.x, accepted and unused: iCloud is not offered until Pyas supports it. */
     @Prop({ attribute: 'show-icloud' }) showIcloud?: boolean
-    /** 1.x, accepted and unused: "Powered by Pyas" always shows (which plans may hide is open, plan §59). */
+    /** 1.x, accepted and unused: "Powered by Pyas" always shows. */
     @Prop({ attribute: 'show-disclaimer' }) showDisclaimer?: boolean
     /** 1.x, accepted and unused: the details screen has no description. */
     @Prop({ attribute: 'form-description' }) formDescription?: string

@@ -1,20 +1,17 @@
-import { execSync } from 'node:child_process'
-import { API_DIR, EXAMPLES, PLAYGROUND, STATE_FILE } from './env'
+import fs from 'node:fs'
+import { API_URL, STATE_FILE, type SeedState } from './env'
 
 /**
- * Fresh data before every run: pyas-api's widget seed (its own database,
- * `pyas_e2e_connect`), with the example apps' and the playground's origins allowed. The live key it
- * makes is written to e2e/.state.json (gitignored, local data only).
+ * Before any journey: the settings are there and the API answers, so a missing setting fails
+ * once with what to set, not in every test.
  */
-export default function globalSetup() {
-    execSync('npx tsx e2e/connectSeed.ts', {
-        cwd: API_DIR,
-        stdio: 'inherit',
-        env: {
-            ...process.env,
-            E2E_DB: 'pyas_e2e_connect',
-            E2E_CONNECT_ORIGINS: [...EXAMPLES, PLAYGROUND].map((e) => e.url).join(','),
-            E2E_CONNECT_OUT: STATE_FILE,
-        },
-    })
+export default async function globalSetup() {
+    if (!API_URL || !STATE_FILE) {
+        throw new Error('Set PYAS_E2E_API_URL to the Pyas API the suite runs against, and PYAS_E2E_STATE to the JSON file with its test app (see e2e/support/env.ts).')
+    }
+    const state = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8')) as Partial<SeedState>
+    const missing = (['apiKey', 'appId', 'appName', 'clientId', 'tokenName'] as const).filter((field) => !state[field])
+    if (missing.length) throw new Error(`${STATE_FILE} has no ${missing.join(', ')}.`)
+    const answered = await fetch(`${API_URL}/v2/openapi.json`).then((res) => res.ok, () => false)
+    if (!answered) throw new Error(`No Pyas API answers at ${API_URL} (PYAS_E2E_API_URL).`)
 }
