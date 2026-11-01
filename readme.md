@@ -120,7 +120,8 @@ element.getSessionToken = async () => (await fetch('/api/pyas-session', { method
 | `theme` | `light` (default), `dark` or `auto` |
 | `mode` | `popup` (default), or `redirect` for in-app browsers. `redirect` requires a `returnUrl` on the session. |
 | `hide-trigger` | Hides the built-in button, so you call `open()` yourself |
-| `strings` | Replaces any of the dialog's text, which is also how you translate it. Accepts an object, or JSON in the attribute. |
+| `locale` | The dialog's language: `en`, `nb` (Norwegian), `sv`, `da`, `de`, `fr`, `es`, `nl` or `pt-BR`. If you leave it out, the dialog uses your page's `<html lang>`, then the browser's language, then English. |
+| `strings` | Replaces any of the dialog's text, in any language, including one the dialog doesn't include. Accepts an object, or JSON in the attribute. |
 | `api-url` | Another Pyas API, such as a local one for development |
 | `callback-origins` | The origin of your own OAuth callback page, if your app uses Native Auth (your own OAuth app) |
 

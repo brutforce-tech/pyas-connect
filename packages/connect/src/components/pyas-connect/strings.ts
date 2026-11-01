@@ -1,7 +1,8 @@
 /**
- * Every word the widget shows, from the PyasConnect 2.0 design. Any of them
- * can be replaced through the `strings` property, which is also how a
- * translation is supplied. `{app}`, `{provider}`, `{calendar}` and `{email}`
+ * Every word the widget shows, in English, from the PyasConnect 2.0 design.
+ * The other built-in languages are in locales.ts. Any of them can be replaced
+ * through the `strings` property, which is also how another language is
+ * supplied. `{app}`, `{provider}`, `{calendar}` and `{email}`
  * are filled in.
  *
  * The person connecting never reads about billing, tokens or Pyas internals:
@@ -72,11 +73,9 @@ export const DEFAULT_STRINGS = {
 
 export type PyasConnectStrings = typeof DEFAULT_STRINGS
 
-const CALENDAR_NAMES: Record<string, string> = { google: 'Google Calendar', microsoft: 'Outlook', zoom: 'Zoom' }
 const PROVIDER_NAMES: Record<string, string> = { google: 'Google', microsoft: 'Microsoft', zoom: 'Zoom' }
 
 export const providerName = (provider: string | null | undefined) => (provider ? PROVIDER_NAMES[provider] ?? provider : '')
-export const calendarName = (provider: string | null | undefined) => (provider ? CALENDAR_NAMES[provider] ?? provider : '')
 
 /** A string with its `{name}` slots filled; unknown slots are left as they are. */
 export const fill = (template: string, values: Record<string, string | null | undefined>) =>

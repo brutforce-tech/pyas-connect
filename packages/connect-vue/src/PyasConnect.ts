@@ -30,6 +30,8 @@ const props = {
     mode: optional(String as PropType<'popup' | 'redirect'>),
     display: optional(String as PropType<'dialog' | 'inline'>),
     theme: optional(String as PropType<'light' | 'dark' | 'auto'>),
+    /** `en`, `nb`, `sv`, `da`, `de`, `fr`, `es`, `nl` or `pt-BR`; without it, the page's language, then the browser's. */
+    locale: optional(String),
     strings: optional(Object as PropType<Partial<PyasConnectStrings>>),
     hideTrigger: optional(Boolean),
     callbackOrigins: optional(String),

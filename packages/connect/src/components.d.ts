@@ -57,6 +57,10 @@ export namespace Components {
           * No trigger button: open it with `open()` from your own.
          */
         "hideTrigger"?: boolean;
+        /**
+          * The language: `en`, `nb` (Norwegian), `sv`, `da`, `de`, `fr`, `es`, `nl` or `pt-BR`. Without it, the page's `<html lang>`, then the browser's languages, then English.
+         */
+        "locale"?: string;
         "modalDescription"?: string;
         "modalTitle"?: string;
         /**
@@ -96,7 +100,7 @@ export namespace Components {
         "showZoom"?: boolean;
         "state"?: string;
         /**
-          * Any of the widget's words, replaced (also how a translation is supplied): an object, or JSON in the attribute.
+          * Any of the widget's words, replaced (also how another language is supplied): an object, or JSON in the attribute.
          */
         "strings"?: Partial<PyasConnectStrings> | string;
         /**
@@ -195,6 +199,10 @@ declare namespace LocalJSX {
           * No trigger button: open it with `open()` from your own.
          */
         "hideTrigger"?: boolean;
+        /**
+          * The language: `en`, `nb` (Norwegian), `sv`, `da`, `de`, `fr`, `es`, `nl` or `pt-BR`. Without it, the page's `<html lang>`, then the browser's languages, then English.
+         */
+        "locale"?: string;
         "modalDescription"?: string;
         "modalTitle"?: string;
         /**
@@ -250,7 +258,7 @@ declare namespace LocalJSX {
         "showZoom"?: boolean;
         "state"?: string;
         /**
-          * Any of the widget's words, replaced (also how a translation is supplied): an object, or JSON in the attribute.
+          * Any of the widget's words, replaced (also how another language is supplied): an object, or JSON in the attribute.
          */
         "strings"?: Partial<PyasConnectStrings> | string;
         /**

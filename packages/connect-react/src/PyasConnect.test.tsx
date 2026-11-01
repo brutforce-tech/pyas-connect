@@ -20,12 +20,13 @@ const mount = async (ui: React.ReactElement) => {
 describe('PyasConnect for React', () => {
     it('renders the element with every prop as a property, functions and objects included', async () => {
         const getSessionToken = async () => 'pcs_x'
-        const { el } = await mount(<PyasConnect sessionToken="pcs_1" getSessionToken={getSessionToken} strings={{ trigger: 'Link' }} theme="auto" showZoom={false}>Connect</PyasConnect>)
+        const { el } = await mount(<PyasConnect sessionToken="pcs_1" getSessionToken={getSessionToken} strings={{ trigger: 'Link' }} theme="auto" locale="de" showZoom={false}>Connect</PyasConnect>)
         expect(el).not.toBeNull()
         expect(el.sessionToken).toBe('pcs_1')
         expect(el.getSessionToken).toBe(getSessionToken)
         expect(el.strings).toEqual({ trigger: 'Link' })
         expect(el.theme).toBe('auto')
+        expect(el.locale).toBe('de')
         expect(el.showZoom).toBe(false)
         expect(el.textContent).toBe('Connect')
     })

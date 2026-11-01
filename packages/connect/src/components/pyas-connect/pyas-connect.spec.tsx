@@ -72,6 +72,28 @@ describe('<pyas-connect>', () => {
         expect(t.flow().choose).toHaveBeenCalledWith('google')
     })
 
+    it('speaks the language of its locale, of the page, then English; the developer\'s strings still win', async () => {
+        const german = await page('<pyas-connect session-token="pcs_t" locale="de"></pyas-connect>')
+        expect(german.el.getAttribute('lang')).toBe('de')
+        await german.click('Konto verbinden')
+        await german.set({ status: 'choosing' })
+        expect(german.text()).toContain('Acme Scheduling sieht nur, was Sie auf dem nächsten Bildschirm erlauben.')
+        expect(german.buttons()).toEqual(expect.arrayContaining(['Google Kalender', 'Outlook']))
+        expect(german.shadow().querySelector('.footer')!.textContent).toContain('Bereitgestellt von Pyas')
+        await german.set({ status: 'error', provider: 'google', error: { code: 'access_denied' } })
+        expect(german.text()).not.toMatch(/Try again|didn't grant/)
+
+        const norwegian = await page('<pyas-connect session-token="pcs_t" locale="nn-NO" strings=\'{"trigger":"Koble til kalender"}\'></pyas-connect>')
+        expect(norwegian.el.getAttribute('lang')).toBe('nb')
+        expect(norwegian.buttons()).toEqual(['Koble til kalender'])
+        await norwegian.click('Koble til kalender')
+        await norwegian.set({ status: 'choosing', provider: 'google', reconnect: { email: 'kari@firma.no', provider: 'google' } })
+        expect(norwegian.text()).toContain('Tilkoblingen til Google Kalender for kari@firma.no har sluttet å virke.')
+
+        const unknown = await page('<pyas-connect session-token="pcs_t" locale="ja"></pyas-connect>')
+        expect(unknown.buttons()).toEqual(['Connect an account'])
+    })
+
     it('a reconnect names the account and goes straight to its provider', async () => {
         const t = await page()
         await t.click('Connect an account')

@@ -1,7 +1,8 @@
 import { Component, Element, Event, EventEmitter, h, Host, Method, Prop, State, Watch } from '@stencil/core'
 import { createConnectFlow, ConnectFlow, ConnectFlowOptions, ConnectSnapshot, ConnectErrorInfo, ConnectedAccount, Provider } from '@pyas/connect-core'
 import { AlertGlyph, CheckGlyph, ChevronGlyph, CloseGlyph, providerMark } from './marks'
-import { calendarName, DEFAULT_STRINGS, fill, providerName, PyasConnectStrings } from './strings'
+import { fill, providerName, PyasConnectStrings } from './strings'
+import { resolveLocale, TRANSLATIONS, type Locale } from './locales'
 
 const ALL: Provider[] = ['google', 'microsoft', 'zoom']
 const DEFAULT_API_URL = 'https://api.pyas.io'
@@ -46,7 +47,12 @@ export class PyasConnect {
     @Prop({ reflect: true }) display?: 'dialog' | 'inline'
     /** `light` (default), `dark`, or `auto` (follows the system setting). */
     @Prop({ reflect: true }) theme?: 'light' | 'dark' | 'auto'
-    /** Any of the widget's words, replaced (also how a translation is supplied): an object, or JSON in the attribute. */
+    /**
+     * The language: `en`, `nb` (Norwegian), `sv`, `da`, `de`, `fr`, `es`, `nl` or `pt-BR`. Without it,
+     * the page's `<html lang>`, then the browser's languages, then English.
+     */
+    @Prop() locale?: string
+    /** Any of the widget's words, replaced (also how another language is supplied): an object, or JSON in the attribute. */
     @Prop() strings?: Partial<PyasConnectStrings> | string
     /** No trigger button: open it with `open()` from your own. */
     @Prop({ attribute: 'hide-trigger' }) hideTrigger?: boolean
@@ -150,6 +156,18 @@ export class PyasConnect {
         this.returnFocus?.focus?.()
     }
 
+    /** The language shown, from `locale`, the page, then the browser. */
+    private get language(): Locale {
+        const browser = typeof navigator !== 'undefined' ? [...(navigator.languages ?? []), navigator.language] : []
+        return resolveLocale(this.locale, typeof document !== 'undefined' ? document.documentElement.lang : null, ...browser)
+    }
+
+    /** A provider's calendar as the language calls it ("Google Kalender"). */
+    private calendarLabel(provider: string | null | undefined): string {
+        const t = this.t
+        return provider === 'google' ? t.googleButton : provider === 'microsoft' ? t.microsoftButton : provider === 'zoom' ? t.zoomButton : (provider ?? '')
+    }
+
     private get t(): PyasConnectStrings {
         let custom: Partial<PyasConnectStrings> = {}
         if (typeof this.strings === 'string') {
@@ -158,7 +176,7 @@ export class PyasConnect {
             custom = this.strings
         }
         return {
-            ...DEFAULT_STRINGS,
+            ...TRANSLATIONS[this.language],
             ...(this.modalTitle ? { chooseTitle: this.modalTitle } : {}),
             ...(this.modalDescription ? { chooseIntro: this.modalDescription } : {}),
             ...(this.formTitle ? { detailsTitle: this.formTitle } : {}),
@@ -352,7 +370,7 @@ export class PyasConnect {
     private screen(s: ConnectSnapshot) {
         const t = this.t
         const provider = s.provider
-        const values = { app: this.appName(), provider: providerName(provider), calendar: calendarName(provider), email: s.reconnect?.email ?? this.snap?.account?.email ?? '' }
+        const values = { app: this.appName(), provider: providerName(provider), calendar: this.calendarLabel(provider), email: s.reconnect?.email ?? this.snap?.account?.email ?? '' }
         const many = s.providers.length > 1
         const title = (text: string) => <h2 class="title" id={this.titleId()} part="title">{text}</h2>
 
@@ -446,7 +464,7 @@ export class PyasConnect {
                         <div class="body centered">
                             <span class="badge success"><CheckGlyph /></span>
                             {title(t.connectedTitle)}
-                            <p class="account"><strong>{s.account?.email}</strong><span>{calendarName(s.account?.provider ?? provider)}</span></p>
+                            <p class="account"><strong>{s.account?.email}</strong><span>{this.calendarLabel(s.account?.provider ?? provider)}</span></p>
                             {!this.inline && (
                                 <div class="actions"><button type="button" class="primary" part="primary-button" onClick={() => void this.close()}>{t.done}</button></div>
                             )}
@@ -520,9 +538,9 @@ export class PyasConnect {
     }
 
     render() {
-        if (this.inline) return <Host class="inline">{this.panel()}</Host>
+        if (this.inline) return <Host class="inline" lang={this.language}>{this.panel()}</Host>
         return (
-            <Host>
+            <Host lang={this.language}>
                 {!this.hideTrigger && (
                     <button type="button" class="trigger" part="trigger" aria-haspopup="dialog" onClick={() => void this.open()}>
                         <slot>{this.t.trigger}</slot>
