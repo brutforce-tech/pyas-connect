@@ -11,13 +11,14 @@ type El = HTMLElement & Record<string, unknown>
 describe('PyasConnect for Vue', () => {
     it('renders the element with every prop as a property, and leaves unset ones to the element', async () => {
         const getSessionToken = async () => 'pcs_x'
-        const w = mount(PyasConnect, { props: { sessionToken: 'pcs_1', getSessionToken, strings: { trigger: 'Link' }, showZoom: false }, slots: { default: 'Connect' } })
+        const w = mount(PyasConnect, { props: { sessionToken: 'pcs_1', getSessionToken, strings: { trigger: 'Link' }, locale: 'nb', showZoom: false }, slots: { default: 'Connect' } })
         await nextTick()
         const el = w.element as El
         expect(el.tagName.toLowerCase()).toBe('pyas-connect')
         expect(el.sessionToken).toBe('pcs_1')
         expect(el.getSessionToken).toBe(getSessionToken)
         expect(el.strings).toEqual({ trigger: 'Link' })
+        expect(el.locale).toBe('nb')
         expect(el.showZoom).toBe(false)
         // Not given: the element keeps its own default (Vue would otherwise send false).
         expect('showGoogle' in el).toBe(false)

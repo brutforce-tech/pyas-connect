@@ -4,7 +4,7 @@
  *   ?token=pcs_...            a connect session's token (your server makes it)
  *   ?fresh=1                  instead, a new session per attempt, from POST /api/pyas-session
  *   ?api=http://localhost:3998  the Pyas API
- *   ?theme=dark|auto  ?display=inline  ?mode=redirect  ?providers=google,zoom  ?hideTrigger=1
+ *   ?theme=dark|auto  ?locale=de  ?display=inline  ?mode=redirect  ?providers=google,zoom  ?hideTrigger=1
  *   ?clientId=...&tokenName=...   PyasConnect 1.x's keys instead of a session
  *
  * The same file is in every example (React, Vue, Angular).
@@ -31,6 +31,7 @@ export const readSetup = (search: string = window.location.search): Setup => {
   copy('token', 'sessionToken')
   copy('api', 'apiUrl')
   copy('theme')
+  copy('locale')
   copy('display')
   copy('mode')
   copy('providers')

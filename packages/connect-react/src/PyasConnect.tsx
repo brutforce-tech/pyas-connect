@@ -29,6 +29,8 @@ export interface PyasConnectProps {
     mode?: 'popup' | 'redirect'
     display?: 'dialog' | 'inline'
     theme?: 'light' | 'dark' | 'auto'
+    /** `en`, `nb`, `sv`, `da`, `de`, `fr`, `es`, `nl` or `pt-BR`; without it, the page's language, then the browser's. */
+    locale?: string
     strings?: Partial<PyasConnectStrings>
     hideTrigger?: boolean
     callbackOrigins?: string
@@ -70,7 +72,7 @@ export interface PyasConnectHandle {
 
 /** Props passed to the element as properties (objects and functions too). */
 const PROPS = [
-    'sessionToken', 'getSessionToken', 'providers', 'apiUrl', 'mode', 'display', 'theme', 'strings', 'hideTrigger', 'callbackOrigins',
+    'sessionToken', 'getSessionToken', 'providers', 'apiUrl', 'mode', 'display', 'theme', 'locale', 'strings', 'hideTrigger', 'callbackOrigins',
     'clientId', 'tokenName', 'userName', 'userEmail', 'productName', 'state', 'modalTitle', 'modalDescription', 'formTitle', 'formDescription',
     'showGoogle', 'showOutlook', 'showZoom', 'showLabels', 'showIcloud', 'showDisclaimer',
 ] as const

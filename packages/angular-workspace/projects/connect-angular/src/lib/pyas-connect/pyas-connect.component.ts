@@ -51,6 +51,8 @@ export class PyasConnect implements OnChanges, AfterViewInit, OnDestroy {
     @Input() mode?: 'popup' | 'redirect'
     @Input() display?: 'dialog' | 'inline'
     @Input() theme?: 'light' | 'dark' | 'auto'
+    /** `en`, `nb`, `sv`, `da`, `de`, `fr`, `es`, `nl` or `pt-BR`; without it, the page's language, then the browser's. */
+    @Input() locale?: string
     @Input() strings?: Partial<PyasConnectStrings>
     @Input() hideTrigger?: boolean
     @Input() callbackOrigins?: string

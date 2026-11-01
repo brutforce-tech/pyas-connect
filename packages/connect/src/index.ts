@@ -8,3 +8,5 @@ export type { ConnectErrorInfo, ConnectedAccount, Provider } from '@pyas/connect
 export { postCallbackResult } from '@pyas/connect-core'
 export { DEFAULT_STRINGS } from './components/pyas-connect/strings'
 export type { PyasConnectStrings } from './components/pyas-connect/strings'
+export { LOCALES, TRANSLATIONS } from './components/pyas-connect/locales'
+export type { Locale } from './components/pyas-connect/locales'

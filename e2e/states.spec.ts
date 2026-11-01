@@ -165,6 +165,99 @@ test('reconnecting an account', async ({ page, request }) => {
     await check(page, 'reconnect')
 })
 
+/**
+ * Every state again in German, on a phone: German's longer words are the ones
+ * that break a layout first. Each is screenshotted and checked with axe.
+ */
+test.describe('in German, on a phone', () => {
+    test.use({ viewport: { width: 360, height: 780 }, isMobile: true, hasTouch: true })
+
+    const openGerman = async (page: Page) => {
+        await page.getByRole('button', { name: 'Konto verbinden' }).click()
+        await expect(page.getByRole('dialog', { name: 'Konto verbinden' })).toBeVisible()
+        await expect(page.locator('pyas-connect')).toHaveAttribute('lang', 'de')
+        // By role only: its name is the title, which changes with each screen.
+        return page.getByRole('dialog')
+    }
+
+    test('the trigger and the chooser', async ({ page, request }) => {
+        await page.goto(examplePath({ token: await makeSession(request), locale: 'de' }))
+        await expect(page.getByRole('button', { name: 'Konto verbinden' })).toBeVisible()
+        const dialog = await openGerman(page)
+        await expect(dialog).toContainText(`${seedState().appName} sieht nur, was Sie auf dem nächsten Bildschirm erlauben.`)
+        await check(page, 'de-choosing')
+    })
+
+    test('waiting, still there, then refused', async ({ page, context, request }) => {
+        await page.clock.install()
+        await playProviders(context)
+        await page.goto(examplePath({ token: await makeSession(request), locale: 'de' }))
+        const dialog = await openGerman(page)
+        const popup = page.waitForEvent('popup')
+        await dialog.getByRole('button', { name: 'Google Kalender' }).click()
+        const window = await popup
+        await expect(dialog.getByRole('heading', { name: 'Weiter bei Google' })).toBeVisible()
+        await page.bringToFront()
+        await check(page, 'de-waiting')
+        await page.clock.runFor(61_000)
+        await expect(dialog).toContainText('Noch da?')
+        await check(page, 'de-still-there')
+        await window.getByRole('button', { name: 'Cancel' }).click()
+        await expect(dialog.getByRole('heading', { name: 'Der Zugriff wurde nicht erteilt' })).toBeVisible()
+        await check(page, 'de-denied')
+    })
+
+    test('connected', async ({ page, context, request }) => {
+        const provider = await playProviders(context)
+        provider.signInAs({ email: 'maria.schneider@beispiel.test', name: 'Maria Schneider' })
+        await page.goto(examplePath({ token: await makeSession(request), locale: 'de' }))
+        const dialog = await openGerman(page)
+        const popup = page.waitForEvent('popup')
+        await dialog.getByRole('button', { name: 'Google Kalender' }).click()
+        await (await popup).getByRole('button', { name: 'Allow' }).click()
+        await expect(dialog.getByRole('heading', { name: 'Konto verbunden' })).toBeVisible()
+        await check(page, 'de-connected')
+    })
+
+    test('the browser blocked the sign-in window', async ({ page, request }) => {
+        await page.addInitScript(() => { window.open = () => null })
+        await page.goto(examplePath({ token: await makeSession(request), locale: 'de' }))
+        const dialog = await openGerman(page)
+        await dialog.getByRole('button', { name: 'Google Kalender' }).click()
+        await expect(dialog.getByRole('heading', { name: 'Ihr Browser hat das Anmeldefenster blockiert' })).toBeVisible()
+        await check(page, 'de-popup-blocked')
+    })
+
+    test('an expired session', async ({ page }) => {
+        await page.goto(examplePath({ token: 'pcs_not-a-real-session', locale: 'de' }))
+        await page.getByRole('button', { name: 'Konto verbinden' }).click()
+        await expect(page.getByRole('heading', { name: 'Dieser Anmeldelink ist abgelaufen' })).toBeVisible()
+        await check(page, 'de-expired')
+    })
+
+    test('1.x: the details screen, with its errors', async ({ page }) => {
+        const { clientId, tokenName } = seedState()
+        await page.goto(examplePath({ clientId, tokenName, locale: 'de' }))
+        await page.getByRole('button', { name: 'Konto verbinden' }).click()
+        const dialog = page.getByRole('dialog')
+        await dialog.getByRole('button', { name: 'Google Kalender' }).click()
+        await expect(dialog.getByRole('heading', { name: 'Ihre Angaben' })).toBeVisible()
+        await dialog.getByRole('button', { name: 'Weiter', exact: true }).click()
+        await expect(dialog).toContainText('Geben Sie Ihre E-Mail-Adresse ein.')
+        await check(page, 'de-details-errors')
+    })
+
+    test('reconnecting an account', async ({ page, request }) => {
+        await page.route(`${API_URL}/v2/connect/info`, (route) => route.fulfill({
+            json: { success: true, data: { app: { name: seedState().appName, iconUrl: null }, providers: ['google'], reconnect: { email: 'maria.schneider@beispiel.test', provider: 'google' }, loginHint: 'maria.schneider@beispiel.test', expiresAt: new Date(Date.now() + 600_000).toISOString() } },
+        }))
+        await page.goto(examplePath({ token: await makeSession(request), locale: 'de' }))
+        await page.getByRole('button', { name: 'Konto verbinden' }).click()
+        await expect(page.getByRole('heading', { name: 'Konto erneut verbinden' })).toBeVisible()
+        await check(page, 'de-reconnect')
+    })
+})
+
 test('keyboard: focus moves into the dialog, stays there, and Escape returns it', async ({ page, request }) => {
     await page.goto(examplePath({ token: await makeSession(request) }))
     const trigger = page.getByRole('button', { name: 'Connect an account' })
