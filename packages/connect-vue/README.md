@@ -1,44 +1,32 @@
-# Vue 3 — `@pyas/connect-vue`
+# @pyas/connect-vue
 
-> A Vue 3 plugin wrapper around the Pyas Connect Web Component <https://www.npmjs.com/package/@pyas/connect>, exposing PyasConnect as a first-class Vue component
-
-## Usage
+PyasConnect for Vue 3. PyasConnect is the dialog where your users connect their
+Google, Microsoft or Zoom calendar to apps built on [Pyas](https://pyas.io).
 
 ```bash
-npm install @pyas/connect-vue # core (@pyas/connect) auto‑installed
+npm install @pyas/connect-vue
 ```
-Use the wrapper directly inside any component file. No need to modify main.ts or register a global plugin.
+
+Your server creates a connect session (`POST /v2/connect/sessions` with your
+API key) and passes its token to the page:
 
 ```vue
 <script setup>
 import { PyasConnect } from '@pyas/connect-vue'
-
-const handleConnected = (event) => {
-  console.log('Account connected:', event)
-}
-
-const handleConnectError = (error) => {
-  console.error('Connect error:', error)
-}
-
+defineProps(['token'])
 </script>
 
 <template>
-   <PyasConnect
-    client-id="YOUR_CLIENT_ID"
-    token-name="YOUR_TOKEN_NAME"
-    :user-email="email"
-    :user-name="name"
-    theme="dark"
-    :show-disclaimer="true"
-    @account-connected="handleConnected"
-    @connect-error="handleConnectError"
-  >
-    <span>Connect an Account</span>
-  </PyasConnect>
+  <PyasConnect :session-token="token" theme="auto" @connected="(account) => save(account.accountId)" />
 </template>
 ```
 
-## Full Documentation
-Full usage documentation can be found on the core component on npm: <https://www.npmjs.com/package/@pyas/connect>
-And also on GitHub: <https://github.com/brutforce-tech/pyas-connect>
+Events include the event's data. To open the dialog from your own button, set
+`hide-trigger`, add a template ref, and call its `open()` method from a click.
+The element loads only in the browser, so Nuxt and server rendering work
+without changes.
+
+For every prop, event and styling hook, see
+[the full guide](https://github.com/brutforce-tech/pyas-connect#readme).
+
+MIT

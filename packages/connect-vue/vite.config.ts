@@ -1,41 +1,21 @@
-import { fileURLToPath, URL } from 'node:url'
-
+import { readFileSync } from 'node:fs'
 import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import vueJsx from '@vitejs/plugin-vue-jsx'
-import vueDevTools from 'vite-plugin-vue-devtools'
 import dts from 'vite-plugin-dts'
 
-// https://vite.dev/config/
+/** The Vue wrapper for <pyas-connect>: no UI of its own, so @pyas/connect stays external. */
 export default defineConfig({
     plugins: [
-        vue(),
-        vueJsx(),
-        vueDevTools(),
-        dts({
-            insertTypesEntry: true,
-            include: ['src/**/*.ts', 'src/**/*.vue'],
-            tsconfigPath: 'tsconfig.app.json',
-        }),
-
+        dts({ insertTypesEntry: true, include: ['src/**/*.ts'], exclude: ['src/**/*.test.ts'], tsconfigPath: 'tsconfig.app.json' }),
+        {
+            // 1.x apps import @pyas/connect-vue/index.css: keep the file.
+            name: 'keep-1x-stylesheet',
+            generateBundle() {
+                this.emitFile({ type: 'asset', fileName: 'index.css', source: readFileSync('index.css', 'utf8') })
+            },
+        },
     ],
     build: {
-        lib: {
-            entry: 'src/index.ts',
-            name: 'PyasConnectVue',
-            fileName: 'index',
-            formats: ['es', 'cjs']
-        },
-        rollupOptions: {
-            external: ['vue', '@pyas/connect'],
-            output: {
-                banner: "import './index.css';",
-            }
-        },
-    },
-    resolve: {
-        alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url))
-        },
+        lib: { entry: 'src/index.ts', name: 'PyasConnectVue', fileName: 'index', formats: ['es', 'cjs'] },
+        rollupOptions: { external: ['vue', /^@pyas\/connect(\/.*)?$/] },
     },
 })

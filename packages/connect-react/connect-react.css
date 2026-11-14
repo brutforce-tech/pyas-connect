@@ -1,0 +1,3 @@
+/* Kept so 1.x imports of @pyas/connect-react/connect-react.css still resolve.
+   PyasConnect 2.0 styles itself inside the element: theme it with the
+   --pyas-connect-* variables and ::part() hooks instead. */

@@ -1,46 +1,18 @@
-import { Config } from '@stencil/core';
-import * as dotenv from 'dotenv';
+import { Config } from '@stencil/core'
 
-dotenv.config();
-
+/**
+ * PyasConnect 2.0. No environment values are baked in: the API address is the
+ * element's `api-url` (production by default).
+ */
 export const config: Config = {
-  namespace: 'pyas-connect',
-
-  outputTargets: [
-    // Core distribution: emit web components and loader
-    {
-      type: 'dist',
-      esmLoaderPath: '../loader',
-    },
-    // Custom elements bundle for direct use in non-framework contexts
-    {
-      type: 'dist-custom-elements',
-      customElementsExportBehavior: 'auto-define-custom-elements',
-      externalRuntime: false,
-      copy: [
-        // copy everything from src/theme into dist/theme
-        { src: 'theme', dest: 'dist/theme' }
-      ]
-    },
-    // Generate README docs
-    { type: 'docs-readme' },
-    // Optional local dev site (if needed)
-    { type: 'www', serviceWorker: null },
-    {
-      type: 'dist-hydrate-script',
-      dir: './hydrate',
-    },
-  ],
-
-  testing: {
-    browserHeadless: 'shell',
-  },
-
-  env: {
-    PYAS_BASE_URL: process.env.PYAS_BASE_URL,
-    PYAS_REDIRECT_URL: process.env.PYAS_REDIRECT_URL,
-  },
-  extras: {
-    experimentalImportInjection: true
-  }
-};
+    namespace: 'pyas-connect',
+    outputTargets: [
+        { type: 'dist', esmLoaderPath: '../loader' },
+        { type: 'dist-custom-elements', customElementsExportBehavior: 'auto-define-custom-elements', externalRuntime: false },
+        { type: 'docs-readme' },
+        { type: 'www', serviceWorker: null },
+        // Kept from 1.x: server-side rendering imports @pyas/connect/hydrate.
+        { type: 'dist-hydrate-script', dir: './hydrate' },
+    ],
+    testing: { browserHeadless: 'shell' },
+}

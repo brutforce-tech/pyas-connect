@@ -1,27 +1,37 @@
-# `@pyas/connect-react`
+# @pyas/connect-react
 
-> A React plugin wrapper around the Pyas Connect Web Component <https://www.npmjs.com/package/@pyas/connect>, exposing PyasConnect as a first-class React component
-
-## Usage
+PyasConnect for React 18 and 19. PyasConnect is the dialog where your users
+connect their Google, Microsoft or Zoom calendar to apps built on
+[Pyas](https://pyas.io).
 
 ```bash
-npm install @pyas/connect-react # core (@pyas/connect) auto-installed
+npm install @pyas/connect-react
 ```
-```jsx
-import { PyasConnect } from '@pyas/connect-react';
 
-function App() {
-  const handleSuccess = (e) => console.log(e.detail);
+Your server creates a connect session (`POST /v2/connect/sessions` with your
+API key) and passes its token to the page:
+
+```jsx
+import { PyasConnect } from '@pyas/connect-react'
+
+export function ConnectCalendar({ token }) {
   return (
     <PyasConnect
-      clientId="YOUR_CLIENT_ID"
-      tokenName="YOUR_TOKEN_NAME"
-      theme="dark"
-      onAccountConnected={handleSuccess}
-    ></PyasConnect>
-  );
+      sessionToken={token}
+      theme="auto"
+      onConnected={(account) => save(account.accountId)}
+      onError={(error) => report(error.code)}
+    />
+  )
 }
 ```
-## Full Documentation
-Full usage documentation can be found on the core component on npm: <https://www.npmjs.com/package/@pyas/connect>
-And also on GitHub: <https://github.com/brutforce-tech/pyas-connect>
+
+Callbacks receive the event's data. To open the dialog from your own button,
+pass a `ref`, set `hideTrigger`, and call `ref.current.open()` from a click.
+The element loads only in the browser, so server rendering works without
+changes.
+
+For every prop, event and styling hook, see
+[the full guide](https://github.com/brutforce-tech/pyas-connect#readme).
+
+MIT

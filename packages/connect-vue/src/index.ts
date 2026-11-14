@@ -1,2 +1,2 @@
-export { default as PyasConnect } from '@/components/PyasConnect.vue';
-export type { PyasConnectProps } from './types';
+export { PyasConnect, definePyasConnect } from './PyasConnect'
+export type { ConnectedAccount } from './PyasConnect'
