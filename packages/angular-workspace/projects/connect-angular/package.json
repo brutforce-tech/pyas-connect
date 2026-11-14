@@ -1,6 +1,6 @@
 {
   "name": "@pyas/connect-angular",
-  "version": "2.0.0-alpha.0",
+  "version": "2.0.0",
   "description": "PyasConnect for Angular: the <pyas-connect> element with Angular inputs and outputs.",
   "keywords": [
     "pyas",
@@ -22,9 +22,6 @@
   },
   "author": "Pyas Team <support@pyas.io>",
   "homepage": "https://github.com/brutforce-tech/pyas-connect",
-  "files": [
-    "dist"
-  ],
   "publishConfig": {
     "access": "public"
   },
@@ -35,7 +32,7 @@
     "rxjs": "^7.0.0"
   },
   "dependencies": {
-    "@pyas/connect": "2.0.0-alpha.0"
+    "@pyas/connect": "2.0.0"
   },
   "devDependencies": {
     "@angular/compiler": "^19.0.0",

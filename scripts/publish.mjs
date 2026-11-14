@@ -11,6 +11,11 @@ if (versions.size !== 1) throw new Error(`The packages are at different versions
 const [version] = versions
 if (tag && tag !== `v${version}`) throw new Error(`The tag ${tag} does not match the packages' version ${version}.`)
 const distTag = version.includes('-') ? 'next' : 'latest'
+// A package with no JavaScript in it is never published (2.0.0's Angular build once packed only its README).
+for (const p of PACKAGES) {
+    const [packed] = JSON.parse(execFileSync('npm', ['pack', '--dry-run', '--json'], { cwd: p.publishDir, shell: process.platform === 'win32' }).toString())
+    if (!packed.files.some((file) => /\.(m|c)?js$/.test(file.path))) throw new Error(`${p.name} would be published without any JavaScript: check its "files" and its build.`)
+}
 for (const p of PACKAGES) {
     console.log(`Publishing ${p.name}@${version} (${distTag})`)
     execFileSync('npm', ['publish', '--access', 'public', '--provenance', '--tag', distTag], { cwd: p.publishDir, stdio: 'inherit', shell: process.platform === 'win32' })

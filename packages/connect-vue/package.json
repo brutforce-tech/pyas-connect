@@ -1,6 +1,6 @@
 {
   "name": "@pyas/connect-vue",
-  "version": "2.0.0-alpha.0",
+  "version": "2.0.0",
   "description": "PyasConnect for Vue 3: the <pyas-connect> element with Vue props and events.",
   "keywords": [
     "pyas",
@@ -47,7 +47,7 @@
     "vue": "^3.0.0"
   },
   "dependencies": {
-    "@pyas/connect": "2.0.0-alpha.0"
+    "@pyas/connect": "2.0.0"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.1",
