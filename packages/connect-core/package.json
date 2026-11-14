@@ -1,6 +1,6 @@
 {
   "name": "@pyas/connect-core",
-  "version": "2.0.0-alpha.0",
+  "version": "2.0.0",
   "description": "The PyasConnect flow without a UI: connect sessions (and 1.x keys), popup and redirect, with every timeout, retry and cleanup. Framework-free, no runtime dependencies.",
   "author": "Pyas Team <support@pyas.io>",
   "license": "MIT",
