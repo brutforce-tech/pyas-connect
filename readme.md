@@ -8,7 +8,8 @@ Zoom calendar to apps built on [Pyas](https://pyas.io). It's one web component,
   the browser never has access to your API key.
 - **Looks like your product.** Your app's name and icon (from the Pyas
   dashboard) appear first. The dialog inherits your page's font, follows your
-  theme, and shows a small "Powered by Pyas" line.
+  theme, and shows a small "Powered by Pyas" line, which `show-disclaimer="false"`
+  hides.
 - **Clear at every step.** Every loading state explains what is happening, and
   every failure offers a way forward. The dialog also handles pop-up blockers
   and phones.

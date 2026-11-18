@@ -1,6 +1,6 @@
 {
   "name": "@pyas/connect-react",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "PyasConnect for React: the <pyas-connect> element with React props and callbacks.",
   "type": "module",
   "repository": {
@@ -54,7 +54,7 @@
     "react-dom": ">=18.0.0 <20.0.0"
   },
   "dependencies": {
-    "@pyas/connect": "2.0.0"
+    "@pyas/connect": "2.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

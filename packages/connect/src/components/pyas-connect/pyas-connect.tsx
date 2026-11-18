@@ -78,7 +78,7 @@ export class PyasConnect {
     @Prop({ attribute: 'show-labels' }) showLabels?: boolean
     /** 1.x, accepted and unused: iCloud is not offered until Pyas supports it. */
     @Prop({ attribute: 'show-icloud' }) showIcloud?: boolean
-    /** 1.x, accepted and unused: "Powered by Pyas" always shows. */
+    /** `false` hides the "Powered by Pyas" line, as in 1.x. Shown when not set. */
     @Prop({ attribute: 'show-disclaimer' }) showDisclaimer?: boolean
     /** 1.x, accepted and unused: the details screen has no description. */
     @Prop({ attribute: 'form-description' }) formDescription?: string
@@ -530,9 +530,11 @@ export class PyasConnect {
                 {this.header()}
                 {body}
                 <div class="sr-only" aria-live="polite">{announce}</div>
-                <div class="footer" part="footer">
-                    <a href="https://pyas.io" target="_blank" rel="noopener noreferrer">{this.t.poweredBy}</a>
-                </div>
+                {this.showDisclaimer !== false && (
+                    <div class="footer" part="footer">
+                        <a href="https://pyas.io" target="_blank" rel="noopener noreferrer">{this.t.poweredBy}</a>
+                    </div>
+                )}
             </div>
         )
     }
