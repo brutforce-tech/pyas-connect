@@ -81,7 +81,7 @@ export namespace Components {
          */
         "sessionToken"?: string;
         /**
-          * 1.x, accepted and unused: "Powered by Pyas" always shows.
+          * `false` hides the "Powered by Pyas" line, as in 1.x. Shown when not set.
          */
         "showDisclaimer"?: boolean;
         /**
@@ -239,7 +239,7 @@ declare namespace LocalJSX {
          */
         "sessionToken"?: string;
         /**
-          * 1.x, accepted and unused: "Powered by Pyas" always shows.
+          * `false` hides the "Powered by Pyas" line, as in 1.x. Shown when not set.
          */
         "showDisclaimer"?: boolean;
         /**

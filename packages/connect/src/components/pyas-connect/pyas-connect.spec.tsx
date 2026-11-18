@@ -72,6 +72,19 @@ describe('<pyas-connect>', () => {
         expect(t.flow().choose).toHaveBeenCalledWith('google')
     })
 
+    it('hides "Powered by Pyas" with show-disclaimer="false", as 1.x did', async () => {
+        const hidden = await page('<pyas-connect session-token="pcs_t" show-disclaimer="false"></pyas-connect>')
+        await hidden.click('Connect an account')
+        await hidden.set({ status: 'choosing' })
+        expect(hidden.shadow().querySelector('.footer')).toBeNull()
+        expect(hidden.text()).not.toContain('Powered by Pyas')
+
+        const shown = await page('<pyas-connect session-token="pcs_t" show-disclaimer="true"></pyas-connect>')
+        await shown.click('Connect an account')
+        await shown.set({ status: 'choosing' })
+        expect(shown.shadow().querySelector('.footer')!.textContent).toContain('Powered by Pyas')
+    })
+
     it('speaks the language of its locale, of the page, then English; the developer\'s strings still win', async () => {
         const german = await page('<pyas-connect session-token="pcs_t" locale="de"></pyas-connect>')
         expect(german.el.getAttribute('lang')).toBe('de')
